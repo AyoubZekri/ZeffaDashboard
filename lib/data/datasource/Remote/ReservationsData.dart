@@ -11,8 +11,9 @@ class ReservationsData {
     try {
       if (id == null) return [];
 
-      // Main query: JOIN with party_type + GROUP_CONCAT for dishes
-      final result = await _db.readData('''
+      // Main query: JOIN with party_types + GROUP_CONCAT for dishes
+      final result = await _db.readData(
+        '''
         SELECT 
           r.*,
           pt.name AS party_type_name,
@@ -22,13 +23,15 @@ class ReservationsData {
           GROUP_CONCAT(d.name, ', ') AS dishes_names,
           GROUP_CONCAT(rd.dishes_uuid, ',') AS dishes_uuids
         FROM reservations r
-        LEFT JOIN party_type pt ON r.type_of_party_uuid = pt.uuid
+        LEFT JOIN party_types pt ON r.type_of_party_uuid = pt.uuid
         LEFT JOIN reservation_dishes rd ON r.uuid = rd.reservation_uuid
         LEFT JOIN dishes d ON rd.dishes_uuid = d.uuid
         WHERE r.user_id = ?
         GROUP BY r.uuid
         ORDER BY r.created_at DESC
-      ''', [id]);
+      ''',
+        [id],
+      );
 
       return result;
     } catch (e) {
@@ -37,7 +40,9 @@ class ReservationsData {
     }
   }
 
-  Future<List<Map<String, dynamic>>> viewReservationDishes(String reservationUuid) async {
+  Future<List<Map<String, dynamic>>> viewReservationDishes(
+    String reservationUuid,
+  ) async {
     try {
       final result = await _db.readData(
         "SELECT * FROM reservation_dishes WHERE reservation_uuid = ?",
@@ -50,7 +55,10 @@ class ReservationsData {
     }
   }
 
-  Future<bool> Adddata(Map<String, dynamic> rawData, List<String> dishesUuids) async {
+  Future<bool> Adddata(
+    Map<String, dynamic> rawData,
+    List<String> dishesUuids,
+  ) async {
     final String uuid = Uuid().v4();
     try {
       final data = {
@@ -85,7 +93,12 @@ class ReservationsData {
             "updated_at": DateTime.now().toIso8601String(),
           };
           await _db.insert("reservation_dishes", rdData);
-          await _syncService.addToQueue("reservation_dishes", rdUuid, "insert", rdData);
+          await _syncService.addToQueue(
+            "reservation_dishes",
+            rdUuid,
+            "insert",
+            rdData,
+          );
         }
         return true;
       }
@@ -96,7 +109,11 @@ class ReservationsData {
     }
   }
 
-  Future<bool> Updatedata(String uuid, Map<String, dynamic> rawData, List<String> dishesUuids) async {
+  Future<bool> Updatedata(
+    String uuid,
+    Map<String, dynamic> rawData,
+    List<String> dishesUuids,
+  ) async {
     try {
       final data = {
         "username": rawData["username"],
@@ -115,7 +132,10 @@ class ReservationsData {
 
       final result = await _db.update("reservations", data, "uuid = ?", [uuid]);
       if (result > 0) {
-        await _syncService.addToQueue("reservations", uuid, "update", {"uuid": uuid, ...data});
+        await _syncService.addToQueue("reservations", uuid, "update", {
+          "uuid": uuid,
+          ...data,
+        });
 
         // Delete old dishes and add new ones
         await _db.delete("reservation_dishes", "reservation_uuid = ?", [uuid]);
@@ -130,7 +150,12 @@ class ReservationsData {
             "updated_at": DateTime.now().toIso8601String(),
           };
           await _db.insert("reservation_dishes", rdData);
-          await _syncService.addToQueue("reservation_dishes", rdUuid, "insert", rdData);
+          await _syncService.addToQueue(
+            "reservation_dishes",
+            rdUuid,
+            "insert",
+            rdData,
+          );
         }
         return true;
       }
@@ -145,7 +170,7 @@ class ReservationsData {
     try {
       await _db.delete("reservation_dishes", "reservation_uuid = ?", [uuid]);
       final result = await _db.delete("reservations", "uuid = ?", [uuid]);
-      
+
       if (result > 0) {
         await _syncService.addToQueue("reservations", uuid, "delete", {
           "uuid": uuid,
@@ -161,10 +186,15 @@ class ReservationsData {
   }
 
   /// Update specific fields on a reservation (e.g. deposit, guest count)
-  Future<bool> updatePartialFields(String uuid, Map<String, dynamic> fields) async {
+  Future<bool> updatePartialFields(
+    String uuid,
+    Map<String, dynamic> fields,
+  ) async {
     try {
       fields["updated_at"] = DateTime.now().toIso8601String();
-      final result = await _db.update("reservations", fields, "uuid = ?", [uuid]);
+      final result = await _db.update("reservations", fields, "uuid = ?", [
+        uuid,
+      ]);
       if (result > 0) {
         await _syncService.addToQueue("reservations", uuid, "update", {
           "uuid": uuid,

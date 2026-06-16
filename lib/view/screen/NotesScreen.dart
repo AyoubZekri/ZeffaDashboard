@@ -98,7 +98,7 @@ class NotesScreen extends StatelessWidget {
                                     dialogDelete(
                                       title: 'delete_confirm_btn'.tr,
                                       content:
-                                          "${'delete_note_confirm'.tr} \n($title)؟",
+                                          'delete_note_confirm_title'.tr,
                                       onConfirm: () {
                                         ctrl.deleteNote(note.uuid!);
                                       },

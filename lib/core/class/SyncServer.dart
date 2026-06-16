@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-
 import '../../LinkApi.dart';
 import '../services/Services.dart';
 import '../functions/CheckInternat.dart';
@@ -13,7 +12,7 @@ import 'sqldb.dart';
 
 class SyncService {
   final SQLDB _db = SQLDB();
-  final String baseUrl = "https://silaaty_desktop.codedev.id/api/sync";
+  final String baseUrl = "https://zeffa.codedev.id/api/sync";
 
   // ---------------------------------------------------------
   // QUEUE
@@ -76,15 +75,15 @@ class SyncService {
 
           // تحقق إذا كانت صورة موجودة للمنتجات أو الفئات
           String? filePath;
-          if (table == "products") filePath = data["Product_image"];
-          if (table == "categoris") filePath = data["categoris_image"];
+          if (table == "cat_dishes") filePath = data["image"];
+          if (table == "dishes") filePath = data["image"];
 
           bool hasImage = filePath != null && File(filePath).existsSync();
 
           if (hasImage) {
             // إزالة الحقل قبل الإرسال
-            if (table == "products") data.remove("Product_image");
-            if (table == "categoris") data.remove("categoris_image");
+            if (table == "cat_dishes") data.remove("image");
+            if (table == "dishes") data.remove("image");
 
             final request = http.MultipartRequest(
               "POST",
@@ -98,9 +97,7 @@ class SyncService {
             });
 
             // اسم الحقل حسب الجدول
-            final fieldName = table == "categoris"
-                ? "categoris_image"
-                : "Product_image";
+            final fieldName = "image";
 
             // إضافة الملف
             request.files.add(
@@ -134,112 +131,6 @@ class SyncService {
     }
 
     print("🏁 انتهى الرفع.");
-  }
-
-  Future<void> _processQueueRow(Map row) async {
-    final table = row["table_name"];
-    final operation = row["operation"];
-    final data = row["data"] != null ? jsonDecode(row["data"]) : {};
-    data["uuid"] = row["row_id"];
-
-    final token = Get.find<Myservices>().sharedPreferences?.getString("token");
-    final headers = {
-      "Accept": "application/json",
-      if (token != null) "Authorization": "Bearer $token",
-    };
-
-    try {
-      http.Response res;
-
-      if (operation == "delete") {
-        res = await _deleteRequest(table, data, headers);
-      } else {
-        res = await _sendDataRequest(table, data, headers);
-      }
-
-      if (res.statusCode == 200) {
-        await _db.update("sync_queue", {"synced": 1}, "id=${row["id"]}");
-        print("✅ نجاح رفع ${data["uuid"]}");
-      } else {
-        print("❌ HTTP ${res.statusCode}: ${res.body}");
-      }
-    } catch (e) {
-      print("❌ استثناء: $e");
-    }
-  }
-
-  Future<http.Response> _deleteRequest(
-    String table,
-    Map data,
-    Map<String, String> headers,
-  ) {
-    print("🗑️ حذف uuid=${data["uuid"]} من جدول $table");
-    return http.post(
-      Uri.parse("$baseUrl/delete/$table"),
-      body: jsonEncode({"uuid": data["uuid"]}),
-      headers: {...headers, "Content-Type": "application/json"},
-    );
-  }
-
-  Future<http.Response> _sendDataRequest(
-    String table,
-    Map<String, dynamic> data,
-    Map<String, String> headers,
-  ) async {
-    String? filePath;
-
-    // تحديد الصورة حسب الجدول
-    if (table == "products") {
-      filePath = data["Product_image"];
-    } else if (table == "categoris") {
-      filePath = data["categoris_image"];
-    }
-
-    bool hasImage = filePath != null && File(filePath).existsSync();
-
-    if (hasImage) {
-      // إزالة المسار المحلي من JSON قبل الإرسال
-      if (table == "products") data.remove("Product_image");
-      if (table == "categoris") data.remove("categoris_image");
-      print("=====================prodact");
-      return _sendMultipart(table, data, headers, filePath);
-    }
-    print("=====================noprodact");
-
-    // إرسال البيانات بدون صورة
-    return http.post(
-      Uri.parse("$baseUrl/$table"),
-      body: jsonEncode(data),
-      headers: {...headers, "Content-Type": "application/json"},
-    );
-  }
-
-  Future<http.Response> _sendMultipart(
-    String table,
-    Map<String, dynamic> data,
-    Map<String, String> headers,
-    String filePath,
-  ) async {
-    final request = http.MultipartRequest("POST", Uri.parse("$baseUrl/$table"));
-    request.headers.addAll(headers);
-
-    // إضافة الحقول العادية
-    data.forEach((key, value) {
-      request.fields[key] = value.toString();
-    });
-
-    // اسم الحقل حسب الجدول
-    final fieldName = table == "categoris"
-        ? "categoris_image"
-        : "Product_image";
-
-    // إضافة الملف نفسه
-    request.files.add(await http.MultipartFile.fromPath(fieldName, filePath));
-
-    print("📤 رفع Multipart => $filePath");
-
-    final streamed = await request.send();
-    return http.Response.fromStream(streamed);
   }
 
   // ---------------------------------------------------------
@@ -290,6 +181,7 @@ class SyncService {
 
       int limit = 50;
       int page = 0;
+      int totalDownloaded = 0;
       bool hasMore = true;
 
       while (hasMore) {
@@ -302,35 +194,39 @@ class SyncService {
             if (token != null) "Authorization": "Bearer $token",
           },
         );
-
         if (res.statusCode != 200) {
           print("⚠️ HTTP ${res.statusCode}");
           break;
         }
 
         final List<dynamic> serverData = jsonDecode(res.body);
+        totalDownloaded += serverData.length;
+        print(
+          "📥 دفعة ${page + 1}: تم استلام ${serverData.length} سجل (الإجمالي: $totalDownloaded)",
+        );
+
+        if (serverData.isNotEmpty) {
+          print("📄 آخر سجل مستلم في هذه الدفعة: ${serverData.last}");
+        }
 
         if (serverData.isEmpty) {
           hasMore = false;
           break;
         }
         final serverCount = serverData.length;
-        if (table != "zakats" && table != "products" && table != "categoris") {
-          final deletedUuids = serverData
-              .where((e) => e["is_delete"] == 1 || e["is_delete"] == "1")
-              .map((e) => e["uuid"].toString())
-              .toList();
-          if (deletedUuids.isNotEmpty) {
-            await _syncDeletedLocalRows(table, deletedUuids);
-          }
-          serverData.removeWhere(
-            (e) => e["is_delete"] == 1 || e["is_delete"] == "1",
-          );
-        }
+        // if (table != "zakats" && table != "products" && table != "categoris") {
+        //   final deletedUuids = serverData
+        //       .where((e) => e["is_delete"] == 1 || e["is_delete"] == "1")
+        //       .map((e) => e["uuid"].toString())
+        //       .toList();
+        //   if (deletedUuids.isNotEmpty) {
+        //     await _syncDeletedLocalRows(table, deletedUuids);
+        //   }
+        //   serverData
+        //       .removeWhere((e) => e["is_delete"] == 1 || e["is_delete"] == "1");
+        // }
 
         await _syncServerRecords(table, serverData);
-
-        print("📥 دفعة ${page + 1}: ${serverData.length} سجل");
 
         hasMore = serverCount == limit;
         page++;
@@ -353,111 +249,120 @@ class SyncService {
     }
   }
 
-  Future<List<String>> _syncDeletedLocalRows(
-    String table,
-    List<String> deletedUuids,
-  ) async {
-    if (deletedUuids.isEmpty) return [];
-
-    List<String> foundLocally = [];
-
-    for (final uuid in deletedUuids) {
-      final row = await _db.readData("SELECT uuid FROM $table WHERE uuid = ?", [
-        uuid,
-      ]);
-
-      if (row.isNotEmpty) {
-        await _db.delete(table, "uuid = ?", [uuid]);
-        print("🗑️ حذف محلي => $uuid");
-        foundLocally.add(uuid);
-      }
-    }
-
-    return foundLocally;
-  }
-
   Future<void> _syncServerRecords(
     String table,
     List<dynamic> serverData,
   ) async {
+    final columns = await getTableColumns(_db, table);
+
     for (var record in serverData) {
-      final uuid = record["uuid"];
+      try {
+        final uuid = record["uuid"];
+        if (uuid == null) continue;
 
-      // معالجة الصور
-      if (record["categoris_image"] != null &&
-          record["categoris_image"] != "") {
-        record["categoris_image"] = await _downloadAndSaveImage(
-          record["categoris_image"],
-        );
-      }
-      if (record["Product_image"] != null && record["Product_image"] != "") {
-        record["Product_image"] = await _downloadAndSaveImage(
-          record["Product_image"],
-        );
-      }
-
-      record.remove("id");
-
-      final existing = await _db.readData(
-        "SELECT * FROM $table WHERE uuid='$uuid'",
-      );
-
-      if (existing.isEmpty) {
-        await _db.insert(table, Map<String, Object?>.from(record));
-      } else {
-        final local = existing.first;
-        final serverUpdated =
-            DateTime.tryParse(record["updated_at"] ?? "") ?? DateTime(1970);
-        final rawDate = local["updated_at"];
-
-        final localUpdated =
-            (rawDate != null &&
-                rawDate.toString().isNotEmpty &&
-                rawDate.toString() != "null")
-            ? DateTime.tryParse(rawDate.toString()) ?? DateTime(1970)
-            : DateTime(1970);
-        if (serverUpdated.isAfter(localUpdated)) {
-          await _db.update(
-            table,
-            Map<String, Object?>.from(record),
-            "uuid='$uuid'",
-          );
+        // images
+        if ((record["image"] ?? "") != "") {
+          record["image"] = await _downloadAndSaveImage(record["image"]);
         }
+
+        record.remove("id");
+
+        final filtered = filterRecord(
+          Map<String, dynamic>.from(record),
+          columns,
+        );
+
+        final existing = await _db.readData(
+          "SELECT * FROM $table WHERE uuid = ?",
+          [uuid],
+        );
+
+        if (existing.isEmpty) {
+          await _db.insert(table, filtered);
+          print("📥 تم حفظ سجل جديد: $uuid في جدول $table");
+        } else {
+          final local = existing.first;
+
+          final serverUpdated =
+              DateTime.tryParse(record["updated_at"] ?? "") ?? DateTime(1970);
+
+          final rawDate = local["updated_at"];
+          final localUpdated = (rawDate != null)
+              ? DateTime.tryParse(rawDate.toString()) ?? DateTime(1970)
+              : DateTime(1970);
+
+          if (serverUpdated.isAfter(localUpdated)) {
+            await _db.update(table, filtered, "uuid = ?", [uuid]);
+            print("🔄 تم تحديث سجل موجود: $uuid في جدول $table");
+          }
+        }
+      } catch (e) {
+        print("❌ فشل معالجة سجل في جدول $table: $e");
       }
     }
   }
 
+  Map<String, Object?> filterRecord(
+    Map<String, dynamic> record,
+    Set<String> columns,
+  ) {
+    // توحيد أسماء الأعمدة لتكون حروف صغيرة للمقارنة
+    final lowerColumns = columns.map((e) => e.toLowerCase()).toSet();
+
+    return Map.fromEntries(
+      record.entries
+          .where((e) {
+            final key = e.key.toLowerCase();
+            return lowerColumns.contains(key);
+          })
+          .map((e) {
+            // نستخدم اسم العمود الأصلي من القاعدة للحفاظ على التوافق
+            final originalKey = columns.firstWhere(
+              (col) => col.toLowerCase() == e.key.toLowerCase(),
+              orElse: () => e.key,
+            );
+            return MapEntry(originalKey, e.value);
+          }),
+    );
+  }
+
+  Future<Set<String>> getTableColumns(SQLDB db, String table) async {
+    final res = await db.readData('PRAGMA table_info($table)');
+    return res.map((e) => e['name'] as String).toSet();
+  }
   // ---------------------------------------------------------
   // FULL SYNC
   // ---------------------------------------------------------
 
   Future<void> syncAll() async {
     if (!await checkInternet()) {
-      print("🚫 مافيش انترنت");
+      print('no_internet'.tr);
       return;
     }
 
-    print("🌐 بدء المزامنة…");
+    print('start_syncing'.tr);
 
-    await pushQueue("categoris");
-    await pushQueue("transactions");
-    await pushQueue("invoies");
-    await pushQueue("products");
-    await pushQueue("sales");
+    await pushQueue("party_types");
+    await pushQueue("cat_dishes");
+    await pushQueue("dishes");
+    await pushQueue("special_dates");
+    await pushQueue("reservations");
+    await pushQueue("reservation_dishes");
+    await pushQueue("expenses");
+    await pushQueue("notes");
     await pushQueue("notifications");
-    await pushQueue("reports");
-    await pushQueue("zakats");
 
-    await pullFromServer("categoris");
-    await pullFromServer("transactions");
-    await pullFromServer("invoies");
-    await pullFromServer("products");
-    await pullFromServer("sales");
+    await pullFromServer("party_types");
+    await pullFromServer("cat_dishes");
+    await pullFromServer("dishes");
+    await pullFromServer("special_dates");
+    await pullFromServer("reservations");
+    await pullFromServer("reservation_dishes");
+    await pullFromServer("expenses");
+    await pullFromServer("notes");
     await pullFromServer("notifications");
-    await pullFromServer("reports");
-    await pullFromServer("zakats");
 
-    print("✅ كل المزامنة كملت بنجاح");
+    print('all_sync_completed_successfully'.tr);
 
     Get.find<RefreshService>().fire();
   }
@@ -473,11 +378,11 @@ class SyncService {
       if (results.contains(ConnectivityResult.mobile) ||
           results.contains(ConnectivityResult.wifi)) {
         if (await checkInternet()) {
-          print("🌐 الانترنت رجع — تشغيل syncAll()");
+          print('internet_restored_run_sync_all'.tr);
           await syncAll();
         }
       } else {
-        print("📴 الانترنت انقطع");
+        print('internet_disconnected'.tr);
       }
     });
   }

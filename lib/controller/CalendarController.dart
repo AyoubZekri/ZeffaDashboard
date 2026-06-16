@@ -125,7 +125,7 @@ class CalendarController extends GetxController {
               'end': item.endDate,
               'type': 'special_period',
               'title': item.title ?? '',
-              'eventType': 'فترة مميزة',
+              'eventType': 'special_period'.tr,
             });
           } else {
             loadedSpecialDays.add({
@@ -380,10 +380,10 @@ class CalendarController extends GetxController {
       }
     }
 
-    if (count > 15) return 'ممتاز';
-    if (count == 15) return 'متوسط';
-    if (count >= 5 && count < 15) return 'دون المتوسط';
-    return 'سيئ'; // < 5
+    if (count > 15) return 'excellent'.tr;
+    if (count == 15) return 'average'.tr;
+    if (count >= 5 && count < 15) return 'below_average'.tr;
+    return 'bad'.tr; // < 5
   }
 
   void showBookingDetails(Map<String, dynamic> event) {
@@ -397,18 +397,18 @@ class CalendarController extends GetxController {
 
   String formatDateShort(DateTime date) {
     final months = [
-      'يناير',
-      'فبراير',
-      'مارس',
-      'أبريل',
-      'مايو',
-      'يونيو',
-      'يوليو',
-      'أغسطس',
-      'سبتمبر',
-      'أكتوبر',
-      'نوفمبر',
-      'ديسمبر',
+      'january'.tr,
+      'february'.tr,
+      'march'.tr,
+      'april'.tr,
+      'may'.tr,
+      'june'.tr,
+      'july'.tr,
+      'august'.tr,
+      'september'.tr,
+      'october'.tr,
+      'november'.tr,
+      'december'.tr,
     ];
     return "${date.day} ${months[date.month - 1]}";
   }
@@ -416,18 +416,18 @@ class CalendarController extends GetxController {
   // Month names
   String getMonthName(int monthNum) {
     final monthsAr = [
-      'يناير',
-      'فبراير',
-      'مارس',
-      'أبريل',
-      'مايو',
-      'يونيو',
-      'يوليو',
-      'أغسطس',
-      'سبتمبر',
-      'أكتوبر',
-      'نوفمبر',
-      'ديسمبر',
+      'january'.tr,
+      'february'.tr,
+      'march'.tr,
+      'april'.tr,
+      'may'.tr,
+      'june'.tr,
+      'july'.tr,
+      'august'.tr,
+      'september'.tr,
+      'october'.tr,
+      'november'.tr,
+      'december'.tr,
     ];
     final monthsEn = [
       'January',

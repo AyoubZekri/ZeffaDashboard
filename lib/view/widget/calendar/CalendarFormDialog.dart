@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../controller/CalendarController.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
+import '../../../core/functions/valiedinput.dart';
 import '../CustemTextField.dart';
 
 class CalendarFormDialog extends StatefulWidget {
@@ -81,7 +82,7 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                           children: [
                             Text(
                               ctrl.editingUuid.value != null 
-                                ? (isPeriod ? 'تحديث الفترة المميزة' : 'تحديث اليوم المميز')
+                                ? (isPeriod ? 'update_special_period'.tr : 'update_special_day'.tr)
                                 : (isPeriod ? 'add_period_season'.tr : 'add_special_day'.tr),
                               style: TextStyle(
                                 fontSize: 20,
@@ -184,6 +185,9 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                               label: 'special_day_name'.tr,
                               hint: 'event_name'.tr,
                               icon: Icons.bookmark_added_outlined,
+                              validator: (val) {
+                                return validInput(val!, 100, 3, "name");
+                              },
                             ),
                             const SizedBox(height: 20),
                             // Specific Date Picker Row
@@ -209,6 +213,9 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                               label: 'period_name'.tr,
                               hint: 'season_autumn'.tr,
                               icon: Icons.wb_twilight_rounded,
+                              validator: (val) {
+                                return validInput(val!, 100, 3, "username");
+                              },
                             ),
                             const SizedBox(height: 20),
 
@@ -319,7 +326,7 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                           elevation: 0,
                         ),
                         child: Text(
-                          ctrl.editingUuid.value != null ? 'تحديث' : (isPeriod ? 'add_period_season'.tr : 'add_special_day'.tr),
+                          ctrl.editingUuid.value != null ? 'update'.tr : (isPeriod ? 'add_period_season'.tr : 'add_special_day'.tr),
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,

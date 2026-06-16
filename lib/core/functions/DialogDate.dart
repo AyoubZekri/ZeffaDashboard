@@ -23,13 +23,13 @@ Future<Map<String, DateTime>?> showCustomRangePicker(BuildContext context,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             title: Text(
-              "إختر المدة".tr,
+              'choose_duration'.tr,
               style: TextStyle(color: AppColor.backgroundcolor),
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text("تاريخ البداية".tr,
+                Text('start_date'.tr,
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppColor.backgroundcolor)),
@@ -86,7 +86,7 @@ Future<Map<String, DateTime>?> showCustomRangePicker(BuildContext context,
                   ),
                 ),
                 const SizedBox(height: 30),
-                Text("تاريخ النهاية".tr,
+                Text('end_date'.tr,
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppColor.backgroundcolor)),
@@ -145,7 +145,7 @@ Future<Map<String, DateTime>?> showCustomRangePicker(BuildContext context,
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text("إلغاء".tr)),
+                  child: Text('cancel'.tr)),
               ElevatedButton(
                 onPressed: () {
                   DateTime startOfDay(DateTime d) =>
@@ -163,7 +163,7 @@ Future<Map<String, DateTime>?> showCustomRangePicker(BuildContext context,
                   foregroundColor: AppColor.white,
                 ),
                 child: Text(
-                  "تأكيد".tr,
+                  'confirm'.tr,
                 ),
               ),
             ],

@@ -264,7 +264,7 @@ class ReservationsTable extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        item.customerType,
+                        item.customerType??'client'.tr,
                         style: TextStyle(
                           color: colors.subtitleColor,
                           fontSize: 13,

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/constant/Colorapp.dart';
@@ -5,6 +6,7 @@ import '../../core/constant/AppTheme.dart';
 import '../../controller/SiedBarController.dart';
 import '../../core/constant/imageassets.dart';
 import '../../core/localizations/ChengeLocal.dart';
+import '../../view/widget/user_profile_dialog.dart';
 
 class SidebarWidget extends StatelessWidget {
   const SidebarWidget({super.key});
@@ -20,12 +22,7 @@ class SidebarWidget extends StatelessWidget {
       width: 280,
       decoration: BoxDecoration(
         color: colors.sidebarColor,
-        border: Border(
-          left: BorderSide(
-            color: colors.borderColor,
-            width: 1,
-          ),
-        ),
+        border: Border(left: BorderSide(color: colors.borderColor, width: 1)),
       ),
       child: Column(
         children: [
@@ -74,24 +71,45 @@ class SidebarWidget extends StatelessWidget {
                   final isExpanded = controller.expandedIndex.value == index;
 
                   if (subPages.isEmpty) {
-                    return _buildMainItem(controller, index, screen, isSelected, theme);
+                    return _buildMainItem(
+                      controller,
+                      index,
+                      screen,
+                      isSelected,
+                      theme,
+                    );
                   } else {
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        _buildMainItem(controller, index, screen, isSelected, theme, 
-                            hasSubPages: true, 
-                            isExpanded: isExpanded,
-                            onExpandToggle: () => controller.toggleExpand(index)),
+                        _buildMainItem(
+                          controller,
+                          index,
+                          screen,
+                          isSelected,
+                          theme,
+                          hasSubPages: true,
+                          isExpanded: isExpanded,
+                          onExpandToggle: () => controller.toggleExpand(index),
+                        ),
                         if (isExpanded)
                           ...subPages.asMap().entries.map((subEntry) {
                             final subIndex = subEntry.key;
                             final subPage = subEntry.value;
-                            final isSubSelected = controller.currentSubIndex.value == subIndex && isSelected;
-                            
+                            final isSubSelected =
+                                controller.currentSubIndex.value == subIndex &&
+                                isSelected;
+
                             return Padding(
                               padding: const EdgeInsets.only(top: 4),
-                              child: _buildSubItem(controller, index, subIndex, subPage, isSubSelected, theme),
+                              child: _buildSubItem(
+                                controller,
+                                index,
+                                subIndex,
+                                subPage,
+                                isSubSelected,
+                                theme,
+                              ),
                             );
                           }),
                       ],
@@ -110,9 +128,7 @@ class SidebarWidget extends StatelessWidget {
               height: 54,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                gradient: const LinearGradient(
-                  colors: AppColor.purpleGradient,
-                ),
+                gradient: const LinearGradient(colors: AppColor.purpleGradient),
                 boxShadow: [
                   BoxShadow(
                     color: AppColor.primaryPurple.withOpacity(0.3),
@@ -123,7 +139,11 @@ class SidebarWidget extends StatelessWidget {
               ),
               child: ElevatedButton.icon(
                 onPressed: () {},
-                icon: const Icon(Icons.add_rounded, color: Colors.white, size: 20),
+                icon: const Icon(
+                  Icons.add_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 label: Text(
                   'add_sales'.tr,
                   style: const TextStyle(
@@ -147,7 +167,16 @@ class SidebarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildMainItem(Siedbarcontroller controller, int index, Map screen, bool isSelected, ThemeData theme, {bool hasSubPages = false, bool isExpanded = false, VoidCallback? onExpandToggle}) {
+  Widget _buildMainItem(
+    Siedbarcontroller controller,
+    int index,
+    Map screen,
+    bool isSelected,
+    ThemeData theme, {
+    bool hasSubPages = false,
+    bool isExpanded = false,
+    VoidCallback? onExpandToggle,
+  }) {
     final colors = theme.extension<AppColors>()!;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
@@ -158,7 +187,9 @@ class SidebarWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: InkWell(
-        onTap: hasSubPages ? onExpandToggle : () => controller.changePage(index),
+        onTap: hasSubPages
+            ? onExpandToggle
+            : () => controller.changePage(index),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -177,14 +208,18 @@ class SidebarWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                    color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+                    color: isSelected
+                        ? Colors.white
+                        : theme.colorScheme.onSurface,
                     fontFamily: 'Cairo',
                   ),
                 ),
               ),
               if (hasSubPages)
                 Icon(
-                  isExpanded ? Icons.expand_more_rounded : Icons.chevron_left_rounded,
+                  isExpanded
+                      ? Icons.expand_more_rounded
+                      : Icons.chevron_left_rounded,
                   color: isSelected ? Colors.white : Colors.grey,
                   size: 20,
                 ),
@@ -195,7 +230,14 @@ class SidebarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSubItem(Siedbarcontroller controller, int parentIndex, int subIndex, Map subPage, bool isSelected, ThemeData theme) {
+  Widget _buildSubItem(
+    Siedbarcontroller controller,
+    int parentIndex,
+    int subIndex,
+    Map subPage,
+    bool isSelected,
+    ThemeData theme,
+  ) {
     final colors = theme.extension<AppColors>()!;
     return InkWell(
       onTap: () {
@@ -207,9 +249,13 @@ class SidebarWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         margin: const EdgeInsets.only(right: 32),
         decoration: BoxDecoration(
-          color: isSelected ? AppColor.primaryPurple.withOpacity(0.1) : Colors.transparent,
+          color: isSelected
+              ? AppColor.primaryPurple.withOpacity(0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
-          border: isSelected ? Border.all(color: AppColor.primaryPurple.withOpacity(0.2)) : null,
+          border: isSelected
+              ? Border.all(color: AppColor.primaryPurple.withOpacity(0.2))
+              : null,
         ),
         child: Row(
           textDirection: TextDirection.rtl,
@@ -226,7 +272,9 @@ class SidebarWidget extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected ? AppColor.primaryPurple : colors.subtitleColor,
+                  color: isSelected
+                      ? AppColor.primaryPurple
+                      : colors.subtitleColor,
                   fontFamily: 'Cairo',
                 ),
               ),
@@ -261,11 +309,15 @@ class MainLayout extends StatelessWidget {
                       TopBar(isMobile: isMobile),
                       Expanded(
                         child: Obx(() {
-                          if (controller.currentSubPage.value != null && controller.expandedIndex.value != null) {
-                             return controller.currentSubPage.value!();
+                          if (controller.currentSubPage.value != null &&
+                              controller.expandedIndex.value != null) {
+                            return controller.currentSubPage.value!();
                           }
-                          final screen = controller.screens[controller.currentPage.value];
-                          return screen['page'] != null ? screen['page']() : Center(child: Text('page_not_found'.tr));
+                          final screen =
+                              controller.screens[controller.currentPage.value];
+                          return screen['page'] != null
+                              ? screen['page']()
+                              : Center(child: Text('page_not_found'.tr));
                         }),
                       ),
                     ],
@@ -300,14 +352,21 @@ class TopBar extends StatelessWidget {
         color: colors.topBarColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-           BoxShadow(color: colors.shadowColor, blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: colors.shadowColor,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Row(
         textDirection: TextDirection.rtl,
         children: [
           if (isMobile)
-            IconButton(icon: const Icon(Icons.menu, color: AppColor.primaryPurple), onPressed: () => Scaffold.of(context).openDrawer()),
+            IconButton(
+              icon: const Icon(Icons.menu, color: AppColor.primaryPurple),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
 
           // Search Field
           Container(
@@ -323,37 +382,84 @@ class TopBar extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: 'search_system'.tr,
                 hintStyle: TextStyle(fontSize: 12, color: colors.subtitleColor),
-                prefixIcon: Icon(Icons.search_rounded, color: colors.subtitleColor, size: 18),
+                prefixIcon: Icon(
+                  Icons.search_rounded,
+                  color: colors.subtitleColor,
+                  size: 18,
+                ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
+                ),
               ),
             ),
           ),
 
           const Spacer(),
 
-          _buildTopButton(onPressed: () => controller.toggleDarkMode(), icon: isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded, theme: theme),
+          _buildTopButton(
+            onPressed: () => controller.toggleDarkMode(),
+            icon: isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+            theme: theme,
+          ),
           const SizedBox(width: 12),
           _buildLanguageToggle(theme),
           const SizedBox(width: 12),
-          _buildTopButton(onPressed: () {}, icon: Icons.notifications_none_rounded, hasBadge: true, theme: theme),
+          _buildTopButton(
+            onPressed: () {},
+            icon: Icons.notifications_none_rounded,
+            hasBadge: true,
+            theme: theme,
+          ),
           const SizedBox(width: 20),
 
           // Profile Section
-          Row(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(controller.name ?? "mock_user_name".tr, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: textColor, fontFamily: 'Cairo')),
-                  Text("mock_user_role".tr, style: TextStyle(fontSize: 11, color: colors.subtitleColor)),
-                ],
-              ),
-              const SizedBox(width: 12),
-               const CircleAvatar(radius: 18, backgroundImage: AssetImage(Appimageassets.avater)),
-            ],
-          ),
+          Obx(() {
+            return Row(
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      controller.hallname.value.isEmpty
+                          ? "mock_user_name".tr
+                          : controller.hallname.value,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: textColor,
+                        fontFamily: 'Cairo',
+                      ),
+                    ),
+                    Text(
+                      controller.name.value.isEmpty
+                          ? "mock_user_role".tr
+                          : controller.name.value,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colors.subtitleColor,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 12),
+                GestureDetector(
+                  onTap: () {
+                    Get.dialog(const UserProfileDialog());
+                  },
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundImage: controller.imagePath.value != null
+                        ? FileImage(File(controller.imagePath.value!))
+                              as ImageProvider
+                        : const AssetImage(Appimageassets.avater),
+                  ),
+                ),
+              ],
+            );
+          }),
         ],
       ),
     );
@@ -374,15 +480,30 @@ class TopBar extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildLangOption(label: "AR", isActive: isArabic, theme: theme, onTap: () => localeController.changeLang("ar")),
+          _buildLangOption(
+            label: "AR",
+            isActive: isArabic,
+            theme: theme,
+            onTap: () => localeController.changeLang("ar"),
+          ),
           const SizedBox(width: 2),
-          _buildLangOption(label: "EN", isActive: !isArabic, theme: theme, onTap: () => localeController.changeLang("en")),
+          _buildLangOption(
+            label: "EN",
+            isActive: !isArabic,
+            theme: theme,
+            onTap: () => localeController.changeLang("en"),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildLangOption({required String label, required bool isActive, required ThemeData theme, required VoidCallback onTap}) {
+  Widget _buildLangOption({
+    required String label,
+    required bool isActive,
+    required ThemeData theme,
+    required VoidCallback onTap,
+  }) {
     final colors = theme.extension<AppColors>()!;
     return InkWell(
       onTap: onTap,
@@ -396,13 +517,22 @@ class TopBar extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(color: isActive ? Colors.white : colors.subtitleColor, fontWeight: FontWeight.bold, fontSize: 11),
+          style: TextStyle(
+            color: isActive ? Colors.white : colors.subtitleColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 11,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildTopButton({required VoidCallback onPressed, required IconData icon, bool hasBadge = false, required ThemeData theme}) {
+  Widget _buildTopButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    bool hasBadge = false,
+    required ThemeData theme,
+  }) {
     final colors = theme.extension<AppColors>()!;
     return Stack(
       children: [
@@ -417,7 +547,11 @@ class TopBar extends StatelessWidget {
             child: Container(
               width: 7,
               height: 7,
-              decoration: BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle, border: Border.all(color: colors.topBarColor, width: 1.5)),
+              decoration: BoxDecoration(
+                color: Colors.redAccent,
+                shape: BoxShape.circle,
+                border: Border.all(color: colors.topBarColor, width: 1.5),
+              ),
             ),
           ),
       ],

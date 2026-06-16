@@ -197,7 +197,7 @@ class ExpensesTable extends StatelessWidget {
     }
 
     // Currency representation in DA
-    final String currencyStr = isArabic ? "د.ج" : "DA";
+    final String currencyStr = isArabic ? 'currency_dzd'.tr : "DA";
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -344,7 +344,7 @@ class ExpensesTable extends StatelessWidget {
         : (currentPage * itemsPerPage);
 
     final String infoText = isArabic
-        ? "عرض $startIndex-$endIndex من أصل $totalItems مصروف"
+        ? 'showing_expenses_range'.tr
         : "Showing $startIndex-$endIndex of $totalItems expenses";
 
     return Row(

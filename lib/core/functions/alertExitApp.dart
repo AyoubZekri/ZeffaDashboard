@@ -12,7 +12,7 @@ Future<bool> alertExitApp() {
       fontWeight: FontWeight.bold,
       color: AppColor.backgroundcolor,
     ),
-    middleText: "هل تريد الخروج من التطبيق".tr,
+    middleText: 'do_you_want_to_exit_app'.tr,
     onConfirm: () {
       exit(0);
     },

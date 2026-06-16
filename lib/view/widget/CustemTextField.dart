@@ -4,7 +4,7 @@ import '../../core/constant/AppTheme.dart';
 
 class CustemTextField extends StatelessWidget {
   final TextEditingController controller;
-  final String label;
+  final String? label;
   final String hint;
   final IconData? icon;
   final TextInputType keyboardType;
@@ -14,11 +14,14 @@ class CustemTextField extends StatelessWidget {
   final String? sectionHeaderTitle;
   final IconData? sectionHeaderIcon;
   final ValueChanged<String>? onChanged;
+  final bool obscureText;
+  final Widget? suffixIcon;
+  final FormFieldValidator<String>? validator;
 
   const CustemTextField({
     super.key,
     required this.controller,
-    required this.label,
+    this.label,
     required this.hint,
     this.icon,
     this.keyboardType = TextInputType.text,
@@ -28,6 +31,9 @@ class CustemTextField extends StatelessWidget {
     this.sectionHeaderTitle,
     this.sectionHeaderIcon,
     this.onChanged,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.validator,
   });
 
   @override
@@ -42,15 +48,18 @@ class CustemTextField extends StatelessWidget {
     Widget formFieldWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textColor),
-        ),
-        const SizedBox(height: 8),
+        if (label != null)
+          Text(
+            label!,
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textColor),
+          ),
+        if (label != null) const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          obscureText: obscureText,
           readOnly: readOnly,
+          validator: validator,
           onTap: onTap,
           onChanged: onChanged,
           maxLines: maxLines,
@@ -59,6 +68,7 @@ class CustemTextField extends StatelessWidget {
             hintText: hint,
             hintStyle: TextStyle(color: subtitleColor, fontSize: 13),
             prefixIcon: icon != null ? Icon(icon, color: AppColor.primaryPurple, size: 20) : null,
+            suffixIcon: suffixIcon,
             filled: true,
             fillColor: inputFillColor,
             border: OutlineInputBorder(

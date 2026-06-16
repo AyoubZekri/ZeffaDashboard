@@ -38,7 +38,7 @@ class ExpensesHeader extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'manage_dishes'.tr == 'manage_dishes' ? 'إدارة ومتابعة المصاريف اليومية' : 'إدارة ومتابعة المصاريف اليومية', // Simple default desc
+              'manage_dishes'.tr == 'manage_dishes' ? 'manage_daily_expenses'.tr : 'manage_daily_expenses'.tr, // Simple default desc
               style: TextStyle(
                 fontSize: 14, 
                 color: colors.subtitleColor,

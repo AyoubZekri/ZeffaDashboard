@@ -9,12 +9,12 @@ validInput(String val, int max, int min, String type) {
     }
   }
   if (Type == 'Email') {
-    if (GetUtils.isUsername(val)) {
+    if (GetUtils.isEmail(val)) {
       return "not valid Email";
     }
   }
   if (Type == 'phone') {
-    if (GetUtils.isUsername(val)) {
+    if (GetUtils.isPhoneNumber(val)) {
       return "not valid phone".tr;
     }
   }
@@ -32,14 +32,14 @@ validInput(String val, int max, int min, String type) {
 
 bool validInputsnak(String val, int min, int max, String type) {
   if (val.isEmpty) {
-    showSnackbar("error".tr, "لا يمكن أن يكون الحقل فارغًا".tr, Colors.red);
+    showSnackbar("error".tr, 'field_cannot_be_empty'.tr, Colors.red);
     return false;
   }
 
   if (val.length > max) {
     showSnackbar(
       "error".tr,
-      "${'لا يمكن أن يكون حقل'.tr} $type ${'أطول من'.tr} $max ${'حرف'.tr}",
+      'field_max_length_error'.tr,
       Colors.red,
     );
     return false;
@@ -48,24 +48,24 @@ bool validInputsnak(String val, int min, int max, String type) {
   if (val.length < min) {
     showSnackbar(
       "error".tr,
-      "${'لا يمكن أن يكون حقل'.tr} $type ${'أقل من'.tr}  $min ${'حرف'.tr}",
+      'field_min_length_error'.tr,
       Colors.red,
     );
     return false;
   }
 
   if (type == 'username' && !GetUtils.isUsername(val)) {
-    showSnackbar("error".tr, "اسم المستخدم غير صالح".tr, Colors.red);
+    showSnackbar("error".tr, 'invalid_username'.tr, Colors.red);
     return false;
   }
 
   if (type == 'email' && !GetUtils.isEmail(val)) {
-    showSnackbar("error".tr, "البريد الإلكتروني غير صالح".tr, Colors.red);
+    showSnackbar("error".tr, 'invalid_email_address'.tr, Colors.red);
     return false;
   }
 
   if (type == 'phone' && !GetUtils.isPhoneNumber(val)) {
-    showSnackbar("error".tr, "رقم الهاتف غير صالح".tr, Colors.red);
+    showSnackbar("error".tr, 'invalid_phone_number'.tr, Colors.red);
     return false;
   }
 

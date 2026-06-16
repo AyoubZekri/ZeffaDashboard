@@ -34,10 +34,10 @@ class SQLDB {
     Batch batch = db.batch();
 
     // ==============================
-    // Party_type
+    // party_types
     // ==============================
     batch.execute('''
-      CREATE TABLE party_type(
+      CREATE TABLE party_types(
         id INTEGER PRIMARY KEY,
         uuid TEXT UNIQUE,
         user_id INTEGER,

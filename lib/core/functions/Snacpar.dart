@@ -24,27 +24,34 @@ void showSnackbar(String titleKey, String messageKey, Color color) {
   }
 
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    _currentFlushbar = Flushbar(
-      margin: const EdgeInsets.all(12),
-      borderRadius: BorderRadius.circular(12),
-      backgroundColor: color,
-      icon: Icon(iconData, color: Colors.white),
-      titleText: Text(
-        titleKey.tr,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-      messageText: Text(
-        messageKey.tr,
-        style: const TextStyle(color: Colors.white),
-      ),
-      duration: const Duration(seconds: 3),
-      flushbarPosition: FlushbarPosition.TOP,
-      isDismissible: true,
-    )..show(context).then((_) {
-        _currentFlushbar = null; // إعادة تعيين بعد الإغلاق
-      });
+    _currentFlushbar =
+        Flushbar(
+            margin: EdgeInsets.only(
+              bottom: 20, // المسافة من الأسفل
+              right: 20,
+              left: 900, // المسافة من اليمين
+            ),
+            borderRadius: BorderRadius.circular(12),
+            backgroundColor: color.withOpacity(0.85),
+            icon: Icon(iconData, color: Colors.white),
+            titleText: Text(
+              titleKey.tr,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            messageText: Text(
+              messageKey.tr,
+              style: const TextStyle(color: Colors.white),
+            ),
+            duration: const Duration(seconds: 3),
+            flushbarPosition: FlushbarPosition.BOTTOM,
+            isDismissible: true,
+          )
+          ..show(context).then((_) {
+            _currentFlushbar = null; // إعادة تعيين بعد الإغلاق
+          });
   });
 }

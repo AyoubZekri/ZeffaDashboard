@@ -90,7 +90,7 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
                       controllerRe.deleteReservation(reservation.uuid);
                       Get.back();
                     },
-                    title: "هل تريد الحذف",
+                    title: 'do_you_want_to_delete'.tr,
                     content: "",
                   );
                 },

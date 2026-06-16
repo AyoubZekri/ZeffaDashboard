@@ -162,7 +162,7 @@ class DishesScreen extends StatelessWidget {
                               dialogDelete(
                                 title: 'delete_confirm_btn'.tr,
                                 content:
-                                    "${'delete_dish_confirm'.tr} ($title)؟",
+                                    'delete_dish_confirm_title'.tr,
                                 onConfirm: () {
                                   ctrl.deleteDishes(dish.uuid!);
                                   Get.snackbar(

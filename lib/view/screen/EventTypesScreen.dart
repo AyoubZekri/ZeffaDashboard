@@ -78,7 +78,7 @@ class EventTypesScreen extends StatelessWidget {
                             onDelete: () {
                               dialogDelete(
                                 title: 'delete_confirm_btn'.tr,
-                                content: "${'delete_event_confirm'.tr} ($title)؟",
+                                content: 'delete_event_confirm_title'.tr,
                                 onConfirm: () {
                                   ctrl.deleteEventType(type['uuid'] as String);
                                   Get.snackbar(

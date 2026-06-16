@@ -57,7 +57,7 @@
 //     // تهيئة Firebase في الخلفية
 //     await Firebase.initializeApp();
 
-//     print("🔔 إشعار في الخلفية أو عند الإغلاق: ${message.data}");
+//     print('background_notification_msg'.tr);
 
 //     // تشغيل صوت الإشعار
 //     FlutterRingtonePlayer().playNotification();
@@ -85,14 +85,14 @@
 
 //   /// معالجة الإشعار أثناء تشغيل التطبيق
 //   static void _onMessageHandler(RemoteMessage message) {
-//     print("🔔 إشعار أثناء التشغيل: ${message.notification?.title}");
+//     print('foreground_notification_msg'.tr);
 //     FlutterRingtonePlayer().playNotification();
 //     _showLocalNotification(message);
 //   }
 
 //   /// معالجة الضغط على الإشعار من الخلفية
 //   static void _onMessageOpenedAppHandler(RemoteMessage message) {
-//     print("🟢 تم الضغط على إشعار من الخلفية");
+//     print('background_notification_clicked'.tr);
 //     final pageName = message.data['pagename'];
 //     if (pageName != null) {
 //       _handleNotificationTap(pageName);
@@ -128,7 +128,7 @@
 
 //   /// التوجيه حسب pagename
 //   static void _handleNotificationTap(String pageName) {
-//     print("🚀 التوجيه إلى صفحة: $pageName");
+//     print('redirect_to_page'.tr);
 
 //     switch (pageName) {
 //       case "notifications":

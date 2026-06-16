@@ -56,7 +56,7 @@ class NotificationHeader extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () => controller.generateDummyNotification(),
               icon: const Icon(Icons.add, size: 20),
-              label: const Text("توليد إشعار تجريبي", style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+              label: Text('generate_test_notification'.tr, style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColor.primaryPurple.withValues(alpha: 0.1),
                 foregroundColor: AppColor.primaryPurple,

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:zeffa/controller/Reservationscontroller.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
+import '../../../core/functions/valiedinput.dart';
 import '../CustemDropDownField.dart';
 import '../CustemTextField.dart';
 
@@ -140,6 +141,9 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               label: 'name_and_surname'.tr,
                               hint: 'name_hint'.tr,
                               icon: Icons.badge_outlined,
+                              validator: (val) {
+                                return validInput(val!, 1000, 1, "username");
+                              },
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -150,6 +154,9 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               hint: 'phone_hint'.tr,
                               icon: Icons.phone_outlined,
                               keyboardType: TextInputType.phone,
+                              validator: (val) {
+                                return validInput(val!, 13, 10, "phone");
+                              },
                             ),
                           ),
                         ],
@@ -190,32 +197,34 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                           const SizedBox(width: 16),
                           // Event Type dropdown
                           Expanded(
-                            child: Obx(() => _buildPartyTypeDropdownField(
-                              label: 'event_type'.tr,
-                              hint: 'select_event_type'.tr,
-                              value: ctrl.typeOfPartyUuid,
-                              items: ctrl.dbPartyTypes,
-                              onChanged: (val) {
-                                if (ctrl.date.text.isEmpty) {
-                                  Get.snackbar(
-                                    "تنبيه".tr,
-                                    "الرجاء تحديد التاريخ أولاً لتحديد السعر".tr,
-                                    backgroundColor: Colors.orange,
-                                    colorText: Colors.white,
-                                  );
-                                  return;
-                                }
-                                ctrl.typeOfPartyUuid = val;
-                                ctrl.calculatePrice();
-                              },
-                              isDark: isDark,
-                              inputFillColor: inputFillColor,
-                              textColor: textColor,
-                              subtitleColor: subtitleColor,
-                              borderColor: borderColor,
-                            )),
+                            child: Obx(
+                              () => _buildPartyTypeDropdownField(
+                                label: 'event_type'.tr,
+                                hint: 'select_event_type'.tr,
+                                value: ctrl.typeOfPartyUuid,
+                                items: ctrl.dbPartyTypes,
+                                onChanged: (val) {
+                                  if (ctrl.date.text.isEmpty) {
+                                    Get.snackbar(
+                                      'warning'.tr,
+                                      'please_select_date_first_to_set_price'
+                                          .tr,
+                                      backgroundColor: Colors.orange,
+                                      colorText: Colors.white,
+                                    );
+                                    return;
+                                  }
+                                  ctrl.typeOfPartyUuid = val;
+                                  ctrl.calculatePrice();
+                                },
+                                isDark: isDark,
+                                inputFillColor: inputFillColor,
+                                textColor: textColor,
+                                subtitleColor: subtitleColor,
+                                borderColor: borderColor,
+                              ),
+                            ),
                           ),
-                     
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -236,9 +245,12 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                           if (picked != null) {
                             final formatted =
                                 "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
-                              ctrl.date.text = formatted;
-                              ctrl.calculatePrice();
+                            ctrl.date.text = formatted;
+                            ctrl.calculatePrice();
                           }
+                        },
+                        validator: (val) {
+                          return validInput(val!, 1000, 0, "date");
                         },
                       ),
 
@@ -262,6 +274,9 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               hint: '0',
                               icon: Icons.man_outlined,
                               keyboardType: TextInputType.number,
+                              validator: (val) {
+                                return validInput(val!, 1000, 1, "number");
+                              },
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -272,6 +287,9 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               hint: '0',
                               icon: Icons.woman_outlined,
                               keyboardType: TextInputType.number,
+                              validator: (val) {
+                                return validInput(val!, 1000, 1, "number");
+                              },
                             ),
                           ),
                         ],
@@ -300,6 +318,9 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               onChanged: (val) {
                                 ctrl.calculateRemaining();
                               },
+                              validator: (val) {
+                                return validInput(val!, 1000, 1, "number");
+                              },
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -313,6 +334,9 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               onChanged: (val) {
                                 ctrl.calculateRemaining();
                               },
+                              validator: (val) {
+                                return validInput(val!, 1000, 1, "number");
+                              },
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -323,6 +347,9 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               hint: 'price_hint'.tr,
                               icon: Icons.account_balance_wallet_outlined,
                               keyboardType: TextInputType.number,
+                              validator: (val) {
+                                return validInput(val!, 1000, 1, "number");
+                              },
                             ),
                           ),
                         ],
@@ -422,6 +449,9 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                         maxLines: 4,
                         sectionHeaderTitle: 'additional_notes'.tr,
                         sectionHeaderIcon: Icons.sticky_note_2_outlined,
+                        validator: (val) {
+                          return validInput(val!, 3000, 1, "note");
+                        },
                       ),
                       const SizedBox(height: 16),
                     ],
@@ -564,7 +594,6 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
               .toList(),
           onChanged: onChanged,
         ),
-      
       ],
     );
   }
@@ -609,7 +638,6 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
               .toList(),
           onChanged: onChanged,
         ),
-      
       ],
     );
   }

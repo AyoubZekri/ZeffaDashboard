@@ -80,7 +80,7 @@ class DishCategoriesScreen extends StatelessWidget {
                               dialogDelete(
                                 title: 'delete_confirm_btn'.tr,
                                 content:
-                                    "${'delete_category_confirm'.tr} ($title)؟",
+                                    'delete_category_confirm_title'.tr,
                                 onConfirm: () {
                                   ctrl.deletecat(category.uuid!);
                                 },

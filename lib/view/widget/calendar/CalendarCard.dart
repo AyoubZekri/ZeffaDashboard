@@ -120,15 +120,15 @@ class CalendarCard extends StatelessWidget {
             Row(
               children:
                   [
-                    'أحد',
-                    'اثنين',
-                    'ثلاثاء',
-                    'أربعاء',
-                    'خميس',
-                    'جمعة',
-                    'سبت',
+                    'sunday'.tr,
+                    'monday'.tr,
+                    'tuesday'.tr,
+                    'wednesday'.tr,
+                    'thursday'.tr,
+                    'friday'.tr,
+                    'saturday'.tr,
                   ].map((dayName) {
-                    final isFriday = dayName == 'جمعة';
+                    final isFriday = dayName == 'friday'.tr;
 
                     return Expanded(
                       child: Center(

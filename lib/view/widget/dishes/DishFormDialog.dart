@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../controller/DishesController.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
+import '../../../core/functions/valiedinput.dart';
 import '../../../data/model/DishCategoryModel.dart';
 import '../CustemDropDownField.dart';
 import '../CustemTextField.dart';
@@ -135,7 +136,7 @@ class _DishFormDialogState extends State<DishFormDialog> {
                                       onPressed: () {
                                         ctrl.uploadimagefile();
                                       },
-                                      child: Text("اضافة صورة".tr),
+                                      child: Text('add_image'.tr),
                                     )
                                   : Stack(
                                       children: [
@@ -173,8 +174,8 @@ class _DishFormDialogState extends State<DishFormDialog> {
                         ),
                         const SizedBox(height: 20),
                         _buildDropdownField(
-                          label: 'فئة الطبق '.tr,
-                          hint: 'اختر فئة الطبق'.tr,
+                          label: 'dish_category_label'.tr,
+                          hint: 'choose_dish_category'.tr,
                           value: isEdit ? ctrl.editcatUuid : ctrl.catUuid,
                           items: ctrl.dishCategories,
                           onChanged: (val) {
@@ -198,6 +199,9 @@ class _DishFormDialogState extends State<DishFormDialog> {
                           label: 'dish_name'.tr,
                           hint: 'dish_name'.tr,
                           icon: Icons.flatware_rounded,
+                          validator: (val) {
+                            return validInput(val!, 100, 1, "name");
+                          },
                         ),
                       ],
                     ),

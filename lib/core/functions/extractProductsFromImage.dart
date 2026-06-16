@@ -19,9 +19,9 @@
 
 // [
 //   {
-//     "name": "اسم المنتج",
-//     "price": "السعر",
-//     "quantity": "الكمية"
+//     "name": 'product_name'.tr,
+//     "price": 'price'.tr,
+//     "quantity": 'quantity'.tr
 //   }
 // ]
 // ''';
@@ -33,5 +33,5 @@
 //     ])
 //   ]);
 
-//   return response.text ?? "فشل في القراءة";
+//   return response.text ?? 'failed_to_read'.tr;
 // }

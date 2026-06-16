@@ -11,7 +11,7 @@ class SpecialDateModel {
   final String? createdAt;
   final String? updatedAt;
 
-  // Joined fields from reservations and party_type
+  // Joined fields from reservations and party_types
   final String? customerName;
   final String? customerPhone;
   final int? bookingId;

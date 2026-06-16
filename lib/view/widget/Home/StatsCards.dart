@@ -19,7 +19,7 @@ class StatsSection extends StatelessWidget {
           _buildStatCard(
             context: context,
             title: 'today_profit'.tr,
-            value: '4,850 ر.س',
+            value: 'sar_amount_1'.tr,
             percentage: '+12.5%',
             isPositive: true,
             icon: Icons.trending_up,
@@ -31,7 +31,7 @@ class StatsSection extends StatelessWidget {
           _buildStatCard(
             context: context,
             title: 'today_income'.tr,
-            value: '12,420 ر.س',
+            value: 'sar_amount_2'.tr,
             percentage: '+8.2%',
             isPositive: true,
             icon: Icons.account_balance_wallet_outlined,

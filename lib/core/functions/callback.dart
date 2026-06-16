@@ -1,44 +1,50 @@
-// import 'dart:async';
-import 'package:zeffa/core/class/SyncServer.dart';
-import 'package:zeffa/core/functions/CheckInternat.dart';
-import 'package:zeffa/core/services/Services.dart';
+import 'dart:async';
+import 'dart:io';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+
+import '../class/SyncServer.dart';
+import '../services/Services.dart';
+import 'CheckInternat.dart';
 
 class SyncForegroundService {
   final SyncService syncService = SyncService();
-  // Timer? _timer;
+  Timer? _timer;
 
   void start() {
-    syncService.initSyncListener();
+    syncService.initSyncListener(); // هذا السطر يجعل المزامنة تعمل عند عودة الإنترنت
 
-    //   _timer?.cancel();
-    //   _timer = Timer.periodic(const Duration(minutes: 15), (_) async {
-    //     if (await checkInternet()) {
-    //       print("🔔 تنفيذ مهمة مزامنة دورية (foreground)...");
-    //       await syncService.syncAll();
-    //     }
-    //   });
-
-    AndroidAlarmManager.periodic(
-      const Duration(minutes: 15),
-      123,
-      syncCallback,
-      wakeup: true,
-      rescheduleOnReboot: true,
-    );
+    if (Platform.isAndroid) {
+      AndroidAlarmManager.periodic(
+        const Duration(minutes: 15),
+        123,
+        syncCallback,
+        wakeup: true,
+        rescheduleOnReboot: true,
+      );
+    } else {
+      // هذا السطر يجعل المزامنة تعمل كل 15 دقيقة على ويندوز
+      _timer?.cancel();
+      _timer = Timer.periodic(const Duration(minutes: 15), (_) async {
+        if (await checkInternet()) {
+          print("🔔 تنفيذ مهمة مزامنة دورية (foreground timer)...");
+          await syncService.syncAll();
+        }
+      });
+    }
   }
-
-  // void stop() {
-  //   _timer?.cancel();
-  //   _timer = null;
-  // }
 
   void stop() {
-    AndroidAlarmManager.cancel(123);
-    print("AlarmManager stopped");
+    if (Platform.isAndroid) {
+      AndroidAlarmManager.cancel(123);
+      print("AlarmManager stopped");
+    } else {
+      _timer?.cancel();
+      _timer = null;
+      print("Timer stopped");
+    }
   }
 }
-
+@pragma('vm:entry-point')
 void syncCallback() async {
   await initialServices();
   if (await checkInternet()) {

@@ -23,7 +23,7 @@ class SpecialDates {
           pt.name AS event_type
         FROM special_dates sd
         LEFT JOIN reservations r ON sd.reservation_uuid = r.uuid
-        LEFT JOIN party_type pt ON r.type_of_party_uuid = pt.uuid
+        LEFT JOIN party_types pt ON r.type_of_party_uuid = pt.uuid
         WHERE sd.user_id = ? 
         ORDER BY sd.id DESC
         ''',
@@ -141,7 +141,7 @@ class SpecialDates {
         ''',
         [id, '$yearStr-$monthStr-%'],
       );
-      
+
       if (response.isNotEmpty) {
         final countRaw = response.first['count'];
         return countRaw != null ? int.tryParse(countRaw.toString()) ?? 0 : 0;
@@ -153,4 +153,3 @@ class SpecialDates {
     }
   }
 }
-

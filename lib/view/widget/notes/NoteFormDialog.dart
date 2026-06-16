@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../controller/NotesController.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
+import '../../../core/functions/valiedinput.dart';
 import '../CustemTextField.dart';
 
 class NoteFormDialog extends StatelessWidget {
@@ -104,6 +105,9 @@ class NoteFormDialog extends StatelessWidget {
                         label: 'note_title'.tr,
                         hint: 'note_title'.tr,
                         icon: Icons.title_rounded,
+                        validator: (val) {
+                            return validInput(val!, 1000, 1, "username");
+                          },
                       ),
                       const SizedBox(height: 24),
                       TextFormField(

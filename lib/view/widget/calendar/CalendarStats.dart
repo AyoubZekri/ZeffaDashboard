@@ -12,23 +12,21 @@ class CalendarStats extends StatelessWidget {
     Key? key,
     this.totalBookings = 24,
     this.fridaysOccupied = "4/4",
-    this.monthName = "أكتوبر",
+    this.monthName = 'october',
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    String monthPerf = 'سيئ';
+    String monthPerf = 'bad'.tr;
     Color perfColor = Colors.redAccent;
     if (totalBookings > 15) {
-      monthPerf = 'ممتاز';
+      monthPerf = 'excellent'.tr;
       perfColor = Colors.greenAccent;
     } else if (totalBookings == 15) {
-      monthPerf = 'متوسط';
+      monthPerf = 'average'.tr;
       perfColor = Colors.blueAccent;
     } else if (totalBookings >= 5) {
-      monthPerf = 'دون المتوسط';
+      monthPerf = 'below_average'.tr;
       perfColor = Colors.orangeAccent;
     }
 
@@ -72,7 +70,10 @@ class CalendarStats extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.15),
+                      width: 1,
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,7 +109,10 @@ class CalendarStats extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.15),
+                      width: 1,
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,14 +146,10 @@ class CalendarStats extends StatelessWidget {
           // Season performance bottom indicator
           Row(
             children: [
-              Icon(
-                Icons.stars_rounded,
-                color: perfColor,
-                size: 20,
-              ),
+              Icon(Icons.stars_rounded, color: perfColor, size: 20),
               const SizedBox(width: 8),
               Text(
-                'أداء الشهر: $monthPerf',
+                'month_performance'.tr,
                 style: TextStyle(
                   color: perfColor,
                   fontWeight: FontWeight.bold,

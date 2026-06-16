@@ -23,9 +23,6 @@ class Siedbarcontroller extends GetxController {
   Rx<Widget Function()?> currentSubPage = Rx<Widget Function()?>(null);
   Myservices myservices = Get.find();
 
-  String? get name => myservices.sharedPreferences!.getString("username");
-  String? get emailofuser => myservices.sharedPreferences!.getString("email");
-
   RxBool isDarkMode = false.obs;
 
   void toggleDarkMode() {
@@ -78,16 +75,9 @@ class Siedbarcontroller extends GetxController {
       'subPages': [],
     },
     {
-      'name': 'settings',
-      'icon': Icons.settings_outlined,
-      'page': null,
-      'subPages': [
-        {
-          'name': 'notifications',
-          'icon': Icons.notifications_none_outlined,
-          'page': () => const NotificationsScreen(),
-        },
-      ],
+      'name': 'notifications',
+      'icon': Icons.notifications_none_outlined,
+      'page': () => const NotificationsScreen(),
     },
   ];
   void changePage(int index) {
@@ -118,12 +108,37 @@ class Siedbarcontroller extends GetxController {
     update();
   }
 
+  void logout() async {
+    myservices.sharedPreferences!.clear();
+    Get.offAllNamed('/login'); // Make sure this matches Approutes.Login
+  }
+
+  RxString name = "".obs;
+  RxString emailofuser = "".obs;
+  RxString hallname = "".obs;
+  RxnString imagePath = RxnString();
+  RxnInt status = RxnInt();
+  RxnString dateExperiment = RxnString();
+
+  void loadProfileData() {
+    name.value = myservices.sharedPreferences!.getString("username") ?? "";
+    emailofuser.value = myservices.sharedPreferences!.getString("email") ?? "";
+    hallname.value = myservices.sharedPreferences!.getString("hallname") ?? "";
+    imagePath.value = myservices.sharedPreferences!.getString("image");
+    status.value = myservices.sharedPreferences!.getInt("status");
+    dateExperiment.value = myservices.sharedPreferences!.getString(
+      "date_experiment",
+    );
+  }
+
   @override
   void onInit() {
     email = TextEditingController();
     password = TextEditingController();
     confirmPassword = TextEditingController();
-    isDarkMode.value = myservices.sharedPreferences!.getBool("isDarkMode") ?? false;
+    isDarkMode.value =
+        myservices.sharedPreferences!.getBool("isDarkMode") ?? false;
+    loadProfileData();
     super.onInit();
   }
 }

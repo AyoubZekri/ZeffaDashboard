@@ -42,7 +42,7 @@ class SeasonsTable extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Text(
-                'seasons_overview'.tr, // "نظرة عامة على المواسم والأيام المميزة"
+                'seasons_overview'.tr, // 'seasons_and_special_days_overview'.tr
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -61,7 +61,7 @@ class SeasonsTable extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: Text(
-                  'الاسم',
+                  'name'.tr,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -85,7 +85,7 @@ class SeasonsTable extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  'أداء الموسم',
+                  'season_performance'.tr,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class SeasonsTable extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  'الاجراءات',
+                  'actions_label'.tr,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -224,10 +224,10 @@ class SeasonsTable extends StatelessWidget {
   }
 
   Color _getPerformanceColor(String perf) {
-    if (perf == 'ممتاز') return Colors.green;
-    if (perf == 'متوسط') return Colors.blue;
-    if (perf == 'دون المتوسط') return Colors.orange;
-    if (perf == 'سيئ') return Colors.red;
+    if (perf == 'excellent'.tr) return Colors.green;
+    if (perf == 'average'.tr) return Colors.blue;
+    if (perf == 'below_average'.tr) return Colors.orange;
+    if (perf == 'bad'.tr) return Colors.red;
     return Colors.grey;
   }
 }

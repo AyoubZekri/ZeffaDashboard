@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../controller/ExpensesController.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
+import '../../../core/functions/valiedinput.dart';
 import '../CustemTextField.dart';
 import '../CustemDropDownField.dart';
 
@@ -124,12 +125,15 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                           label: 'expense_name'.tr,
                           hint: 'expense_name'.tr,
                           icon: Icons.description_outlined,
+                          validator: (val) {
+                            return validInput(val!, 1000, 1, "username");
+                          },
                         ),
                         const SizedBox(height: 20),
 
                         // Category Dropdown
                         Text(
-                          'status'.tr == 'الحالة' ? 'الفئة' : 'Category',
+                          'status'.tr == 'status'.tr ? 'category'.tr : 'Category',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -179,16 +183,22 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                           icon: Icons.calendar_today_outlined,
                           readOnly: true,
                           onTap: () => ctrl.selectDate(context),
+                          validator: (val) {
+                            return validInput(val!, 1000, 0, "date");
+                          },
                         ),
                         const SizedBox(height: 20),
 
                         // Amount
                         CustemTextField(
                           controller: ctrl.amountController,
-                          label: 'status'.tr == 'الحالة' ? 'المبلغ (DA)' : 'Amount (DA)',
+                          label: 'status'.tr == 'status'.tr ? 'amount_da'.tr : 'Amount (DA)',
                           hint: '0.00',
                           icon: Icons.monetization_on_outlined,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          validator: (val) {
+                            return validInput(val!, 1000, 1, "number");
+                          },
                         ),
                       ],
                     ),

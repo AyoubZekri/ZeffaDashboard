@@ -38,7 +38,7 @@ class NotesHeader extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'إدارة ومتابعة الملاحظات الخاصة بك', // "Manage and track your notes"
+              'manage_your_notes'.tr, // "Manage and track your notes"
               style: TextStyle(
                 fontSize: 14, 
                 color: colors.subtitleColor,

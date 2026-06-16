@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../controller/DishCategoriesController.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
+import '../../../core/functions/valiedinput.dart';
 import '../CustemTextField.dart';
 
 class DishCategoryFormDialog extends StatefulWidget {
@@ -132,7 +133,7 @@ class _DishCategoryFormDialogState extends State<DishCategoryFormDialog> {
                                     onPressed: () {
                                       ctrl.uploadimagefile();
                                     },
-                                    child: Text("اضافة صورة".tr),
+                                    child: Text('add_image'.tr),
                                   )
                                 : Stack(
                                     children: [
@@ -176,6 +177,9 @@ class _DishCategoryFormDialogState extends State<DishCategoryFormDialog> {
                         label: 'category_name'.tr,
                         hint: 'category_name'.tr,
                         icon: Icons.label_important_outline_rounded,
+                        validator: (val) {
+                          return validInput(val!, 100, 1, "name");
+                        },
                       ),
                     ],
                   ),

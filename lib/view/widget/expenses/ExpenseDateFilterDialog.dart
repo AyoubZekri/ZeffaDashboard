@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' hide TextDirection;
+import 'package:zeffa/core/functions/valiedinput.dart' show validInput;
 import '../../../controller/ExpensesController.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
@@ -10,7 +11,8 @@ class ExpenseDateFilterDialog extends StatefulWidget {
   const ExpenseDateFilterDialog({super.key});
 
   @override
-  State<ExpenseDateFilterDialog> createState() => _ExpenseDateFilterDialogState();
+  State<ExpenseDateFilterDialog> createState() =>
+      _ExpenseDateFilterDialogState();
 }
 
 class _ExpenseDateFilterDialogState extends State<ExpenseDateFilterDialog> {
@@ -29,7 +31,9 @@ class _ExpenseDateFilterDialogState extends State<ExpenseDateFilterDialog> {
     tempEnd = ctrl.endDateFilter.value;
 
     startController = TextEditingController(
-      text: tempStart != null ? DateFormat('yyyy-MM-dd').format(tempStart!) : "",
+      text: tempStart != null
+          ? DateFormat('yyyy-MM-dd').format(tempStart!)
+          : "",
     );
     endController = TextEditingController(
       text: tempEnd != null ? DateFormat('yyyy-MM-dd').format(tempEnd!) : "",
@@ -107,7 +111,7 @@ class _ExpenseDateFilterDialogState extends State<ExpenseDateFilterDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isArabic ? 'تصفية بالتاريخ' : 'Filter by Date',
+                          isArabic ? 'filter_by_date'.tr : 'Filter by Date',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -118,7 +122,7 @@ class _ExpenseDateFilterDialogState extends State<ExpenseDateFilterDialog> {
                         const SizedBox(height: 4),
                         Text(
                           isArabic
-                              ? 'اختر تاريخ البدء وتاريخ الانتهاء'
+                              ? 'choose_start_end_date'.tr
                               : 'Select start date and end date',
                           style: TextStyle(
                             fontSize: 12,
@@ -147,6 +151,9 @@ class _ExpenseDateFilterDialogState extends State<ExpenseDateFilterDialog> {
                 icon: Icons.date_range_rounded,
                 readOnly: true,
                 onTap: () => _pickDate(context, true),
+                validator: (val) {
+                  return validInput(val!, 10000, 0, "date");
+                },
               ),
               const SizedBox(height: 20),
 
@@ -158,6 +165,9 @@ class _ExpenseDateFilterDialogState extends State<ExpenseDateFilterDialog> {
                 icon: Icons.date_range_rounded,
                 readOnly: true,
                 onTap: () => _pickDate(context, false),
+                validator: (val) {
+                  return validInput(val!, 10000, 0, "date");
+                },
               ),
               const SizedBox(height: 32),
 
@@ -178,7 +188,7 @@ class _ExpenseDateFilterDialogState extends State<ExpenseDateFilterDialog> {
                       ),
                     ),
                     child: Text(
-                      isArabic ? 'إعادة تعيين' : 'Reset',
+                      isArabic ? 'reset'.tr : 'Reset',
                       style: const TextStyle(
                         fontSize: 14,
                         color: Colors.red,
@@ -228,7 +238,7 @@ class _ExpenseDateFilterDialogState extends State<ExpenseDateFilterDialog> {
                       elevation: 0,
                     ),
                     child: Text(
-                      isArabic ? 'تطبيق' : 'Apply',
+                      isArabic ? 'apply'.tr : 'Apply',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

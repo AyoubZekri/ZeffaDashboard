@@ -23,7 +23,7 @@ class PartyTypes {
       }
 
       final result = await _db.readData(
-        "SELECT * FROM party_type WHERE user_id = ? ORDER BY created_at DESC",
+        "SELECT * FROM party_types WHERE user_id = ? ORDER BY created_at DESC",
         [id],
       );
 
@@ -34,7 +34,13 @@ class PartyTypes {
     }
   }
 
-  Future<bool> Adddata(String name, String content, double basicPrice, double seasonalPrice, String icon) async {
+  Future<bool> Adddata(
+    String name,
+    String content,
+    double basicPrice,
+    double seasonalPrice,
+    String icon,
+  ) async {
     final String uuid = Uuid().v4();
 
     try {
@@ -50,10 +56,10 @@ class PartyTypes {
         "updated_at": DateTime.now().toIso8601String(),
       };
 
-      final result = await _db.insert("party_type", data);
+      final result = await _db.insert("party_types", data);
       print("============Adddata PartyType===== $result =============");
       if (result > 0) {
-        await _syncService.addToQueue("party_type", uuid, "insert", data);
+        await _syncService.addToQueue("party_types", uuid, "insert", data);
         return true;
       }
       return false;
@@ -81,10 +87,10 @@ class PartyTypes {
         "updated_at": DateTime.now().toIso8601String(),
       };
 
-      final result = await _db.update("party_type", data, "uuid = ?", [uuid]);
+      final result = await _db.update("party_types", data, "uuid = ?", [uuid]);
 
       if (result > 0) {
-        await _syncService.addToQueue("party_type", uuid, "update", {
+        await _syncService.addToQueue("party_types", uuid, "update", {
           "uuid": uuid,
           ...data,
         });
@@ -99,10 +105,10 @@ class PartyTypes {
 
   Future<bool> Deletedata(String uuid) async {
     try {
-      final result = await _db.delete("party_type", "uuid = ?", [uuid]);
+      final result = await _db.delete("party_types", "uuid = ?", [uuid]);
 
       if (result > 0) {
-        await _syncService.addToQueue("party_type", uuid, "delete", {
+        await _syncService.addToQueue("party_types", uuid, "delete", {
           "uuid": uuid,
           "updated_at": DateTime.now().toIso8601String(),
         });

@@ -51,7 +51,7 @@ class ExpensesScreen extends StatelessWidget {
                 // ── Summary Cards Section (Remaining budget removed, only total expenses is displayed) ──
                 Obx(() {
                   final totalSum = ctrl.totalExpensesSum;
-                  final currencyStr = isArabic ? "د.ج" : "DA";
+                  final currencyStr = isArabic ? 'currency_dzd'.tr : "DA";
 
                   return Container(
                     width: double.infinity,
@@ -78,8 +78,8 @@ class ExpensesScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'status'.tr == 'الحالة'
-                                  ? 'إجمالي مصاريف الشهر الحالي'
+                              'status'.tr == 'status'.tr
+                                  ? 'total_current_month_expenses'.tr
                                   : 'Total Month Expenses',
                               style: TextStyle(
                                 fontSize: 14,
@@ -111,8 +111,8 @@ class ExpensesScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  'status'.tr == 'الحالة'
-                                      ? 'محدث تلقائياً من العمليات'
+                                  'status'.tr == 'status'.tr
+                                      ? 'automatically_updated_from_operations'.tr
                                       : 'Auto-updated from transactions',
                                   style: TextStyle(
                                     fontSize: 12,
@@ -187,7 +187,7 @@ class ExpensesScreen extends StatelessWidget {
                       dialogDelete(
                         title: 'delete_expense'.tr,
                         content:
-                            "${'delete_expense_confirm'.tr} (${expense.description})؟",
+                            'delete_expense_confirm_desc'.tr,
                         onConfirm: () {
                           ctrl.deleteExpense(expense.uuid!);
                         },
@@ -273,7 +273,7 @@ class ExpensesScreen extends StatelessWidget {
               label: Text(
                 hasDateFilter
                     ? "${start.year}/${start.month.toString().padLeft(2, '0')}/${start.day.toString().padLeft(2, '0')} - ${end.year}/${end.month.toString().padLeft(2, '0')}/${end.day.toString().padLeft(2, '0')}"
-                    : 'status'.tr == 'الحالة' ? 'تصفية بالتاريخ' : 'Filter by Date',
+                    : 'status'.tr == 'status'.tr ? 'filter_by_date'.tr : 'Filter by Date',
                 style: TextStyle(
                   color: hasDateFilter ? Colors.white : theme.colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -301,7 +301,7 @@ class ExpensesScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.clear_rounded, color: Colors.red),
               onPressed: () => ctrl.clearDateFilter(),
-              tooltip: 'status'.tr == 'الحالة' ? 'إلغاء تصفية التاريخ' : 'Clear Date Filter',
+              tooltip: 'status'.tr == 'status'.tr ? 'cancel_date_filter'.tr : 'Clear Date Filter',
             ),
         ],
       );

@@ -12,6 +12,8 @@ import 'package:zeffa/core/services/Services.dart';
 import 'package:zeffa/core/constant/AppTheme.dart';
 import 'package:zeffa/routes.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'core/functions/callback.dart';
+import 'core/functions/SystemTrayHandler.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -37,6 +39,7 @@ void main() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
+
   /// 👇 تهيئة window_manager
   await windowManager.ensureInitialized();
 
@@ -55,8 +58,11 @@ void main() async {
     await windowManager.show();
     await windowManager.focus();
   });
-
-  runApp(const MyApp());
+  
+  final syncForeground = SyncForegroundService();
+  syncForeground.start();
+  
+  runApp(const SystemTrayHandler(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -80,7 +86,7 @@ class MyApp extends StatelessWidget {
       navigatorObservers: [routeObserver],
       translations: MyTranslation(),
       debugShowCheckedModeBanner: false,
-      title: 'Silaaty',
+      title: 'zeffa',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode:

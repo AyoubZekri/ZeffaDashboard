@@ -103,16 +103,20 @@ class Reservationscontroller extends GetxController {
         sDates.map((e) => SpecialDateModel.fromJson(e)).toList(),
       );
 
-      // Fetch reservations (now includes joined party_type + dishes data)
+      // Fetch reservations (now includes joined party_types + dishes data)
       var res = await resData.viewdata();
       print("🔍 Reservations fetched: ${res.length} items");
       if (res.isNotEmpty) print("🔍 First reservation: ${res.first}");
       allReservations.assignAll(
         List<ReservationModel>.from(
-          res.map((e) => ReservationModel.fromJson(Map<String, dynamic>.from(e))),
+          res.map(
+            (e) => ReservationModel.fromJson(Map<String, dynamic>.from(e)),
+          ),
         ),
       );
-      print("🔍 allReservations.length after assign: ${allReservations.length}");
+      print(
+        "🔍 allReservations.length after assign: ${allReservations.length}",
+      );
 
       statusrequest = Statusrequest.success;
     } catch (e, st) {
@@ -191,8 +195,17 @@ class Reservationscontroller extends GetxController {
 
   // عرض البيانات
   Future<void> addReservation() async {
-    if (username.text.isEmpty || phone.text.isEmpty || date.text.isEmpty || typeOfPartyUuid == null || BookingBeriod == null) {
-      Get.snackbar("تنبيه".tr, "يرجى تعبئة الحقول الأساسية (الاسم، الهاتف، التاريخ، نوع الحفل والفترة)".tr, backgroundColor: Colors.orange, colorText: Colors.white);
+    if (username.text.isEmpty ||
+        phone.text.isEmpty ||
+        date.text.isEmpty ||
+        typeOfPartyUuid == null ||
+        BookingBeriod == null) {
+      Get.snackbar(
+        'warning'.tr,
+        'please_fill_required_fields'.tr,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -216,7 +229,11 @@ class Reservationscontroller extends GetxController {
     bool success = await resData.Adddata(rawData, selectedDishes);
     if (success) {
       Get.back();
-      showSnackbar("نجاح".tr, "تم حفظ الحجز بنجاح".tr, Colors.green);
+      showSnackbar(
+        'success_msg'.tr,
+        'reservation_saved_successfully'.tr,
+        Colors.green,
+      );
       fetchInitialData();
 
       username.clear();
@@ -232,7 +249,7 @@ class Reservationscontroller extends GetxController {
       typeOfPartyUuid = null;
       selectedDishes.clear();
     } else {
-      showSnackbar("خطأ".tr, "فشل حفظ الحجز".tr, Colors.red);
+      showSnackbar('error'.tr, 'failed_to_save_reservation'.tr, Colors.red);
     }
 
     statusrequest = Statusrequest.success;
@@ -283,10 +300,14 @@ class Reservationscontroller extends GetxController {
     bool success = await resData.Updatedata(uuid, rawData, selectedDishes);
     if (success) {
       Get.back();
-      showSnackbar("نجاح".tr, "تم تعديل الحجز بنجاح".tr, Colors.green);
+      showSnackbar(
+        'success_msg'.tr,
+        'reservation_updated_successfully'.tr,
+        Colors.green,
+      );
       fetchInitialData();
     } else {
-      showSnackbar("خطأ".tr, "فشل تعديل الحجز".tr, Colors.red);
+      showSnackbar('error'.tr, 'failed_to_update_reservation'.tr, Colors.red);
     }
 
     statusrequest = Statusrequest.success;
@@ -296,15 +317,20 @@ class Reservationscontroller extends GetxController {
   Future<void> deleteReservation(String uuid) async {
     bool success = await resData.Deletedata(uuid);
     if (success) {
-      showSnackbar("نجاح".tr, "تم الحذف بنجاح".tr, Colors.green);
+      showSnackbar('success_msg'.tr, 'deleted_successfully'.tr, Colors.green);
       fetchInitialData();
     } else {
-      showSnackbar("خطأ".tr, "فشل الحذف".tr, Colors.red);
+      showSnackbar('error'.tr, 'failed_to_delete'.tr, Colors.red);
     }
   }
 
   /// Add payment to existing deposit
-  Future<void> addPayment(String uuid, double currentDeposit, double reservationPrice, double newPayment) async {
+  Future<void> addPayment(
+    String uuid,
+    double currentDeposit,
+    double reservationPrice,
+    double newPayment,
+  ) async {
     double newTotalDeposit = currentDeposit + newPayment;
     if (newTotalDeposit > reservationPrice) {
       showSnackbar("warning".tr, "payment_exceeds_price".tr, Colors.orange);

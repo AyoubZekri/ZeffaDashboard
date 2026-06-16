@@ -6,7 +6,7 @@ class  Appimageassets {
   static const String ALG ="$rootimage/ALG.png";
   static const String en ="$rootimage/EN.jpeg";
 
-  static const String test2 ="$rootimage/silaaty_desktop.png";
+  static const String test2 ="$rootimage/zeffa_desktop.png";
   static const String avater ="$rootimage/Avatar.jpg";
 
 

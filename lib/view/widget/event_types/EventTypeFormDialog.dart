@@ -3,17 +3,14 @@ import 'package:get/get.dart';
 import '../../../controller/EventTypesController.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
+import '../../../core/functions/valiedinput.dart';
 import '../CustemTextField.dart';
 
 class EventTypeFormDialog extends StatefulWidget {
   final bool isEdit;
   final Map<String, dynamic>? item;
 
-  const EventTypeFormDialog({
-    super.key,
-    this.isEdit = false,
-    this.item,
-  });
+  const EventTypeFormDialog({super.key, this.isEdit = false, this.item});
 
   @override
   State<EventTypeFormDialog> createState() => _EventTypeFormDialogState();
@@ -75,7 +72,9 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Icon(
-                        isEdit ? Icons.edit_note_rounded : Icons.add_circle_outline_rounded,
+                        isEdit
+                            ? Icons.edit_note_rounded
+                            : Icons.add_circle_outline_rounded,
                         color: Colors.white,
                         size: 26,
                       ),
@@ -96,9 +95,11 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            isEdit ? 'edit_event_type_desc'.tr : 'add_event_type_desc'.tr,
+                            isEdit
+                                ? 'edit_event_type_desc'.tr
+                                : 'add_event_type_desc'.tr,
                             style: TextStyle(
-                              fontSize: 12, 
+                              fontSize: 12,
                               color: subtitleColor,
                               fontFamily: 'Cairo',
                             ),
@@ -135,7 +136,9 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                         ),
                         const SizedBox(height: 12),
                         Obx(() {
-                          final currentSelected = isEdit ? ctrl.editSelectedIcon.value : ctrl.selectedIcon.value;
+                          final currentSelected = isEdit
+                              ? ctrl.editSelectedIcon.value
+                              : ctrl.selectedIcon.value;
                           return Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -162,17 +165,25 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                                     height: 48,
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? AppColor.primaryPurple.withOpacity(0.15)
-                                          : (isDark ? Colors.white.withOpacity(0.04) : const Color(0xFFF8F9FA)),
+                                          ? AppColor.primaryPurple.withOpacity(
+                                              0.15,
+                                            )
+                                          : (isDark
+                                                ? Colors.white.withOpacity(0.04)
+                                                : const Color(0xFFF8F9FA)),
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
-                                        color: isSelected ? AppColor.primaryPurple : borderColor,
+                                        color: isSelected
+                                            ? AppColor.primaryPurple
+                                            : borderColor,
                                         width: isSelected ? 2 : 1,
                                       ),
                                     ),
                                     child: Icon(
                                       icon,
-                                      color: isSelected ? AppColor.primaryPurple : subtitleColor,
+                                      color: isSelected
+                                          ? AppColor.primaryPurple
+                                          : subtitleColor,
                                       size: 22,
                                     ),
                                   ),
@@ -185,40 +196,60 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
 
                         // Event Type Name Field
                         CustemTextField(
-                          controller: isEdit ? ctrl.editTypeName : ctrl.typeName,
+                          controller: isEdit
+                              ? ctrl.editTypeName
+                              : ctrl.typeName,
                           label: 'event_type_name'.tr,
                           hint: 'event_type_hint'.tr,
                           icon: Icons.title_rounded,
+                          validator: (val) {
+                            return validInput(val!, 100, 1, "username");
+                          },
                         ),
                         const SizedBox(height: 20),
 
                         // Price Field
                         CustemTextField(
-                          controller: isEdit ? ctrl.editTypePrice : ctrl.typePrice,
+                          controller: isEdit
+                              ? ctrl.editTypePrice
+                              : ctrl.typePrice,
                           label: 'base_price'.tr,
                           hint: 'price_hint'.tr,
                           icon: Icons.attach_money_rounded,
                           keyboardType: TextInputType.number,
+                          validator: (val) {
+                            return validInput(val!, 100, 1, "username");
+                          },
                         ),
                         const SizedBox(height: 20),
 
                         // Seasonal Price Field
                         CustemTextField(
-                          controller: isEdit ? ctrl.editTypeSeasonalPrice : ctrl.typeSeasonalPrice,
-                          label: 'السعر الموسمي',
-                          hint: 'أدخل السعر الموسمي',
+                          controller: isEdit
+                              ? ctrl.editTypeSeasonalPrice
+                              : ctrl.typeSeasonalPrice,
+                          label: 'seasonal_price'.tr,
+                          hint: 'enter_seasonal_price'.tr,
                           icon: Icons.price_change_rounded,
                           keyboardType: TextInputType.number,
+                          validator: (val) {
+                            return validInput(val!, 100, 1, "username");
+                          },
                         ),
                         const SizedBox(height: 20),
 
                         // Description Field
                         CustemTextField(
-                          controller: isEdit ? ctrl.editTypeDesc : ctrl.typeDesc,
+                          controller: isEdit
+                              ? ctrl.editTypeDesc
+                              : ctrl.typeDesc,
                           label: 'description'.tr,
                           hint: 'notes_hint'.tr,
                           icon: Icons.description_outlined,
                           maxLines: 3,
+                          validator: (val) {
+                            return validInput(val!, 1000, 1, "username");
+                          },
                         ),
                       ],
                     ),
@@ -238,7 +269,10 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                     TextButton(
                       onPressed: () => Get.back(),
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 14,
+                        ),
                       ),
                       child: Text(
                         'cancel'.tr,
@@ -261,16 +295,25 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                         Get.back();
                         Get.snackbar(
                           'success'.tr,
-                          isEdit ? 'event_type_updated_success'.tr : 'event_type_added_success'.tr,
-                          backgroundColor: isDark ? const Color(0xFF1B5E20) : const Color(0xFFE8F5E9),
-                          colorText: isDark ? Colors.white : Colors.green.shade900,
+                          isEdit
+                              ? 'event_type_updated_success'.tr
+                              : 'event_type_added_success'.tr,
+                          backgroundColor: isDark
+                              ? const Color(0xFF1B5E20)
+                              : const Color(0xFFE8F5E9),
+                          colorText: isDark
+                              ? Colors.white
+                              : Colors.green.shade900,
                           snackPosition: SnackPosition.BOTTOM,
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColor.primaryPurple,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 14,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

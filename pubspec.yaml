@@ -81,6 +81,7 @@ dependencies:
   auto_size_text: ^3.0.0
   window_manager: ^0.5.1
   sqflite_common_ffi: ^2.4.0+3
+  tray_manager: ^0.5.3
 
 
 dev_dependencies:

@@ -82,7 +82,7 @@ class NotificationCard extends StatelessWidget {
                           children: [
                             Container(width: 6, height: 6, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
                             const SizedBox(width: 6),
-                            Text('غير مقروء', style: TextStyle(fontSize: 10, color: Colors.red.shade700, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                            Text('unread_msg'.tr, style: TextStyle(fontSize: 10, color: Colors.red.shade700, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                           ],
                         ),
                       )
@@ -98,7 +98,7 @@ class NotificationCard extends StatelessWidget {
                           children: [
                             const Icon(Icons.done_all, color: Colors.green, size: 12),
                             const SizedBox(width: 6),
-                            const Text('مقروء', style: TextStyle(fontSize: 10, color: Colors.green, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                             Text('read_msg'.tr, style: TextStyle(fontSize: 10, color: Colors.green, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                           ],
                         ),
                       ),

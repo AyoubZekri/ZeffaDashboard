@@ -136,7 +136,7 @@ class EventTypeCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'السعر الموسمي: ',
+                        'seasonal_price_label'.tr,
                         style: TextStyle(
                           fontSize: 11,
                           color: colors.subtitleColor,
