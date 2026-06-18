@@ -200,10 +200,10 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                               ? ctrl.editTypeName
                               : ctrl.typeName,
                           label: 'event_type_name'.tr,
-                          hint: 'event_type_hint'.tr,
+                          hint: 'event_type_name'.tr,
                           icon: Icons.title_rounded,
                           validator: (val) {
-                            return validInput(val!, 100, 1, "username");
+                            return validInput(val!, 100, 1, "text");
                           },
                         ),
                         const SizedBox(height: 20),
@@ -218,7 +218,7 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                           icon: Icons.attach_money_rounded,
                           keyboardType: TextInputType.number,
                           validator: (val) {
-                            return validInput(val!, 100, 1, "username");
+                            return validInput(val!, 100, 1, "decimal");
                           },
                         ),
                         const SizedBox(height: 20),
@@ -233,7 +233,7 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                           icon: Icons.price_change_rounded,
                           keyboardType: TextInputType.number,
                           validator: (val) {
-                            return validInput(val!, 100, 1, "username");
+                            return validInput(val!, 100, 1, "decimal");
                           },
                         ),
                         const SizedBox(height: 20),
@@ -248,7 +248,13 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                           icon: Icons.description_outlined,
                           maxLines: 3,
                           validator: (val) {
-                            return validInput(val!, 1000, 1, "username");
+                            return validInput(
+                              val!,
+                              1000,
+                              1,
+                              "text",
+                              empty: true,
+                            );
                           },
                         ),
                       ],
@@ -287,25 +293,14 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                     const SizedBox(width: 16),
                     ElevatedButton(
                       onPressed: () {
+                        if (!ctrl.formState.currentState!.validate()) return;
+
                         if (isEdit) {
                           ctrl.updateEventType(widget.item!['uuid'] as String);
                         } else {
                           ctrl.addEventType();
                         }
                         Get.back();
-                        Get.snackbar(
-                          'success'.tr,
-                          isEdit
-                              ? 'event_type_updated_success'.tr
-                              : 'event_type_added_success'.tr,
-                          backgroundColor: isDark
-                              ? const Color(0xFF1B5E20)
-                              : const Color(0xFFE8F5E9),
-                          colorText: isDark
-                              ? Colors.white
-                              : Colors.green.shade900,
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColor.primaryPurple,

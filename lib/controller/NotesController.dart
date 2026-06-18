@@ -8,9 +8,9 @@ import '../../data/model/NoteModel.dart';
 class NotesController extends GetxController {
   late final TextEditingController searchController;
   final RxString searchQuery = "".obs;
-  
+
   final RxList<NoteModel> allNotes = <NoteModel>[].obs;
-  
+
   // Pagination
   final RxInt currentPage = 1.obs;
   final int itemsPerPage = 5;
@@ -19,7 +19,7 @@ class NotesController extends GetxController {
   final GlobalKey<FormState> formState = GlobalKey<FormState>();
   late TextEditingController titleController;
   late TextEditingController descriptionController;
-  
+
   bool isEdit = false;
   String? editUuid;
 
@@ -31,7 +31,7 @@ class NotesController extends GetxController {
     searchController = TextEditingController();
     titleController = TextEditingController();
     descriptionController = TextEditingController();
-    
+
     loadNotes();
 
     ever(searchQuery, (_) => currentPage.value = 1);
@@ -78,10 +78,11 @@ class NotesController extends GetxController {
     final query = searchQuery.value.trim().toLowerCase();
 
     return allNotes.where((note) {
-      final matchesSearch = query.isEmpty ||
+      final matchesSearch =
+          query.isEmpty ||
           (note.title?.toLowerCase().contains(query) ?? false) ||
           (note.description?.toLowerCase().contains(query) ?? false);
-      
+
       return matchesSearch;
     }).toList();
   }
@@ -91,7 +92,7 @@ class NotesController extends GetxController {
     final list = filteredNotes;
     final startIndex = (currentPage.value - 1) * itemsPerPage;
     if (startIndex >= list.length) return [];
-    
+
     final endIndex = startIndex + itemsPerPage;
     return list.sublist(
       startIndex,
@@ -125,7 +126,7 @@ class NotesController extends GetxController {
 
   Future<void> saveNote() async {
     if (!formState.currentState!.validate()) return;
-    
+
     bool success = false;
     if (isEdit) {
       success = await notesRepo.Updatedata(
@@ -144,7 +145,6 @@ class NotesController extends GetxController {
       Get.back();
       loadNotes();
       clearFields();
-      showSnackbar("success".tr, isEdit ? "note_updated_success".tr : "note_added_success".tr, Colors.green);
     } else {
       showSnackbar("error".tr, "operation_failed".tr, Colors.red);
     }

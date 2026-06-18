@@ -1,15 +1,18 @@
 import 'package:uuid/uuid.dart';
 import '../../../core/class/Sqldb.dart';
 import '../../../core/class/SyncServer.dart';
+import '../../../core/services/Services.dart';
 
 class NotificationsData {
   final SQLDB _db = SQLDB();
   final SyncService _syncService = SyncService();
-  int? id = 1; // Default user ID for now
+  Myservices myServices;
 
+  int get id => myServices.sharedPreferences?.getInt("id") ?? 1;
+
+  NotificationsData(this.myServices);
   Future<List<Map<String, dynamic>>> getNotifications() async {
     try {
-      if (id == null) return [];
       final result = await _db.readData(
         "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC",
         [id],
@@ -47,7 +50,6 @@ class NotificationsData {
 
   Future<bool> markAllAsRead() async {
     try {
-      if (id == null) return false;
       final now = DateTime.now().toIso8601String();
       final result = await _db.update(
         "notifications",
@@ -82,7 +84,6 @@ class NotificationsData {
 
   Future<bool> deleteAllNotifications() async {
     try {
-      if (id == null) return false;
       final result = await _db.delete("notifications", "user_id = ?", [id]);
       return result > 0;
     } catch (e) {
@@ -91,12 +92,15 @@ class NotificationsData {
     }
   }
 
-  Future<bool> addNotification(String title, String content, String type) async {
+  Future<bool> addNotification(
+    String title,
+    String content,
+    String type,
+  ) async {
     try {
-      if (id == null) return false;
       final uuid = const Uuid().v4();
       final now = DateTime.now().toIso8601String();
-      
+
       Map<String, dynamic> data = {
         "uuid": uuid,
         "user_id": id,

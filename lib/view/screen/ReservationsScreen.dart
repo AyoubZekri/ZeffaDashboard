@@ -12,6 +12,7 @@ import '../widget/reservations/ReservationFormDialog.dart';
 import '../widget/reservations/ReservationDetailsDialog.dart';
 import '../widget/reservations/AddPaymentDialog.dart';
 import '../widget/reservations/EditGuestsDialog.dart';
+import '../widget/reservations/ReservationDateFilterDialog.dart';
 
 class ReservationsScreen extends StatefulWidget {
   const ReservationsScreen({Key? key}) : super(key: key);
@@ -28,15 +29,8 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
     final theme = Theme.of(context);
     final colors = theme.extension<AppColors>()!;
 
-    // Filter reservations dynamically based on the search query
     return Obx(() {
-      final query = controllerRe.searchQuery.value.trim().toLowerCase();
-      final filteredReservations = controllerRe.allReservations.where((res) {
-        if (query.isEmpty) return true;
-        return res.customerName.toLowerCase().contains(query) ||
-            res.phoneNumber.contains(query) ||
-            res.id.toString().contains(query);
-      }).toList();
+      final filteredReservations = controllerRe.filteredReservations;
 
       return Container(
         padding: const EdgeInsets.all(24),
@@ -57,10 +51,17 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
                 );
               },
               onFilter: () {
-                // Implement filter logic
+                Get.dialog(
+                  const ReservationDateFilterDialog(),
+                  barrierDismissible: true,
+                );
               },
               onExport: () {
-                // Implement export logic
+                controllerRe.exportToExcel();
+              },
+              isFilterActive: controllerRe.startDateFilter.value != null || controllerRe.endDateFilter.value != null,
+              onClearFilter: () {
+                controllerRe.clearDateFilter();
               },
             ),
 

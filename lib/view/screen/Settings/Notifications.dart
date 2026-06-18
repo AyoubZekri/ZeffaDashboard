@@ -16,7 +16,7 @@ class NotificationsScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const NotificationHeader(),
             const SizedBox(height: 32),

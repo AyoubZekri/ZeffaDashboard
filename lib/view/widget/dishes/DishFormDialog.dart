@@ -314,6 +314,12 @@ class _DishFormDialogState extends State<DishFormDialog> {
               )
               .toList(),
           onChanged: onChanged,
+          validator: (val) {
+            if (val == null) {
+              return 'please_select_category'.tr;
+            }
+            return null;
+          },
         ),
       ],
     );

@@ -40,7 +40,9 @@ class DishCategoriesController extends GetxController {
 
   void clearFields() {
     catName.clear();
-    file == null;
+    editCatName.clear();
+    file = null;
+    update();
   }
 
   Future<void> uploadimagefile() async {
@@ -101,6 +103,8 @@ class DishCategoriesController extends GetxController {
   }
 
   void editCategory() async {
+    if (!formState.currentState!.validate()) return;
+
     try {
       var result = await dishcategories.Updatecat(
         uuid!,
@@ -111,6 +115,7 @@ class DishCategoriesController extends GetxController {
       if (result == true) {
         Get.back(result: true);
         viewCategory();
+        clearFields();
       }
     } catch (e) {
       print("error in edit category : $e");

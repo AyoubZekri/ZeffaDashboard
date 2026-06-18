@@ -11,7 +11,7 @@ class CalendarStats extends StatelessWidget {
   const CalendarStats({
     Key? key,
     this.totalBookings = 24,
-    this.fridaysOccupied = "4/4",
+    this.fridaysOccupied = "4",
     this.monthName = 'october',
   }) : super(key: key);
 

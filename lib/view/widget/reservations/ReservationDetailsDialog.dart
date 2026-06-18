@@ -15,7 +15,8 @@ class ReservationDetailsDialog extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.extension<AppColors>() ?? AppColors.light;
     final isDark = theme.brightness == Brightness.dark;
-    final bgColor = theme.dialogTheme.backgroundColor ?? theme.colorScheme.surface;
+    final bgColor =
+        theme.dialogTheme.backgroundColor ?? theme.colorScheme.surface;
     final textColor = theme.colorScheme.onSurface;
     final subtitleColor = colors.subtitleColor;
     final cardColor = colors.cardColor;
@@ -43,7 +44,11 @@ class ReservationDetailsDialog extends StatelessWidget {
                         color: AppColor.primaryPurple,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Icon(Icons.local_offer, color: Colors.white, size: 28),
+                      child: const Icon(
+                        Icons.local_offer,
+                        color: Colors.white,
+                        size: 28,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Column(
@@ -52,35 +57,43 @@ class ReservationDetailsDialog extends StatelessWidget {
                         RichText(
                           text: TextSpan(
                             children: [
-                              TextSpan(text: 'booking_confirmation'.tr, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor, fontFamily: 'Cairo')),
+                              TextSpan(
+                                text: 'booking_confirmation'.tr,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
+                                  fontFamily: 'Cairo',
+                                ),
+                              ),
                               const TextSpan(text: ' '),
-                              TextSpan(text: reservation.id?.toString() ?? '', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: subtitleColor, fontFamily: 'Cairo')),
+                              TextSpan(
+                                text: reservation.id?.toString() ?? '',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: subtitleColor,
+                                  fontFamily: 'Cairo',
+                                ),
+                              ),
                             ],
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(reservation.statusKey.tr, style: TextStyle(fontSize: 14, color: subtitleColor, fontFamily: 'Cairo')),
+                        Text(
+                          reservation.statusKey.tr,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: subtitleColor,
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
                       ],
                     ),
                   ],
                 ),
                 Row(
                   children: [
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        Get.back();
-                        // Trigger edit dialog callback here if needed
-                      },
-                      icon: const Icon(Icons.edit_outlined, size: 16),
-                      label: Text('edit_btn'.tr),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColor.primaryPurple,
-                        side: BorderSide(color: AppColor.primaryPurple.withOpacity(0.3)),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
                     IconButton(
                       onPressed: () => Get.back(),
                       icon: Icon(Icons.close, color: textColor),
@@ -90,7 +103,7 @@ class ReservationDetailsDialog extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 32),
-            
+
             // Content
             Expanded(
               child: SingleChildScrollView(
@@ -104,37 +117,84 @@ class ReservationDetailsDialog extends StatelessWidget {
                         Expanded(
                           flex: 3,
                           child: _buildCard(
-                            cardColor, borderColor,
+                            cardColor,
+                            borderColor,
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildCardHeader('customer_identity'.tr, Icons.person_outline, AppColor.primaryPurple),
+                                _buildCardHeader(
+                                  'customer_identity'.tr,
+                                  Icons.person_outline,
+                                  AppColor.primaryPurple,
+                                ),
                                 const SizedBox(height: 16),
                                 Row(
                                   children: [
                                     CircleAvatar(
                                       radius: 28,
-                                      backgroundColor: AppColor.primaryPurple.withOpacity(0.1),
-                                      child: Text(reservation.avatarInitials, style: const TextStyle(fontSize: 20, color: AppColor.primaryPurple, fontWeight: FontWeight.bold)),
+                                      backgroundColor: AppColor.primaryPurple
+                                          .withOpacity(0.1),
+                                      child: Text(
+                                        reservation.avatarInitials,
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          color: AppColor.primaryPurple,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
                                     const SizedBox(width: 16),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text('full_name'.tr, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subtitleColor, letterSpacing: 1.2)),
+                                          Text(
+                                            'full_name'.tr,
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              color: subtitleColor,
+                                              letterSpacing: 1.2,
+                                            ),
+                                          ),
                                           const SizedBox(height: 2),
-                                          Text(reservation.customerName, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor, fontFamily: 'Cairo')),
+                                          Text(
+                                            reservation.customerName,
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: textColor,
+                                              fontFamily: 'Cairo',
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text('contact'.tr, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subtitleColor, letterSpacing: 1.2)),
+                                          Text(
+                                            'contact'.tr,
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              color: subtitleColor,
+                                              letterSpacing: 1.2,
+                                            ),
+                                          ),
                                           const SizedBox(height: 2),
-                                          Text(reservation.phoneNumber, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: textColor, fontFamily: 'Cairo')),
+                                          Text(
+                                            reservation.phoneNumber,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              color: textColor,
+                                              fontFamily: 'Cairo',
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -149,25 +209,27 @@ class ReservationDetailsDialog extends StatelessWidget {
                         Expanded(
                           flex: 2,
                           child: _buildCard(
-                            cardColor, borderColor,
+                            cardColor,
+                            borderColor,
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildCardHeader('event_type_label'.tr, Icons.celebration_outlined, AppColor.primaryPurple),
-                                const SizedBox(height: 16),
-                                Text(reservation.partyTypeName ?? 'N/A', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor, fontFamily: 'Cairo')),
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(color: AppColor.primaryPurple, borderRadius: BorderRadius.circular(20)),
-                                      child: Text('vip_service'.tr, style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text('confirmed_days_ago'.tr, style: TextStyle(fontSize: 12, color: subtitleColor)),
-                                  ],
+                                _buildCardHeader(
+                                  'event_type_label'.tr,
+                                  Icons.celebration_outlined,
+                                  AppColor.primaryPurple,
                                 ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  reservation.typeOfPartyUuid,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: textColor,
+                                    fontFamily: 'Cairo',
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
                               ],
                             ),
                           ),
@@ -184,24 +246,68 @@ class ReservationDetailsDialog extends StatelessWidget {
                         Expanded(
                           flex: 2,
                           child: _buildCard(
-                            cardColor, borderColor,
+                            cardColor,
+                            borderColor,
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildCardHeader('date_and_time'.tr, Icons.calendar_today_outlined, AppColor.primaryPurple),
+                                _buildCardHeader(
+                                  'date_and_time'.tr,
+                                  Icons.calendar_today_outlined,
+                                  AppColor.primaryPurple,
+                                ),
                                 const SizedBox(height: 16),
-                                Text('scheduled_date'.tr, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subtitleColor, letterSpacing: 1.2)),
+                                Text(
+                                  'scheduled_date'.tr,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: subtitleColor,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
-                                Text(reservation.bookingDate, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                                Text(
+                                  reservation.bookingDate,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: textColor,
+                                  ),
+                                ),
                                 const SizedBox(height: 16),
-                                Text('duration'.tr, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subtitleColor, letterSpacing: 1.2)),
+                                Text(
+                                  'duration'.tr,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: subtitleColor,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
                                 Row(
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                      decoration: BoxDecoration(color: AppColor.primaryPurple.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-                                      child: Text(_getPeriodLabel(reservation.bookingPeriod), style: const TextStyle(fontSize: 12, color: AppColor.primaryPurple, fontWeight: FontWeight.bold)),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColor.primaryPurple
+                                            .withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        _getPeriodLabel(
+                                          reservation.bookingPeriod,
+                                        ),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: AppColor.primaryPurple,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -214,26 +320,66 @@ class ReservationDetailsDialog extends StatelessWidget {
                         Expanded(
                           flex: 2,
                           child: _buildCard(
-                            cardColor, borderColor,
+                            cardColor,
+                            borderColor,
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildCardHeader('guest_count_label'.tr, Icons.people_alt_outlined, AppColor.primaryPurple),
+                                _buildCardHeader(
+                                  'guest_count_label'.tr,
+                                  Icons.people_alt_outlined,
+                                  AppColor.primaryPurple,
+                                ),
                                 const SizedBox(height: 24),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   children: [
                                     Column(
                                       children: [
-                                        Text("${reservation.numberOfMen}", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: textColor)),
-                                        Text('gentlemen'.tr, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subtitleColor, letterSpacing: 1.2)),
+                                        Text(
+                                          "${reservation.numberOfMen}",
+                                          style: TextStyle(
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.bold,
+                                            color: textColor,
+                                          ),
+                                        ),
+                                        Text(
+                                          'gentlemen'.tr,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: subtitleColor,
+                                            letterSpacing: 1.2,
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                    Container(width: 1, height: 40, color: borderColor),
+                                    Container(
+                                      width: 1,
+                                      height: 40,
+                                      color: borderColor,
+                                    ),
                                     Column(
                                       children: [
-                                        Text("${reservation.numberOfWomen}", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: textColor)),
-                                        Text('ladies'.tr, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subtitleColor, letterSpacing: 1.2)),
+                                        Text(
+                                          "${reservation.numberOfWomen}",
+                                          style: TextStyle(
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.bold,
+                                            color: textColor,
+                                          ),
+                                        ),
+                                        Text(
+                                          'ladies'.tr,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: subtitleColor,
+                                            letterSpacing: 1.2,
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ],
@@ -248,20 +394,41 @@ class ReservationDetailsDialog extends StatelessWidget {
                         Expanded(
                           flex: 2,
                           child: _buildCard(
-                            isDark ? const Color(0xFF1E1E2C) : const Color(0xFF2C2C3E), // Dark card for financials regardless of light mode
+                            isDark
+                                ? const Color(0xFF1E1E2C)
+                                : const Color(
+                                    0xFF2C2C3E,
+                                  ), // Dark card for financials regardless of light mode
                             Colors.transparent,
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildCardHeader('financials_label'.tr, Icons.money, Colors.white),
+                                _buildCardHeader(
+                                  'financials_label'.tr,
+                                  Icons.money,
+                                  Colors.white,
+                                ),
                                 const SizedBox(height: 16),
-                                _buildFinancialRow('paid_amount'.tr, "\$${reservation.deposit}", AppColor.primaryPurple),
+                                _buildFinancialRow(
+                                  'paid_amount'.tr,
+                                  "\$${reservation.deposit}",
+                                  AppColor.primaryPurple,
+                                ),
                                 const SizedBox(height: 8),
-                                _buildFinancialRow('remaining_amount'.tr, "\$${reservation.remainingAmount}", Colors.white),
+                                _buildFinancialRow(
+                                  'remaining_amount'.tr,
+                                  "\$${reservation.remainingAmount}",
+                                  Colors.white,
+                                ),
                                 const SizedBox(height: 16),
                                 Container(height: 1, color: Colors.white24),
                                 const SizedBox(height: 16),
-                                _buildFinancialRow('total_label'.tr, "\$${reservation.price}", Colors.white, isBold: true),
+                                _buildFinancialRow(
+                                  'total_label'.tr,
+                                  "\$${reservation.price}",
+                                  Colors.white,
+                                  isBold: true,
+                                ),
                               ],
                             ),
                           ),
@@ -278,18 +445,34 @@ class ReservationDetailsDialog extends StatelessWidget {
                         Expanded(
                           flex: 3,
                           child: _buildCard(
-                            cardColor, borderColor,
+                            cardColor,
+                            borderColor,
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildCardHeader('culinary_selection'.tr, Icons.restaurant_menu, AppColor.primaryPurple),
+                                _buildCardHeader(
+                                  'culinary_selection'.tr,
+                                  Icons.restaurant_menu,
+                                  AppColor.primaryPurple,
+                                ),
                                 const SizedBox(height: 16),
                                 Wrap(
                                   spacing: 8,
                                   runSpacing: 8,
-                                  children: reservation.dishesNameList.isNotEmpty
-                                      ? reservation.dishesNameList.map((name) => _buildChip(name)).toList()
-                                      : [Text('no_dishes_selected'.tr, style: TextStyle(fontSize: 13, color: subtitleColor))],
+                                  children:
+                                      reservation.dishesNameList.isNotEmpty
+                                      ? reservation.dishesNameList
+                                            .map((name) => _buildChip(name))
+                                            .toList()
+                                      : [
+                                          Text(
+                                            'no_dishes_selected'.tr,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: subtitleColor,
+                                            ),
+                                          ),
+                                        ],
                                 ),
                               ],
                             ),
@@ -300,15 +483,28 @@ class ReservationDetailsDialog extends StatelessWidget {
                         Expanded(
                           flex: 2,
                           child: _buildCard(
-                            AppColor.primaryPurple, Colors.transparent,
+                            AppColor.primaryPurple,
+                            Colors.transparent,
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildCardHeader('special_requests'.tr, Icons.notes, Colors.white),
+                                _buildCardHeader(
+                                  'special_requests'.tr,
+                                  Icons.notes,
+                                  Colors.white,
+                                ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  reservation.notes != null && reservation.notes!.isNotEmpty ? reservation.notes! : 'no_notes'.tr,
-                                  style: const TextStyle(fontSize: 13, color: Colors.white, fontStyle: FontStyle.italic, height: 1.5),
+                                  reservation.notes != null &&
+                                          reservation.notes!.isNotEmpty
+                                      ? reservation.notes!
+                                      : 'no_notes'.tr,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white,
+                                    fontStyle: FontStyle.italic,
+                                    height: 1.5,
+                                  ),
                                 ),
                               ],
                             ),
@@ -320,7 +516,7 @@ class ReservationDetailsDialog extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
             // Footer
             Row(
@@ -328,7 +524,14 @@ class ReservationDetailsDialog extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () => Get.back(),
-                  child: Text('dismiss'.tr, style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 16)),
+                  child: Text(
+                    'dismiss'.tr,
+                    style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 24),
                 ElevatedButton(
@@ -336,11 +539,22 @@ class ReservationDetailsDialog extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.primaryPurple,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 18,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 0,
                   ),
-                  child: Text('send_receipt'.tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  child: Text(
+                    'send_receipt'.tr,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -358,7 +572,12 @@ class ReservationDetailsDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: borderColor),
         boxShadow: [
-          if (borderColor != Colors.transparent) BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+          if (borderColor != Colors.transparent)
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
         ],
       ),
       child: child,
@@ -370,17 +589,44 @@ class ReservationDetailsDialog extends StatelessWidget {
       children: [
         Icon(icon, color: color, size: 20),
         const SizedBox(width: 8),
-        Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color, fontFamily: 'Cairo', letterSpacing: 1.1)),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: color,
+            fontFamily: 'Cairo',
+            letterSpacing: 1.1,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildFinancialRow(String label, String value, Color valueColor, {bool isBold = false}) {
+  Widget _buildFinancialRow(
+    String label,
+    String value,
+    Color valueColor, {
+    bool isBold = false,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(fontSize: isBold ? 14 : 13, color: isBold ? Colors.white : Colors.white70)),
-        Text(value, style: TextStyle(fontSize: isBold ? 18 : 16, fontWeight: FontWeight.bold, color: valueColor)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isBold ? 14 : 13,
+            color: isBold ? Colors.white : Colors.white70,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: isBold ? 18 : 16,
+            fontWeight: FontWeight.bold,
+            color: valueColor,
+          ),
+        ),
       ],
     );
   }
@@ -389,18 +635,32 @@ class ReservationDetailsDialog extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: isOutlined ? Colors.transparent : AppColor.primaryPurple.withOpacity(0.1),
-        border: isOutlined ? Border.all(color: AppColor.primaryPurple.withOpacity(0.3)) : null,
+        color: isOutlined
+            ? Colors.transparent
+            : AppColor.primaryPurple.withOpacity(0.1),
+        border: isOutlined
+            ? Border.all(color: AppColor.primaryPurple.withOpacity(0.3))
+            : null,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (!isOutlined) ...[
-            const CircleAvatar(radius: 3, backgroundColor: AppColor.primaryPurple),
+            const CircleAvatar(
+              radius: 3,
+              backgroundColor: AppColor.primaryPurple,
+            ),
             const SizedBox(width: 6),
           ],
-          Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColor.primaryPurple)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColor.primaryPurple,
+            ),
+          ),
         ],
       ),
     );
@@ -408,11 +668,16 @@ class ReservationDetailsDialog extends StatelessWidget {
 
   String _getPeriodLabel(int? period) {
     switch (period) {
-      case 1: return 'period_full_day'.tr;
-      case 2: return 'period_half_day'.tr;
-      case 3: return 'period_evening'.tr;
-      case 4: return 'period_morning'.tr;
-      default: return 'N/A';
+      case 1:
+        return 'period_full_day'.tr;
+      case 2:
+        return 'period_half_day'.tr;
+      case 3:
+        return 'period_evening'.tr;
+      case 4:
+        return 'period_morning'.tr;
+      default:
+        return 'N/A';
     }
   }
 }

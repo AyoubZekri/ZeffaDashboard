@@ -2,22 +2,41 @@ import 'package:zeffa/core/functions/Snacpar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-validInput(String val, int max, int min, String type) {
-  if (Type == 'username') {
-    if (GetUtils.isUsername(val)) {
-      return "not valid username";
+validInput(String val, int max, int min, String type, {bool? empty = false}) {
+  if (val.isEmpty && empty!) {
+    return null;
+  }
+  if (type == 'username') {
+    if (!GetUtils.isUsername(val)) {
+      return "not valid username".tr;
     }
   }
-  if (Type == 'Email') {
-    if (GetUtils.isEmail(val)) {
-      return "not valid Email";
+  if ((type == 'email' || type == 'Email')) {
+    if (!GetUtils.isEmail(val)) {
+      return "not valid Email".tr;
     }
   }
-  if (Type == 'phone') {
-    if (GetUtils.isPhoneNumber(val)) {
+  if (type == 'phone') {
+    if (!GetUtils.isPhoneNumber(val)) {
       return "not valid phone".tr;
     }
   }
+  if (type == 'number') {
+    if (!GetUtils.isNum(val)) {
+      return "not valid number".tr;
+    }
+  }
+  if (type == 'integer') {
+    if (int.tryParse(val) == null) {
+      return "not valid integer".tr;
+    }
+  }
+  if (type == 'decimal') {
+    if (!GetUtils.isNum(val)) {
+      return "not valid decimal".tr;
+    }
+  }
+
   if (val.isEmpty) {
     return "Can't be Empty".tr;
   }
@@ -37,20 +56,12 @@ bool validInputsnak(String val, int min, int max, String type) {
   }
 
   if (val.length > max) {
-    showSnackbar(
-      "error".tr,
-      'field_max_length_error'.tr,
-      Colors.red,
-    );
+    showSnackbar("error".tr, 'field_max_length_error'.tr, Colors.red);
     return false;
   }
 
   if (val.length < min) {
-    showSnackbar(
-      "error".tr,
-      'field_min_length_error'.tr,
-      Colors.red,
-    );
+    showSnackbar("error".tr, 'field_min_length_error'.tr, Colors.red);
     return false;
   }
 

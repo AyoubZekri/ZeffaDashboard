@@ -70,7 +70,9 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Icon(
-                          isPeriod ? Icons.date_range_rounded : Icons.star_rounded,
+                          isPeriod
+                              ? Icons.date_range_rounded
+                              : Icons.star_rounded,
                           color: Colors.white,
                           size: 26,
                         ),
@@ -81,9 +83,13 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              ctrl.editingUuid.value != null 
-                                ? (isPeriod ? 'update_special_period'.tr : 'update_special_day'.tr)
-                                : (isPeriod ? 'add_period_season'.tr : 'add_special_day'.tr),
+                              ctrl.editingUuid.value != null
+                                  ? (isPeriod
+                                        ? 'update_special_period'.tr
+                                        : 'update_special_day'.tr)
+                                  : (isPeriod
+                                        ? 'add_period_season'.tr
+                                        : 'add_special_day'.tr),
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -124,13 +130,17 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                               duration: const Duration(milliseconds: 200),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: !isPeriod ? AppColor.primaryPurple : Colors.transparent,
+                                color: !isPeriod
+                                    ? AppColor.primaryPurple
+                                    : Colors.transparent,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 'add_special_day'.tr,
                                 style: TextStyle(
-                                  color: !isPeriod ? Colors.white : subtitleColor,
+                                  color: !isPeriod
+                                      ? Colors.white
+                                      : subtitleColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                   fontFamily: 'Cairo',
@@ -149,13 +159,17 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                               duration: const Duration(milliseconds: 200),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: isPeriod ? AppColor.primaryPurple : Colors.transparent,
+                                color: isPeriod
+                                    ? AppColor.primaryPurple
+                                    : Colors.transparent,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 'add_period_season'.tr,
                                 style: TextStyle(
-                                  color: isPeriod ? Colors.white : subtitleColor,
+                                  color: isPeriod
+                                      ? Colors.white
+                                      : subtitleColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                   fontFamily: 'Cairo',
@@ -279,7 +293,10 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                       TextButton(
                         onPressed: () => Get.back(),
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 14,
+                          ),
                         ),
                         child: Text(
                           'cancel'.tr,
@@ -304,14 +321,20 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                               success = await ctrl.addSpecialDay();
                             }
                           }
-                          
+
                           if (success) {
                             Get.back();
                             Get.snackbar(
                               'success'.tr,
-                              isPeriod ? 'season_added'.tr : 'special_day_added'.tr,
-                              backgroundColor: isDark ? const Color(0xFF1B5E20) : const Color(0xFFE8F5E9),
-                              colorText: isDark ? Colors.white : Colors.green.shade900,
+                              isPeriod
+                                  ? 'season_added'.tr
+                                  : 'special_day_added'.tr,
+                              backgroundColor: isDark
+                                  ? const Color(0xFF1B5E20)
+                                  : const Color(0xFFE8F5E9),
+                              colorText: isDark
+                                  ? Colors.white
+                                  : Colors.green.shade900,
                               snackPosition: SnackPosition.BOTTOM,
                             );
                           }
@@ -319,14 +342,21 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColor.primaryPurple,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 14,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           elevation: 0,
                         ),
                         child: Text(
-                          ctrl.editingUuid.value != null ? 'update'.tr : (isPeriod ? 'add_period_season'.tr : 'add_special_day'.tr),
+                          ctrl.editingUuid.value != null
+                              ? 'update'.tr
+                              : (isPeriod
+                                    ? 'add_period_season'.tr
+                                    : 'add_special_day'.tr),
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -356,51 +386,86 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
         ? 'select_date'.tr
         : "${currentVal.year}/${currentVal.month.toString().padLeft(2, '0')}/${currentVal.day.toString().padLeft(2, '0')}";
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface,
-            fontFamily: 'Cairo',
-          ),
-        ),
-        const SizedBox(height: 8),
-        InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            height: 52,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: colors.inputFillColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colors.borderColor),
+    return FormField<DateTime>(
+      key: ValueKey(
+        currentVal,
+      ), // Force rebuild and reset state when value changes
+      initialValue: currentVal,
+      validator: (val) {
+        if (currentVal == null) {
+          return 'required_field'.tr; // Or any generic error message you prefer
+        }
+        return null;
+      },
+      builder: (FormFieldState<DateTime> state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+                fontFamily: 'Cairo',
+              ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  dateText,
+            const SizedBox(height: 8),
+            InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                height: 52,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: colors.inputFillColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: state.hasError
+                        ? Colors.red.shade400
+                        : colors.borderColor,
+                    width: state.hasError ? 1.5 : 1.0,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      dateText,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: currentVal == null
+                            ? colors.subtitleColor
+                            : theme.colorScheme.onSurface,
+                        fontFamily: 'Cairo',
+                      ),
+                    ),
+                    Icon(
+                      Icons.calendar_month_rounded,
+                      color: state.hasError
+                          ? Colors.red.shade400
+                          : AppColor.primaryPurple.withOpacity(0.7),
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(top: 6, right: 12, left: 12),
+                child: Text(
+                  state.errorText!,
                   style: TextStyle(
-                    fontSize: 14,
-                    color: currentVal == null ? colors.subtitleColor : theme.colorScheme.onSurface,
+                    color: Colors.red.shade400,
+                    fontSize: 12,
                     fontFamily: 'Cairo',
                   ),
                 ),
-                Icon(
-                  Icons.calendar_month_rounded,
-                  color: AppColor.primaryPurple.withOpacity(0.7),
-                  size: 20,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+              ),
+          ],
+        );
+      },
     );
   }
 }

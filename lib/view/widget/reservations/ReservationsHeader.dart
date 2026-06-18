@@ -7,16 +7,20 @@ class ReservationsHeader extends StatelessWidget {
   final ValueChanged<String>? onSearchChanged;
   final VoidCallback? onAddReservation;
   final VoidCallback? onFilter;
+  final VoidCallback? onClearFilter;
   final VoidCallback? onExport;
   final TextEditingController? searchController;
+  final bool isFilterActive;
 
   const ReservationsHeader({
     super.key,
     this.onSearchChanged,
     this.onAddReservation,
     this.onFilter,
+    this.onClearFilter,
     this.onExport,
     this.searchController,
+    this.isFilterActive = false,
   });
 
   @override
@@ -47,67 +51,83 @@ class ReservationsHeader extends StatelessWidget {
           ],
         ),
 
-        Row(
-          children: [
-            Container(
-              width: 250,
-              decoration: BoxDecoration(
-                color: colors.inputFillColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: TextField(
-                controller: searchController,
-                onChanged: onSearchChanged,
-                textAlign: TextAlign.right,
-                style: TextStyle(color: textColor, fontSize: 13),
-                decoration: InputDecoration(
-                  hintText: 'search_reservations'.tr,
-                  hintStyle: TextStyle(
-                    fontSize: 12,
-                    color: colors.subtitleColor,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search_rounded,
-                    color: colors.subtitleColor,
-                    size: 20,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 16,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            ElevatedButton.icon(
-              onPressed: onAddReservation,
-              icon: const Icon(Icons.add, size: 18),
-              label: Text(
-                'add_reservation'.tr,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.primaryPurple,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 21,
-                ),
-                shape: RoundedRectangleBorder(
+        Expanded(
+          child: Wrap(
+            alignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              Container(
+                width: 250,
+                decoration: BoxDecoration(
+                  color: colors.inputFillColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                elevation: 0,
+                child: TextField(
+                  controller: searchController,
+                  onChanged: onSearchChanged,
+                  textAlign: TextAlign.right,
+                  style: TextStyle(color: textColor, fontSize: 13),
+                  decoration: InputDecoration(
+                    hintText: 'search_reservations'.tr,
+                    hintStyle: TextStyle(
+                      fontSize: 12,
+                      color: colors.subtitleColor,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search_rounded,
+                      color: colors.subtitleColor,
+                      size: 20,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            _buildOutlinedButton(
-              context,
-              'filter'.tr,
-              Icons.filter_list_rounded,
-              onFilter,
-            ),
-          ],
+              ElevatedButton.icon(
+                onPressed: onAddReservation,
+                icon: const Icon(Icons.add, size: 18),
+                label: Text(
+                  'add_reservation'.tr,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.primaryPurple,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 21,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 0,
+                ),
+              ),
+              if (isFilterActive)
+                IconButton(
+                  onPressed: onClearFilter,
+                  icon: const Icon(Icons.cancel, color: Colors.red),
+                  tooltip: 'cancel_date_filter'.tr,
+                ),
+              _buildOutlinedButton(
+                context,
+                'filter'.tr,
+                Icons.filter_list_rounded,
+                onFilter,
+              ),
+              _buildOutlinedButton(
+                context,
+                'export_btn'.tr,
+                Icons.file_download_outlined,
+                onExport,
+              ),
+            ],
+          ),
         ),
       ],
     );

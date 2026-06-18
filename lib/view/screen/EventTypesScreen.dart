@@ -81,17 +81,6 @@ class EventTypesScreen extends StatelessWidget {
                                 content: 'delete_event_confirm_title'.tr,
                                 onConfirm: () {
                                   ctrl.deleteEventType(type['uuid'] as String);
-                                  Get.snackbar(
-                                    'success'.tr,
-                                    'event_type_deleted_success'.tr,
-                                    backgroundColor: theme.brightness == Brightness.dark
-                                        ? const Color(0xFF1B5E20)
-                                        : const Color(0xFFE8F5E9),
-                                    colorText: theme.brightness == Brightness.dark
-                                        ? Colors.white
-                                        : Colors.green.shade900,
-                                    snackPosition: SnackPosition.BOTTOM,
-                                  );
                                 },
                               );
                             },

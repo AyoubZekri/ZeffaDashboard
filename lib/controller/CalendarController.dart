@@ -88,7 +88,7 @@ class CalendarController extends GetxController {
       }
     }
 
-    fridaysOccupied.value = "$occupiedFridays/$totalFridays";
+    fridaysOccupied.value = "$totalFridays";
   }
 
   @override
@@ -216,7 +216,10 @@ class CalendarController extends GetxController {
 
   // Add Special Day
   Future<bool> addSpecialDay() async {
-    if (eventNameController.text.trim().isEmpty || selectedDate.value == null) {
+    if (!formState.currentState!.validate()) {
+      return false;
+    }
+    if (selectedDate.value == null) {
       return false;
     }
 
@@ -242,9 +245,10 @@ class CalendarController extends GetxController {
 
   // Add Seasonal Period
   Future<bool> addSeason() async {
-    if (eventNameController.text.trim().isEmpty ||
-        selectedStartDate.value == null ||
-        selectedEndDate.value == null) {
+    if (!formState.currentState!.validate()) {
+      return false;
+    }
+    if (selectedStartDate.value == null || selectedEndDate.value == null) {
       return false;
     }
 
@@ -273,13 +277,16 @@ class CalendarController extends GetxController {
     final uuid = editingUuid.value;
     if (uuid == null) return false;
 
+    if (!formState.currentState!.validate()) {
+      return false;
+    }
+
     bool success = false;
 
     if (isPeriodMode.value) {
-      if (eventNameController.text.trim().isEmpty ||
-          selectedStartDate.value == null ||
-          selectedEndDate.value == null)
+      if (selectedStartDate.value == null || selectedEndDate.value == null) {
         return false;
+      }
 
       final startStr = formatDate(selectedStartDate.value!);
       final endStr = formatDate(selectedEndDate.value!);
@@ -292,8 +299,9 @@ class CalendarController extends GetxController {
         endDate: endStr,
       );
     } else {
-      if (eventNameController.text.trim().isEmpty || selectedDate.value == null)
+      if (selectedDate.value == null) {
         return false;
+      }
 
       final isFriday = selectedDate.value!.weekday == DateTime.friday;
       final type = isFriday ? 'friday' : 'special_day';

@@ -79,9 +79,7 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            isEdit
-                                ? 'edit_expense'.tr
-                                : 'add_expense'.tr,
+                            isEdit ? 'edit_expense'.tr : 'add_expense'.tr,
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -126,14 +124,16 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                           hint: 'expense_name'.tr,
                           icon: Icons.description_outlined,
                           validator: (val) {
-                            return validInput(val!, 1000, 1, "username");
+                            return validInput(val!, 1000, 1, "Text");
                           },
                         ),
                         const SizedBox(height: 20),
 
                         // Category Dropdown
                         Text(
-                          'status'.tr == 'status'.tr ? 'category'.tr : 'Category',
+                          'status'.tr == 'status'.tr
+                              ? 'category'.tr
+                              : 'Category',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -148,26 +148,41 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                             onChanged: (val) {
                               ctrl.formCategory.value = val;
                             },
+                            validator: (val) {
+                              if (val == null) {
+                                return "please_select_category".tr;
+                              }
+                              return null;
+                            },
                             items: [
                               DropdownMenuItem<int>(
                                 value: 1,
                                 child: Text(
                                   'maintenance_workers'.tr,
-                                  style: TextStyle(color: textColor, fontFamily: 'Cairo'),
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontFamily: 'Cairo',
+                                  ),
                                 ),
                               ),
                               DropdownMenuItem<int>(
                                 value: 2,
                                 child: Text(
                                   'cleaning_materials'.tr,
-                                  style: TextStyle(color: textColor, fontFamily: 'Cairo'),
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontFamily: 'Cairo',
+                                  ),
                                 ),
                               ),
                               DropdownMenuItem<int>(
                                 value: 3,
                                 child: Text(
                                   'other_expenses'.tr,
-                                  style: TextStyle(color: textColor, fontFamily: 'Cairo'),
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontFamily: 'Cairo',
+                                  ),
                                 ),
                               ),
                             ],
@@ -192,10 +207,14 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                         // Amount
                         CustemTextField(
                           controller: ctrl.amountController,
-                          label: 'status'.tr == 'status'.tr ? 'amount_da'.tr : 'Amount (DA)',
+                          label: 'status'.tr == 'status'.tr
+                              ? 'amount_da'.tr
+                              : 'Amount (DA)',
                           hint: '0.00',
                           icon: Icons.monetization_on_outlined,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
                           validator: (val) {
                             return validInput(val!, 1000, 1, "number");
                           },

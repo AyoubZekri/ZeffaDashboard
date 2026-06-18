@@ -8,14 +8,14 @@ import '../../../core/services/Services.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Dishcategories {
-  Crud crud;
   final SQLDB _db = SQLDB();
   final SyncService _syncService = SyncService();
 
-  // int? id = Get.find<Myservices>().sharedPreferences?.getInt("id");
-  int? id = 1;
+  Myservices myServices;
 
-  Dishcategories(this.crud);
+  int get id => myServices.sharedPreferences?.getInt("id") ?? 1;
+
+  Dishcategories(this.myServices);
 
   viewdata() async {
     try {
@@ -61,6 +61,7 @@ class Dishcategories {
       final result = await _db.insert("cat_dishes", data);
 
       if (result > 0) {
+        print("✅ data added successfully ===== $result ");
         await _syncService.addToQueue("cat_dishes", uuid, "insert", data);
         return true;
       }

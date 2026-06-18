@@ -17,10 +17,7 @@ class PartyTypes {
 
   Future<List<Map<String, dynamic>>> viewdata() async {
     try {
-      if (id == null) {
-        print("❌ user_id not found");
-        return [];
-      }
+
 
       final result = await _db.readData(
         "SELECT * FROM party_types WHERE user_id = ? ORDER BY created_at DESC",

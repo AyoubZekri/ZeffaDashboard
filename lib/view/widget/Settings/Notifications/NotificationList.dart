@@ -19,11 +19,20 @@ class NotificationList extends StatelessWidget {
             padding: const EdgeInsets.all(48.0),
             child: Column(
               children: [
-                Icon(Icons.notifications_off_outlined, size: 64, color: Colors.grey.shade400),
+                Icon(
+                  Icons.notifications_off_outlined,
+                  size: 64,
+                  color: Colors.grey.shade400,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'no_notifications'.tr,
-                  style: TextStyle(fontSize: 18, color: Colors.grey.shade600, fontFamily: 'Cairo', fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey.shade600,
+                    fontFamily: 'Cairo',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),

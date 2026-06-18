@@ -15,11 +15,118 @@ import '../data/datasource/Remote/SpecialDates.dart';
 import '../data/model/PartyTypeModel.dart';
 import '../data/model/SpecialDateModel.dart';
 
+import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
+
 class Reservationscontroller extends GetxController {
   late final TextEditingController searchController;
   final RxString searchQuery = "".obs;
 
   final RxList<ReservationModel> allReservations = <ReservationModel>[].obs;
+
+  // Filters
+  final Rx<DateTime?> startDateFilter = Rx<DateTime?>(null);
+  final Rx<DateTime?> endDateFilter = Rx<DateTime?>(null);
+
+  List<ReservationModel> get filteredReservations {
+    return allReservations.where((res) {
+      // 1. Search Query
+      if (searchQuery.value.isNotEmpty) {
+        final query = searchQuery.value.toLowerCase();
+        final matchesName = res.customerName.toLowerCase().contains(query);
+        final matchesPhone = res.phoneNumber.toLowerCase().contains(query);
+        if (!matchesName && !matchesPhone) return false;
+      }
+      
+      // 2. Date Filter
+      if (startDateFilter.value != null || endDateFilter.value != null) {
+        try {
+          DateTime resDate = DateTime.parse(res.bookingDate.replaceAll('/', '-'));
+          DateTime normalizedResDate = DateTime(resDate.year, resDate.month, resDate.day);
+          
+          if (startDateFilter.value != null) {
+            DateTime sDate = startDateFilter.value!;
+            DateTime nsDate = DateTime(sDate.year, sDate.month, sDate.day);
+            if (normalizedResDate.isBefore(nsDate)) return false;
+          }
+          if (endDateFilter.value != null) {
+            DateTime eDate = endDateFilter.value!;
+            DateTime neDate = DateTime(eDate.year, eDate.month, eDate.day);
+            if (normalizedResDate.isAfter(neDate)) return false;
+          }
+        } catch (e) {
+          return false;
+        }
+      }
+      return true;
+    }).toList();
+  }
+
+  void clearDateFilter() {
+    startDateFilter.value = null;
+    endDateFilter.value = null;
+  }
+
+  Future<void> exportToExcel() async {
+    try {
+      statusrequest = Statusrequest.loadeng;
+      update();
+
+      var excel = Excel.createExcel();
+      Sheet sheetObject = excel['Sheet1'];
+
+      List<String> headers = [
+        'reservation_number'.tr,
+        'customer_name'.tr,
+        'phone_number'.tr,
+        'payment_status'.tr,
+        'reservation_date'.tr,
+        'event_type_label'.tr,
+        'gentlemen'.tr,
+        'ladies'.tr,
+        'paid_amount'.tr,
+        'remaining_amount'.tr,
+        'notes'.tr,
+      ];
+
+      sheetObject.appendRow(headers.map((h) => TextCellValue(h)).toList());
+
+      for (var res in filteredReservations) {
+        sheetObject.appendRow([
+          TextCellValue(res.id?.toString() ?? res.uuid),
+          TextCellValue(res.customerName),
+          TextCellValue(res.phoneNumber),
+          TextCellValue(res.statusKey.tr),
+          TextCellValue(res.bookingDate),
+          TextCellValue(res.typeOfPartyUuid),
+          TextCellValue(res.numberOfMen.toString()),
+          TextCellValue(res.numberOfWomen.toString()),
+          TextCellValue(res.deposit.toString()),
+          TextCellValue(res.remainingAmount.toString()),
+          TextCellValue(res.notes ?? ''),
+        ]);
+      }
+
+      String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+
+      if (selectedDirectory != null) {
+        String filePath = '$selectedDirectory/reservations_export_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+        var fileBytes = excel.save();
+        if (fileBytes != null) {
+          File(filePath)
+            ..createSync(recursive: true)
+            ..writeAsBytesSync(fileBytes);
+          showSnackbar('success'.tr, 'export_to_excel'.tr + ' ' + 'success'.tr, Colors.green);
+        }
+      }
+
+    } catch (e) {
+      showSnackbar('error'.tr, e.toString(), Colors.red);
+    } finally {
+      statusrequest = Statusrequest.success;
+      update();
+    }
+  }
 
   // Dynamic lists from DB
   final RxList<PartyTypeModel> dbPartyTypes = <PartyTypeModel>[].obs;
@@ -70,7 +177,7 @@ class Reservationscontroller extends GetxController {
     remainingamount = TextEditingController();
     note = TextEditingController();
 
-    resData = ReservationsData();
+    resData = ReservationsData(Get.find());
     partyTypesData = PartyTypes(myServices);
     dishesData = Dishes(myServices);
     specialDatesData = SpecialDates(myServices);
@@ -132,7 +239,7 @@ class Reservationscontroller extends GetxController {
     if (typeOfPartyUuid == null) return;
 
     final selectedParty = dbPartyTypes.firstWhereOrNull(
-      (p) => p.uuid == typeOfPartyUuid,
+      (p) => p.name == typeOfPartyUuid,
     );
     if (selectedParty == null) return;
 
@@ -195,16 +302,15 @@ class Reservationscontroller extends GetxController {
 
   // عرض البيانات
   Future<void> addReservation() async {
-    if (username.text.isEmpty ||
-        phone.text.isEmpty ||
-        date.text.isEmpty ||
-        typeOfPartyUuid == null ||
-        BookingBeriod == null) {
-      Get.snackbar(
+    if (!formState.currentState!.validate()) {
+      return;
+    }
+
+    if (typeOfPartyUuid == null || BookingBeriod == null) {
+      showSnackbar(
         'warning'.tr,
         'please_fill_required_fields'.tr,
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
+        Colors.orange,
       );
       return;
     }
@@ -229,11 +335,7 @@ class Reservationscontroller extends GetxController {
     bool success = await resData.Adddata(rawData, selectedDishes);
     if (success) {
       Get.back();
-      showSnackbar(
-        'success_msg'.tr,
-        'reservation_saved_successfully'.tr,
-        Colors.green,
-      );
+
       fetchInitialData();
 
       username.clear();
@@ -279,6 +381,16 @@ class Reservationscontroller extends GetxController {
 
   Future<void> updateReservation(String uuid) async {
     if (!formState.currentState!.validate()) return;
+
+    if (typeOfPartyUuid == null || BookingBeriod == null) {
+      Get.snackbar(
+        'warning'.tr,
+        'please_fill_required_fields'.tr,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+      return;
+    }
 
     statusrequest = Statusrequest.loadeng;
     update();

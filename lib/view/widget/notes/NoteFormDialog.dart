@@ -106,8 +106,8 @@ class NoteFormDialog extends StatelessWidget {
                         hint: 'note_title'.tr,
                         icon: Icons.title_rounded,
                         validator: (val) {
-                            return validInput(val!, 1000, 1, "username");
-                          },
+                          return validInput(val!, 1000, 1, "Text");
+                        },
                       ),
                       const SizedBox(height: 24),
                       TextFormField(
@@ -137,8 +137,10 @@ class NoteFormDialog extends StatelessWidget {
                               ? const Color(0xFF1E1E1E)
                               : Colors.grey[50],
                         ),
-                        validator: (value) =>
-                            value!.isEmpty ? "Can't be empty" : null,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (val) {
+                          return validInput(val!, 1000000, 1, "Text");
+                        },
                       ),
                     ],
                   ),

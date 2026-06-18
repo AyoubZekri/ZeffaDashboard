@@ -1,29 +1,26 @@
 import 'package:uuid/uuid.dart';
 import '../../../core/class/Sqldb.dart';
 import '../../../core/class/SyncServer.dart';
+import '../../../core/services/Services.dart';
 
 class ReservationsData {
   final SQLDB _db = SQLDB();
   final SyncService _syncService = SyncService();
-  int? id = 1;
+  Myservices myServices;
 
+  int get id => myServices.sharedPreferences?.getInt("id") ?? 1;
+
+  ReservationsData(this.myServices);
   Future<List<Map<String, dynamic>>> viewdata() async {
     try {
-      if (id == null) return [];
-
       // Main query: JOIN with party_types + GROUP_CONCAT for dishes
       final result = await _db.readData(
         '''
         SELECT 
           r.*,
-          pt.name AS party_type_name,
-          pt.basic_price AS party_basic_price,
-          pt.seasonal_price AS party_seasonal_price,
-          pt.icon AS party_icon,
           GROUP_CONCAT(d.name, ', ') AS dishes_names,
           GROUP_CONCAT(rd.dishes_uuid, ',') AS dishes_uuids
         FROM reservations r
-        LEFT JOIN party_types pt ON r.type_of_party_uuid = pt.uuid
         LEFT JOIN reservation_dishes rd ON r.uuid = rd.reservation_uuid
         LEFT JOIN dishes d ON rd.dishes_uuid = d.uuid
         WHERE r.user_id = ?

@@ -60,6 +60,7 @@ class CustemTextField extends StatelessWidget {
           obscureText: obscureText,
           readOnly: readOnly,
           validator: validator,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           onTap: onTap,
           onChanged: onChanged,
           maxLines: maxLines,

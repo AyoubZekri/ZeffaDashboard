@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:zeffa/controller/Reservationscontroller.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
+import '../../../core/functions/Snacpar.dart';
 import '../../../core/functions/valiedinput.dart';
 import '../CustemDropDownField.dart';
 import '../CustemTextField.dart';
@@ -121,6 +122,7 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(32),
                 child: Form(
+                  key: ctrl.formState,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -139,10 +141,10 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                             child: CustemTextField(
                               controller: ctrl.username,
                               label: 'name_and_surname'.tr,
-                              hint: 'name_hint'.tr,
+                              hint: 'name_and_surname'.tr,
                               icon: Icons.badge_outlined,
                               validator: (val) {
-                                return validInput(val!, 1000, 1, "username");
+                                return validInput(val!, 1000, 1, "Text");
                               },
                             ),
                           ),
@@ -151,7 +153,7 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                             child: CustemTextField(
                               controller: ctrl.phone,
                               label: 'phone_number'.tr,
-                              hint: 'phone_hint'.tr,
+                              hint: 'phone_number'.tr,
                               icon: Icons.phone_outlined,
                               keyboardType: TextInputType.phone,
                               validator: (val) {
@@ -205,12 +207,11 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                                 items: ctrl.dbPartyTypes,
                                 onChanged: (val) {
                                   if (ctrl.date.text.isEmpty) {
-                                    Get.snackbar(
+                                    showSnackbar(
                                       'warning'.tr,
                                       'please_select_date_first_to_set_price'
                                           .tr,
-                                      backgroundColor: Colors.orange,
-                                      colorText: Colors.white,
+                                      Colors.orange,
                                     );
                                     return;
                                   }
@@ -232,7 +233,7 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                       CustemTextField(
                         controller: ctrl.date,
                         label: 'appointment_date'.tr,
-                        hint: '2025/01/15',
+                        hint: 'appointment_date'.tr,
                         icon: Icons.calendar_today_outlined,
                         readOnly: true,
                         onTap: () async {
@@ -275,7 +276,13 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               icon: Icons.man_outlined,
                               keyboardType: TextInputType.number,
                               validator: (val) {
-                                return validInput(val!, 1000, 1, "number");
+                                return validInput(
+                                  val!,
+                                  1000,
+                                  1,
+                                  "integer",
+                                  empty: true,
+                                );
                               },
                             ),
                           ),
@@ -288,7 +295,13 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               icon: Icons.woman_outlined,
                               keyboardType: TextInputType.number,
                               validator: (val) {
-                                return validInput(val!, 1000, 1, "number");
+                                return validInput(
+                                  val!,
+                                  1000,
+                                  1,
+                                  "integer",
+                                  empty: true,
+                                );
                               },
                             ),
                           ),
@@ -450,7 +463,7 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                         sectionHeaderTitle: 'additional_notes'.tr,
                         sectionHeaderIcon: Icons.sticky_note_2_outlined,
                         validator: (val) {
-                          return validInput(val!, 3000, 1, "note");
+                          return validInput(val!, 3000, 1, "note", empty: true);
                         },
                       ),
                       const SizedBox(height: 16),
@@ -628,7 +641,7 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
           items: items
               .map(
                 (item) => DropdownMenuItem<String>(
-                  value: item.uuid as String,
+                  value: item.name as String,
                   child: Text(
                     item.name,
                     style: TextStyle(fontSize: 14, color: textColor),

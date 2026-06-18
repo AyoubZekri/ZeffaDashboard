@@ -36,7 +36,7 @@ class EventTypesController extends GetxController {
 
   // List of Event Types in RxList to update UI dynamically
   final RxList<Map<String, dynamic>> eventTypes = <Map<String, dynamic>>[].obs;
-  
+
   final PartyTypes partyTypesRepo = PartyTypes(Get.find());
   Statusrequest statusrequest = Statusrequest.none;
   String? editUuid;
@@ -52,7 +52,7 @@ class EventTypesController extends GetxController {
     editTypeDesc = TextEditingController();
     editTypePrice = TextEditingController();
     editTypeSeasonalPrice = TextEditingController();
-    
+
     loadEventTypes();
     super.onInit();
   }
@@ -75,34 +75,38 @@ class EventTypesController extends GetxController {
     update();
     try {
       final result = await partyTypesRepo.viewdata();
-      
+
       if (result.isEmpty) {
         statusrequest = Statusrequest.none;
         eventTypes.clear();
       } else {
         final models = PartyTypeModel.fromList(result);
-        
+
         final mappedList = models.map((item) {
           IconData icon;
           if (item.icon != null && item.icon!.isNotEmpty) {
             final codePoint = int.tryParse(item.icon!);
-            icon = codePoint != null ? IconData(codePoint, fontFamily: 'MaterialIcons') : Icons.favorite_rounded;
+            icon = codePoint != null
+                ? IconData(codePoint, fontFamily: 'MaterialIcons')
+                : Icons.favorite_rounded;
           } else {
             int iconIndex = (item.id ?? 0) % availableIcons.length;
             icon = availableIcons[iconIndex];
           }
-          
+
           Color doubleColor = _getColorForIcon(icon);
 
           return {
             'uuid': item.uuid,
             'id': item.id,
-            'titleKey': '', 
+            'titleKey': '',
             'descKey': '',
             'titleCustom': item.name ?? '',
             'descCustom': item.content ?? '',
             'price': _formatPrice(item.basicPrice?.toString() ?? '0'),
-            'seasonalPrice': _formatPrice(item.seasonalPrice?.toString() ?? '0'),
+            'seasonalPrice': _formatPrice(
+              item.seasonalPrice?.toString() ?? '0',
+            ),
             'icon': icon,
             'iconBgColor': doubleColor.withOpacity(0.12),
             'iconColor': doubleColor,
@@ -136,8 +140,11 @@ class EventTypesController extends GetxController {
     // Parse prices
     final cleanPrice = typePrice.text.replaceAll(RegExp(r'[^0-9.]'), '');
     final doublePrice = double.tryParse(cleanPrice) ?? 0.0;
-    
-    final cleanSeasonalPrice = typeSeasonalPrice.text.replaceAll(RegExp(r'[^0-9.]'), '');
+
+    final cleanSeasonalPrice = typeSeasonalPrice.text.replaceAll(
+      RegExp(r'[^0-9.]'),
+      '',
+    );
     final doubleSeasonalPrice = double.tryParse(cleanSeasonalPrice) ?? 0.0;
 
     final success = await partyTypesRepo.Adddata(
@@ -159,10 +166,17 @@ class EventTypesController extends GetxController {
   // Set data for editing
   void setEditData(Map<String, dynamic> item) {
     editUuid = item['uuid'];
-    editTypeName.text = item['titleKey'] != '' ? item['titleKey'].toString().tr : item['titleCustom'].toString();
-    editTypeDesc.text = item['descKey'] != '' ? item['descKey'].toString().tr : item['descCustom'].toString();
+    editTypeName.text = item['titleKey'] != ''
+        ? item['titleKey'].toString().tr
+        : item['titleCustom'].toString();
+    editTypeDesc.text = item['descKey'] != ''
+        ? item['descKey'].toString().tr
+        : item['descCustom'].toString();
     editTypePrice.text = item['price'].toString().replaceAll(',', '');
-    editTypeSeasonalPrice.text = item['seasonalPrice'].toString().replaceAll(',', '');
+    editTypeSeasonalPrice.text = item['seasonalPrice'].toString().replaceAll(
+      ',',
+      '',
+    );
     editSelectedIcon.value = item['icon'] as IconData;
   }
 
@@ -170,8 +184,11 @@ class EventTypesController extends GetxController {
   Future<void> updateEventType(String uuid) async {
     final cleanPrice = editTypePrice.text.replaceAll(RegExp(r'[^0-9.]'), '');
     final doublePrice = double.tryParse(cleanPrice) ?? 0.0;
-    
-    final cleanSeasonalPrice = editTypeSeasonalPrice.text.replaceAll(RegExp(r'[^0-9.]'), '');
+
+    final cleanSeasonalPrice = editTypeSeasonalPrice.text.replaceAll(
+      RegExp(r'[^0-9.]'),
+      '',
+    );
     final doubleSeasonalPrice = double.tryParse(cleanSeasonalPrice) ?? 0.0;
 
     final success = await partyTypesRepo.Updatedata(
@@ -195,6 +212,7 @@ class EventTypesController extends GetxController {
     final success = await partyTypesRepo.Deletedata(uuid);
     if (success) {
       loadEventTypes();
+      Get.back();
     } else {
       showSnackbar("error".tr, "operation_failed".tr, Colors.red);
     }

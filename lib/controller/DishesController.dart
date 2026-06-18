@@ -42,8 +42,8 @@ class DishesController extends GetxController {
 
   @override
   void onInit() {
-    viewdishes();
     viewCategory();
+    viewdishes();
     name = TextEditingController();
     editName = TextEditingController();
     super.onInit();
@@ -73,6 +73,7 @@ class DishesController extends GetxController {
   // Add Category
   void adddishes() async {
     if (!formState.currentState!.validate()) return;
+
     try {
       final result = await dishes.Adddata(name.text, catUuid!, file);
       print("=============$result");
@@ -96,6 +97,7 @@ class DishesController extends GetxController {
   void viewCategory() async {
     try {
       final result = await dishcategories.viewdata();
+      print("=================$result=============");
       if (result.isEmpty) {
         statusrequest = Statusrequest.none;
         dishCategories.clear();
@@ -146,6 +148,8 @@ class DishesController extends GetxController {
   }
 
   void editdishes() async {
+    if (!formState.currentState!.validate()) return;
+
     try {
       var result = await dishes.Updatecat(
         uuid!,
@@ -157,12 +161,12 @@ class DishesController extends GetxController {
 
       if (result == true) {
         Get.back(result: true);
+        clearFields();
         viewdishes();
       }
     } catch (e) {
       print("error in edit category : $e");
     }
-    
   }
 
   void deleteDishes(String uuid) async {

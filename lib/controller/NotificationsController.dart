@@ -2,10 +2,9 @@ import 'package:get/get.dart';
 import '../data/datasource/Remote/NotificationsData.dart';
 import '../data/model/NotificationModel.dart';
 import '../core/class/statusrequest.dart';
-import '../core/functions/handlingdatacontroller.dart';
 
 class NotificationsController extends GetxController {
-  final NotificationsData _data = NotificationsData();
+  final NotificationsData _data = NotificationsData(Get.find());
 
   RxList<NotificationModel> notifications = <NotificationModel>[].obs;
   RxString currentFilter = 'all'.obs; // 'all', 'unread'
@@ -17,6 +16,8 @@ class NotificationsController extends GetxController {
   List<NotificationModel> get filteredNotifications {
     if (currentFilter.value == 'unread') {
       return notifications.where((n) => !n.isRead).toList();
+    } else if (currentFilter.value == 'read') {
+      return notifications.where((n) => n.isRead).toList();
     }
     return notifications;
   }

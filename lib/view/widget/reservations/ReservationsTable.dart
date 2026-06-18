@@ -138,14 +138,7 @@ class ReservationsTable extends StatelessWidget {
               style: style,
             ),
           ),
-          SizedBox(
-            width: 180,
-            child: Text(
-              'reservation_date'.tr,
-              textAlign: TextAlign.right,
-              style: style,
-            ),
-          ),
+
           SizedBox(
             width: 250,
             child: Text(
@@ -158,6 +151,14 @@ class ReservationsTable extends StatelessWidget {
             width: 180,
             child: Text(
               'phone_number'.tr,
+              textAlign: TextAlign.right,
+              style: style,
+            ),
+          ),
+          SizedBox(
+            width: 180,
+            child: Text(
+              'reservation_date'.tr,
               textAlign: TextAlign.right,
               style: style,
             ),
@@ -210,27 +211,6 @@ class ReservationsTable extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: 180,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.bookingDate,
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  item.time,
-                  style: TextStyle(color: colors.subtitleColor, fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
             width: 250,
             child: Row(
               textDirection: TextDirection.rtl,
@@ -264,7 +244,7 @@ class ReservationsTable extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        item.customerType??'client'.tr,
+                        item.customerType ?? 'client'.tr,
                         style: TextStyle(
                           color: colors.subtitleColor,
                           fontSize: 13,
@@ -276,6 +256,7 @@ class ReservationsTable extends StatelessWidget {
               ],
             ),
           ),
+
           SizedBox(
             width: 180,
             child: Text(
@@ -287,6 +268,18 @@ class ReservationsTable extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(
+            width: 180,
+            child: Text(
+              item.bookingDate,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+
           SizedBox(
             width: 120,
             child: Center(

@@ -57,6 +57,7 @@ class SyncService {
       );
 
       for (final row in batch) {
+        final operation = row["operation"] as String;
         final data = row["data"] != null
             ? Map<String, dynamic>.from(jsonDecode(row["data"] as String))
             : <String, dynamic>{};
@@ -87,7 +88,9 @@ class SyncService {
 
             final request = http.MultipartRequest(
               "POST",
-              Uri.parse("$baseUrl/$table"),
+              operation == "delete"
+                  ? Uri.parse("$baseUrl/delete/$table")
+                  : Uri.parse("$baseUrl/$table"),
             );
             request.headers.addAll(headers);
 
@@ -110,7 +113,9 @@ class SyncService {
           } else {
             // إرسال JSON عادي إذا ما فيه صورة
             res = await http.post(
-              Uri.parse("$baseUrl/$table"),
+              operation == "delete"
+                  ? Uri.parse("$baseUrl/delete/$table")
+                  : Uri.parse("$baseUrl/$table"),
               body: jsonEncode(data),
               headers: {...headers, "Content-Type": "application/json"},
             );

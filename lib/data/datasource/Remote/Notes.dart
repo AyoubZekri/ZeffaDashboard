@@ -1,24 +1,20 @@
 import 'package:uuid/uuid.dart';
-import '../../../core/class/Crud.dart';
 import '../../../core/class/Sqldb.dart';
 import '../../../core/class/SyncServer.dart';
+import '../../../core/services/Services.dart';
 
 class Notes {
-  final Crud crud;
   final SQLDB _db = SQLDB();
   final SyncService _syncService = SyncService();
 
-  int? id = 1; // user_id fallback to 1
+  Myservices myServices;
 
-  Notes(this.crud);
+  int get id => myServices.sharedPreferences?.getInt("id") ?? 1;
+
+  Notes(this.myServices);
 
   Future<List<Map<String, dynamic>>> viewdata() async {
     try {
-      if (id == null) {
-        print("❌ user_id not found");
-        return [];
-      }
-
       final result = await _db.readData(
         "SELECT * FROM notes WHERE user_id = ? ORDER BY created_at DESC",
         [id],
@@ -57,11 +53,7 @@ class Notes {
     }
   }
 
-  Future<bool> Updatedata(
-    String uuid,
-    String title,
-    String description,
-  ) async {
+  Future<bool> Updatedata(String uuid, String title, String description) async {
     try {
       final data = {
         "title": title,

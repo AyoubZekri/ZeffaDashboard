@@ -216,25 +216,13 @@ class _DishCategoryFormDialogState extends State<DishCategoryFormDialog> {
                     const SizedBox(width: 16),
                     ElevatedButton(
                       onPressed: () {
+                        
                         if (isEdit) {
                           ctrl.editCategory();
                         } else {
                           ctrl.addCategory();
                         }
                         Get.back();
-                        Get.snackbar(
-                          'success'.tr,
-                          isEdit
-                              ? 'dish_category_updated_success'.tr
-                              : 'dish_category_added_success'.tr,
-                          backgroundColor: isDark
-                              ? const Color(0xFF1B5E20)
-                              : const Color(0xFFE8F5E9),
-                          colorText: isDark
-                              ? Colors.white
-                              : Colors.green.shade900,
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
                      
                       },
                       style: ElevatedButton.styleFrom(

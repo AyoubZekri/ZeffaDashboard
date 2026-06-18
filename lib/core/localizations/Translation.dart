@@ -36,7 +36,8 @@ class MyTranslation extends Translations {
       "no_account": "ليس لديك حساب؟",
       "login_here": "سجل الدخول هنا",
       "verify_email_title": "التحقق من البريد الإلكتروني",
-      "verify_email_subtitle": "الرجاء إدخال رمز التحقق المكون من 5 أرقام المرسل إلى بريدك الإلكتروني.",
+      "verify_email_subtitle":
+          "الرجاء إدخال رمز التحقق المكون من 5 أرقام المرسل إلى بريدك الإلكتروني.",
       "verify_btn": "تأكيد الرمز",
       "didnt_receive_code": "لم تتلقَ الرمز؟",
       "resend_code": "إعادة إرسال الرمز",
@@ -44,19 +45,24 @@ class MyTranslation extends Translations {
       "verify_error": "رمز التحقق غير صحيح",
       "success_verification": "تم التحقق من الحساب بنجاح",
       "forget_password_title": "نسيت كلمة المرور؟",
-      "forget_password_subtitle": "الرجاء إدخال بريدك الإلكتروني المرتبط بالحساب لاستلام رمز التحقق.",
+      "forget_password_subtitle":
+          "الرجاء إدخال بريدك الإلكتروني المرتبط بالحساب لاستلام رمز التحقق.",
       "send_code_btn": "إرسال الرمز",
       "reset_password_title": "إعادة تعيين كلمة المرور",
-      "reset_password_subtitle": "الرجاء إدخال كلمة المرور الجديدة وتأكيدها أدناه.",
+      "reset_password_subtitle":
+          "الرجاء إدخال كلمة المرور الجديدة وتأكيدها أدناه.",
       "new_password_label": "كلمة المرور الجديدة",
       "new_password_hint": "أدخل كلمة المرور الجديدة",
       "reset_btn": "تحديث كلمة المرور",
       "password_reset_success": "تم تحديث كلمة المرور بنجاح",
-      "info_subtitle": "ارتقِ بمستوى إدارة قاعاتك وانضم إلى النخبة في عالم الفعاليات الفاخرة.",
+      "info_subtitle":
+          "ارتقِ بمستوى إدارة قاعاتك وانضم إلى النخبة في عالم الفعاليات الفاخرة.",
       "feature_1_title": "تحليلات ذكية",
-      "feature_1_desc": "راقب أداء قاعتك وحجوزاتك بكل سهولة ويسر عبر لوحة تحكم متطورة.",
+      "feature_1_desc":
+          "راقب أداء قاعتك وحجوزاتك بكل سهولة ويسر عبر لوحة تحكم متطورة.",
       "feature_2_title": "إدارة ملكية",
-      "feature_2_desc": "نظام متكامل يضمن لك السلاسة في التعامل مع العملاء والمدفوعات.",
+      "feature_2_desc":
+          "نظام متكامل يضمن لك السلاسة في التعامل مع العملاء والمدفوعات.",
       "copyright": "© زفّة 2026 جميع الحقوق محفوظة.",
       "required_field": "مطلوب",
       "invalid_email": "بريد إلكتروني غير صالح",
@@ -67,6 +73,7 @@ class MyTranslation extends Translations {
       "view_all_current_and_future_reservations":
           "عرض جميع الحجوزات الحالية والمستقبلية",
       "add_reservation": "إضافة حجز",
+      "add_reservation_btn": "إضافة حجز",
       "filter": "تصفية",
       "export_btn": "تصدير",
       "search_reservations": "ابحث في الحجوزات...",
@@ -94,18 +101,23 @@ class MyTranslation extends Translations {
       // Event Types Screen
       "event_types": "أنواع الحفلات",
       "manage_event_types": "إدارة أنواع الحفلات",
-      "event_types_desc": "إضافة وتعديل أنواع المناسبات والخدمات المقدمة وتحديد النماذج السعرية الخاصة بكل فئة.",
+      "event_types_desc":
+          "إضافة وتعديل أنواع المناسبات والخدمات المقدمة وتحديد النماذج السعرية الخاصة بكل فئة.",
       "add_new_type": "إضافة نوع جديد",
       "base_price": "السعر الأساسي",
-      "sar_currency": "ريال",
+      "sar_currency": "دينار",
       "wedding_parties": "حفلات زفاف",
-      "wedding_desc": "تنسيق متكامل لحفلات الزفاف الفاخرة يشمل القاعة، الضيافة، وأنظمة الإضاءة المتقدمة مع فريق تنظيم محترف.",
+      "wedding_desc":
+          "تنسيق متكامل لحفلات الزفاف الفاخرة يشمل القاعة، الضيافة، وأنظمة الإضاءة المتقدمة مع فريق تنظيم محترف.",
       "conferences": "مؤتمرات",
-      "conferences_desc": "تجهيزات تقنية عالية المستوى للاجتماعات الرسمية والمؤتمرات، تشمل شاشات LED وأنظمة صوتية متطورة.",
+      "conferences_desc":
+          "تجهيزات تقنية عالية المستوى للاجتماعات الرسمية والمؤتمرات، تشمل شاشات LED وأنظمة صوتية متطورة.",
       "graduation_parties": "حفلات تخرج",
-      "graduation_desc": "احتفالات مبهجة مخصصة للطلاب والمؤسسات التعليمية مع منصات تكريم وتنسيقات عصرية متكاملة.",
+      "graduation_desc":
+          "احتفالات مبهجة مخصصة للطلاب والمؤسسات التعليمية مع منصات تكريم وتنسيقات عصرية متكاملة.",
       "edit_event_type": "تعديل نوع الحفل",
-      "edit_event_type_desc": "قم بتعديل تفاصيل هذا النوع من الحفلات والنموذج السعري له",
+      "edit_event_type_desc":
+          "قم بتعديل تفاصيل هذا النوع من الحفلات والنموذج السعري له",
       "add_event_type_desc": "أدخل تفاصيل نوع الحفل الجديد والنموذج السعري له",
       "select_party_icon": "اختر أيقونة الحفل",
       "event_type_name": "اسم نوع الحفل",
@@ -118,22 +130,29 @@ class MyTranslation extends Translations {
       // Dish Categories Screen
       "dish_categories": "فئات الأطباق",
       "manage_dish_categories": "إدارة فئات الأطباق",
-      "dish_categories_desc": "تنظيم وتصنيف قائمة الطعام لتسهيل عملية الحجز واختيار المنيو.",
+      "dish_categories_desc":
+          "تنظيم وتصنيف قائمة الطعام لتسهيل عملية الحجز واختيار المنيو.",
       "add_new_category": "إضافة فئة جديدة",
       "explore_category": "استكشف الفئة",
       "items_count": "أطباق",
       "main_dishes": "أطباق رئيسية",
-      "main_dishes_desc": "تشكيلة واسعة من الأطباق الرئيسية العالمية والشرقية المطهوة بعناية فائقة.",
+      "main_dishes_desc":
+          "تشكيلة واسعة من الأطباق الرئيسية العالمية والشرقية المطهوة بعناية فائقة.",
       "appetizers": "مقبلات",
-      "appetizers_desc": "بدايات فاخرة ولقيمات فنية تفتح الشهية وتضفي لمسة من الرقي على مائدتكم.",
+      "appetizers_desc":
+          "بدايات فاخرة ولقيمات فنية تفتح الشهية وتضفي لمسة من الرقي على مائدتكم.",
       "desserts": "حلويات",
-      "desserts_desc": "نهايات سعيدة لكل وجبة مع تشكيلة من الحلويات العصرية والتقليدية المبتكرة.",
+      "desserts_desc":
+          "نهايات سعيدة لكل وجبة مع تشكيلة من الحلويات العصرية والتقليدية المبتكرة.",
       "drinks": "مشروبات",
-      "drinks_desc": "عصائر طازجة، كوكتيلات مبتكرة، ومشروبات ساخنة محضرة من أجود المكونات.",
+      "drinks_desc":
+          "عصائر طازجة، كوكتيلات مبتكرة، ومشروبات ساخنة محضرة من أجود المكونات.",
       "seafood": "مأكولات بحرية",
-      "seafood_desc": "ثمار البحر الطازجة محضرة بوصفات عالمية تجمع بين نكهة البحر والابتكار.",
+      "seafood_desc":
+          "ثمار البحر الطازجة محضرة بوصفات عالمية تجمع بين نكهة البحر والابتكار.",
       "popular_dishes": "أطباق شعبية",
-      "popular_dishes_desc": "نكهات الأصالة والتراث مع لمسة عصرية تعيد تعريف الأطباق التقليدية المحببة.",
+      "popular_dishes_desc":
+          "نكهات الأصالة والتراث مع لمسة عصرية تعيد تعريف الأطباق التقليدية المحببة.",
       "edit_dish_category": "تعديل فئة الأطباق",
       "edit_dish_category_desc": "قم بتعديل تفاصيل هذه الفئة وعدد أطباقها",
       "add_dish_category_desc": "أدخل تفاصيل فئة الأطباق الجديدة",
@@ -148,7 +167,8 @@ class MyTranslation extends Translations {
       // Dishes Screen
       "dishes": "الأطباق",
       "manage_dishes": "إدارة الأطباق والمنيو",
-      "dishes_desc": "إضافة وتعديل قائمة الطعام والوجبات المقدّمة في الحفلات لضمان تجربة ضيافة استثنائية.",
+      "dishes_desc":
+          "إضافة وتعديل قائمة الطعام والوجبات المقدّمة في الحفلات لضمان تجربة ضيافة استثنائية.",
       "add_new_dish": "إضافة طبق جديد",
       "edit_dish": "تعديل الطبق",
       "edit_dish_desc": "قم بتعديل تفاصيل هذا الطبق",
@@ -224,7 +244,6 @@ class MyTranslation extends Translations {
       "phone_number_label": "رقم الهاتف",
       "go_to_date": "الذهاب إلى تاريخ",
 
-
       // Reservations screen additions
       "reservation_details": "تفاصيل الحجز",
       "customer": "العميل",
@@ -243,6 +262,11 @@ class MyTranslation extends Translations {
       "no_reservations_found": "لم يتم العثور على حجوزات",
       "reservation_number": "رقم الحجز",
       "reservation_date": "تاريخ الحجز",
+      "number_of_guests": "عدد الضيوف",
+      "paid_amount": "المبلغ المدفوع",
+      "remaining_amount": "المبلغ المتبقي",
+      "export_to_excel": "تصدير إلى إكسيل",
+      "payment_status": "حالة الدفع",
       "show": "عرض",
       "of": "من أصل",
       "booking": "حجز",
@@ -425,12 +449,14 @@ class MyTranslation extends Translations {
 
       // Add Payment Dialog
       "add_payment": "إضافة دفعة",
-      "add_payment_desc": "أدخل مبلغ الدفعة الجديدة لإضافتها على المبلغ المدفوع سابقاً",
+      "add_payment_desc":
+          "أدخل مبلغ الدفعة الجديدة لإضافتها على المبلغ المدفوع سابقاً",
       "current_deposit": "المبلغ المدفوع حالياً",
       "reservation_price": "سعر الحجز",
       "new_payment_amount": "مبلغ الدفعة الجديدة",
       "new_payment_hint": "أدخل المبلغ",
-      "payment_exceeds_price": "المبلغ الإجمالي يتجاوز سعر الحجز! لا يمكن إضافة هذه الدفعة.",
+      "payment_exceeds_price":
+          "المبلغ الإجمالي يتجاوز سعر الحجز! لا يمكن إضافة هذه الدفعة.",
       "payment_added_success": "تم إضافة الدفعة بنجاح",
       "payment_failed": "فشل إضافة الدفعة",
       "confirm_payment": "تأكيد الدفع",
@@ -467,7 +493,8 @@ class MyTranslation extends Translations {
       "october": "أكتوبر",
       "november": "نوفمبر",
       "december": "ديسمبر",
-      "please_fill_required_fields": "يرجى تعبئة الحقول الأساسية (الاسم، الهاتف، التاريخ، نوع الحفل والفترة)",
+      "please_fill_required_fields":
+          "يرجى تعبئة الحقول الأساسية (الاسم، الهاتف، التاريخ، نوع الحفل والفترة)",
       "success_msg": "نجاح",
       "reservation_saved_successfully": "تم حفظ الحجز بنجاح",
       "failed_to_save_reservation": "فشل حفظ الحجز",
@@ -494,8 +521,10 @@ class MyTranslation extends Translations {
       "internet_restored_run_sync_all": "🌐 الانترنت رجع — تشغيل syncAll()",
       "internet_disconnected": "📴 الانترنت انقطع",
       "do_you_want_to_exit_app": "هل تريد الخروج من التطبيق",
-      "run_periodic_sync_task_foreground": "🔔 تنفيذ مهمة مزامنة دورية (foreground)...",
-      "run_periodic_sync_task_background": "🔔 تنفيذ مهمة مزامنة دورية (background isolate)...",
+      "run_periodic_sync_task_foreground":
+          "🔔 تنفيذ مهمة مزامنة دورية (foreground)...",
+      "run_periodic_sync_task_background":
+          "🔔 تنفيذ مهمة مزامنة دورية (background isolate)...",
       "choose_duration": "إختر المدة",
       "start_date": "تاريخ البداية",
       "end_date": "تاريخ النهاية",
@@ -516,16 +545,16 @@ class MyTranslation extends Translations {
       "invalid_phone_number": "رقم الهاتف غير صالح",
       "client": "عميل",
       "copyright_text": "© 2024 Zeffa. جميع الحقوق محفوظة.",
-      "delete_category_confirm_title": " ()؟",
-      "delete_dish_confirm_title": " ()؟",
-      "delete_event_confirm_title": " ()؟",
+      "delete_category_confirm_title": "هل أنت متأكد من حذف هذه الفئة؟",
+      "delete_dish_confirm_title": "هل أنت متأكد من حذف هذا الطبق؟",
+      "delete_event_confirm_title": "هل أنت متأكد من حذف هذه المناسبة؟",
       "currency_dzd": "د.ج",
       "total_current_month_expenses": "إجمالي مصاريف الشهر الحالي",
       "automatically_updated_from_operations": "محدث تلقائياً من العمليات",
-      "delete_expense_confirm_desc": " ()؟",
+      "delete_expense_confirm_desc": "هل أنت متأكد من حذف هذا المصروف؟",
       "filter_by_date": "تصفية بالتاريخ",
       "cancel_date_filter": "إلغاء تصفية التاريخ",
-      "delete_note_confirm_title": " \n()؟",
+      "delete_note_confirm_title": "هل أنت متأكد من حذف هذه الملاحظة؟",
       "do_you_want_to_delete": "هل تريد الحذف",
       "sunday": "أحد",
       "monday": "اثنين",
@@ -538,7 +567,8 @@ class MyTranslation extends Translations {
       "update_special_day": "تحديث اليوم المميز",
       "update": "تحديث",
       "month_performance": "أداء الشهر: ",
-      "seasons_and_special_days_overview": "نظرة عامة على المواسم والأيام المميزة",
+      "seasons_and_special_days_overview":
+          "نظرة عامة على المواسم والأيام المميزة",
       "name": "الاسم",
       "season_performance": "أداء الموسم",
       "actions_label": "الاجراءات",
@@ -566,7 +596,8 @@ class MyTranslation extends Translations {
       "date_time_4": "12 أكتوبر، 09:45",
       "sar_amount_6": "6,200 ر.س",
       "manage_your_notes": "إدارة ومتابعة الملاحظات الخاصة بك",
-      "please_select_date_first_to_set_price": "الرجاء تحديد التاريخ أولاً لتحديد السعر",
+      "please_select_date_first_to_set_price":
+          "الرجاء تحديد التاريخ أولاً لتحديد السعر",
       "unread_msg": "غير مقروء",
       "read_msg": "مقروء",
       "generate_test_notification": "توليد إشعار تجريبي",
@@ -576,11 +607,14 @@ class MyTranslation extends Translations {
       "account_status": "حالة الحساب: ",
       "activation_end_date": "تاريخ إنتهاء التفعيل: ",
       "renew": "تجديد",
+      "please_select_category": "الرجاء تحديد الفئة",
       "edit_account": "تعديل الحساب",
       "edit_password": "تعديل كلمة السر",
       "logout": "تسجيل الخروج",
-},
+      "notifications": "الإشعارات",
+    },
     "en": {
+      "notifications": "notifications",
       "western_region": "Western Region",
       "search_branches": "Search branches...",
 
@@ -595,7 +629,8 @@ class MyTranslation extends Translations {
       "remember_me": "Remember me",
       "login_btn": "Login",
       "signup_title": "Create new account",
-      "signup_subtitle": "Start your journey as a partner in the exclusive Zeffa network today.",
+      "signup_subtitle":
+          "Start your journey as a partner in the exclusive Zeffa network today.",
       "hall_name_label": "Hall Name",
       "hall_name_hint": "Royal Lavender Hall",
       "hall_address_label": "Hall Address",
@@ -611,7 +646,8 @@ class MyTranslation extends Translations {
       "no_account": "Don't have an account?",
       "login_here": "Login here",
       "verify_email_title": "Email Verification",
-      "verify_email_subtitle": "Please enter the 5-digit verification code sent to your email.",
+      "verify_email_subtitle":
+          "Please enter the 5-digit verification code sent to your email.",
       "verify_btn": "Verify Code",
       "didnt_receive_code": "Didn't receive the code?",
       "resend_code": "Resend Code",
@@ -619,19 +655,24 @@ class MyTranslation extends Translations {
       "verify_error": "Invalid verification code",
       "success_verification": "Account verified successfully",
       "forget_password_title": "Forgot Password?",
-      "forget_password_subtitle": "Please enter the email address associated with your account to receive a verification code.",
+      "forget_password_subtitle":
+          "Please enter the email address associated with your account to receive a verification code.",
       "send_code_btn": "Send Code",
       "reset_password_title": "Reset Password",
-      "reset_password_subtitle": "Please enter and confirm your new password below.",
+      "reset_password_subtitle":
+          "Please enter and confirm your new password below.",
       "new_password_label": "New Password",
       "new_password_hint": "Enter your new password",
       "reset_btn": "Update Password",
       "password_reset_success": "Password updated successfully",
-      "info_subtitle": "Elevate your hall management and join the elite in the world of luxury events.",
+      "info_subtitle":
+          "Elevate your hall management and join the elite in the world of luxury events.",
       "feature_1_title": "Smart Analytics",
-      "feature_1_desc": "Monitor your hall's performance and bookings easily through an advanced dashboard.",
+      "feature_1_desc":
+          "Monitor your hall's performance and bookings easily through an advanced dashboard.",
       "feature_2_title": "Property Management",
-      "feature_2_desc": "An integrated system that ensures smooth dealing with customers and payments.",
+      "feature_2_desc":
+          "An integrated system that ensures smooth dealing with customers and payments.",
       "copyright": "© Zeffa 2026 All rights reserved.",
       "required_field": "Required",
       "invalid_email": "Invalid email",
@@ -642,6 +683,7 @@ class MyTranslation extends Translations {
       "view_all_current_and_future_reservations":
           "View all current and future reservations",
       "add_reservation": "Add Reservation",
+      "add_reservation_btn": "Add Reservation",
       "filter": "Filter",
       "export_btn": "Export",
       "search_reservations": "Search reservations...",
@@ -669,48 +711,63 @@ class MyTranslation extends Translations {
       // Event Types Screen
       "event_types": "Event Types",
       "manage_event_types": "Manage Event Types",
-      "event_types_desc": "Add, edit event types, services offered and define pricing models for each category.",
+      "event_types_desc":
+          "Add, edit event types, services offered and define pricing models for each category.",
       "add_new_type": "Add New Type",
       "base_price": "Base Price",
-      "sar_currency": "SAR",
+      "sar_currency": "DAZ",
       "wedding_parties": "Wedding Parties",
-      "wedding_desc": "Full coordination for luxurious weddings including hall, hospitality, and advanced lighting systems with a professional team.",
+      "wedding_desc":
+          "Full coordination for luxurious weddings including hall, hospitality, and advanced lighting systems with a professional team.",
       "conferences": "Conferences",
-      "conferences_desc": "High-level technical equipment for formal meetings and conferences, including LED screens and advanced sound systems.",
+      "conferences_desc":
+          "High-level technical equipment for formal meetings and conferences, including LED screens and advanced sound systems.",
       "graduation_parties": "Graduation Parties",
-      "graduation_desc": "Joyful celebrations tailored for students and educational institutions with honor platforms and modern styling.",
+      "graduation_desc":
+          "Joyful celebrations tailored for students and educational institutions with honor platforms and modern styling.",
       "edit_event_type": "Edit Event Type",
-      "edit_event_type_desc": "Edit details of this event type and its pricing model",
-      "add_event_type_desc": "Enter details of the new event type and its pricing model",
+      "edit_event_type_desc":
+          "Edit details of this event type and its pricing model",
+      "add_event_type_desc":
+          "Enter details of the new event type and its pricing model",
       "select_party_icon": "Select Event Icon",
       "event_type_name": "Event Type Name",
       "event_type_updated_success": "Event type updated successfully",
       "event_type_added_success": "Event type added successfully",
       "save_changes": "Save Changes",
       "event_type_deleted_success": "Event type deleted successfully",
-      "delete_event_confirm": "Are you sure you want to delete this event type?",
+      "delete_event_confirm":
+          "Are you sure you want to delete this event type?",
 
       // Dish Categories Screen
       "dish_categories": "Dish Categories",
       "manage_dish_categories": "Dish Categories Management",
-      "dish_categories_desc": "Organizing and classifying the food menu to facilitate booking and menu selection.",
+      "dish_categories_desc":
+          "Organizing and classifying the food menu to facilitate booking and menu selection.",
       "add_new_category": "Add New Category",
       "explore_category": "Explore Category",
       "items_count": "items",
       "main_dishes": "Main Dishes",
-      "main_dishes_desc": "A wide variety of international and oriental main dishes cooked with extreme care.",
+      "main_dishes_desc":
+          "A wide variety of international and oriental main dishes cooked with extreme care.",
       "appetizers": "Appetizers",
-      "appetizers_desc": "Luxurious starters and artistic bites that whet the appetite and add a touch of sophistication to your table.",
+      "appetizers_desc":
+          "Luxurious starters and artistic bites that whet the appetite and add a touch of sophistication to your table.",
       "desserts": "Desserts",
-      "desserts_desc": "Happy endings for every meal with a selection of innovative modern and traditional desserts.",
+      "desserts_desc":
+          "Happy endings for every meal with a selection of innovative modern and traditional desserts.",
       "drinks": "Drinks",
-      "drinks_desc": "Fresh juices, innovative cocktails, and hot drinks prepared from the finest ingredients.",
+      "drinks_desc":
+          "Fresh juices, innovative cocktails, and hot drinks prepared from the finest ingredients.",
       "seafood": "Seafood",
-      "seafood_desc": "Fresh seafood prepared with international recipes that combine ocean flavor and innovation.",
+      "seafood_desc":
+          "Fresh seafood prepared with international recipes that combine ocean flavor and innovation.",
       "popular_dishes": "Popular Dishes",
-      "popular_dishes_desc": "Authentic flavors and heritage with a modern touch that redefines beloved traditional dishes.",
+      "popular_dishes_desc":
+          "Authentic flavors and heritage with a modern touch that redefines beloved traditional dishes.",
       "edit_dish_category": "Edit Dish Category",
-      "edit_dish_category_desc": "Edit details of this category and its dishes count",
+      "edit_dish_category_desc":
+          "Edit details of this category and its dishes count",
       "add_dish_category_desc": "Enter details of the new dish category",
       "category_name": "Category Name",
       "dishes_count": "Dishes Count",
@@ -718,12 +775,14 @@ class MyTranslation extends Translations {
       "dish_category_updated_success": "Dish category updated successfully",
       "dish_category_added_success": "Dish category added successfully",
       "dish_category_deleted_success": "Dish category deleted successfully",
-      "delete_category_confirm": "Are you sure you want to delete this dish category?",
+      "delete_category_confirm":
+          "Are you sure you want to delete this dish category?",
 
       // Dishes Screen
       "dishes": "Dishes",
       "manage_dishes": "Dishes & Menu Management",
-      "dishes_desc": "Add and edit the food menu and meals served at events to ensure an exceptional hospitality experience.",
+      "dishes_desc":
+          "Add and edit the food menu and meals served at events to ensure an exceptional hospitality experience.",
       "add_new_dish": "Add New Dish",
       "edit_dish": "Edit Dish",
       "edit_dish_desc": "Edit details of this dish",
@@ -742,7 +801,8 @@ class MyTranslation extends Translations {
 
       // Calendar & Seasons Screen
       "calendar_title": "Seasons & Special Dates Management",
-      "calendar_desc": "Control peak periods, pricing, and elite reservations with precision.",
+      "calendar_desc":
+          "Control peak periods, pricing, and elite reservations with precision.",
       "add_seasonal_event": "Add Seasonal Event",
       "export_calendar": "Export Calendar",
       "calendar_guide": "Calendar Guide",
@@ -799,7 +859,6 @@ class MyTranslation extends Translations {
       "phone_number_label": "Phone Number",
       "go_to_date": "Go to Date",
 
-
       // Reservations screen additions
       "reservation_details": "Reservation Details",
       "customer": "Customer",
@@ -820,6 +879,11 @@ class MyTranslation extends Translations {
       "no_reservations_found": "No reservations found",
       "reservation_number": "Reservation Number",
       "reservation_date": "Reservation Date",
+      "number_of_guests": "Number of Guests",
+      "paid_amount": "Paid Amount",
+      "remaining_amount": "Remaining Amount",
+      "export_to_excel": "Export to Excel",
+      "payment_status": "Payment Status",
       "show": "Show",
       "of": "of",
       "booking": "reservation",
@@ -1005,12 +1069,14 @@ class MyTranslation extends Translations {
 
       // Add Payment Dialog
       "add_payment": "Add Payment",
-      "add_payment_desc": "Enter the new payment amount to add to the existing deposit",
+      "add_payment_desc":
+          "Enter the new payment amount to add to the existing deposit",
       "current_deposit": "Current Deposit",
       "reservation_price": "Reservation Price",
       "new_payment_amount": "New Payment Amount",
       "new_payment_hint": "Enter amount",
-      "payment_exceeds_price": "Total amount exceeds reservation price! Cannot add this payment.",
+      "payment_exceeds_price":
+          "Total amount exceeds reservation price! Cannot add this payment.",
       "payment_added_success": "Payment added successfully",
       "payment_failed": "Failed to add payment",
       "confirm_payment": "Confirm Payment",
@@ -1019,7 +1085,8 @@ class MyTranslation extends Translations {
 
       // Edit Guest Count Dialog
       "edit_guests": "Edit Guest Count",
-      "edit_guests_desc": "Update the number of men and women for this reservation",
+      "edit_guests_desc":
+          "Update the number of men and women for this reservation",
       "guests_updated_success": "Guest count updated successfully",
       "guests_update_failed": "Failed to update guest count",
       "save": "Save",
@@ -1048,7 +1115,8 @@ class MyTranslation extends Translations {
       "october": "October",
       "november": "November",
       "december": "December",
-      "please_fill_required_fields": "Please fill in the required fields (name, phone, date, event type and period)",
+      "please_fill_required_fields":
+          "Please fill in the required fields (name, phone, date, event type and period)",
       "success_msg": "Success",
       "reservation_saved_successfully": "Reservation saved successfully",
       "failed_to_save_reservation": "Failed to save reservation",
@@ -1072,11 +1140,14 @@ class MyTranslation extends Translations {
       "no_internet": "🚫 No Internet",
       "start_syncing": "🌐 Start syncing…",
       "all_sync_completed_successfully": "✅ All sync completed successfully",
-      "internet_restored_run_sync_all": "🌐 Internet restored — running syncAll()",
+      "internet_restored_run_sync_all":
+          "🌐 Internet restored — running syncAll()",
       "internet_disconnected": "📴 Internet disconnected",
       "do_you_want_to_exit_app": "Do you want to exit the app",
-      "run_periodic_sync_task_foreground": "🔔 Running periodic sync task (foreground)...",
-      "run_periodic_sync_task_background": "🔔 Running periodic sync task (background isolate)...",
+      "run_periodic_sync_task_foreground":
+          "🔔 Running periodic sync task (foreground)...",
+      "run_periodic_sync_task_background":
+          "🔔 Running periodic sync task (background isolate)...",
       "choose_duration": "Choose duration",
       "start_date": "Start Date",
       "end_date": "End Date",
@@ -1085,7 +1156,8 @@ class MyTranslation extends Translations {
       "price": "Price",
       "quantity": "Quantity",
       "failed_to_read": "Failed to read",
-      "background_notification_msg": "🔔 Background or terminated notification: ",
+      "background_notification_msg":
+          "🔔 Background or terminated notification: ",
       "foreground_notification_msg": "🔔 Foreground notification: ",
       "background_notification_clicked": "🟢 Background notification clicked",
       "redirect_to_page": "🚀 Redirecting to page: ",
@@ -1097,17 +1169,21 @@ class MyTranslation extends Translations {
       "invalid_phone_number": "Invalid phone number",
       "client": "Client",
       "copyright_text": "© 2024 Zeffa. All rights reserved.",
-      "delete_category_confirm_title": "Delete category ()?",
-      "delete_dish_confirm_title": "Delete dish ()?",
-      "delete_event_confirm_title": "Delete event ()?",
+      "delete_category_confirm_title":
+          "Are you sure you want to delete this category?",
+      "delete_dish_confirm_title": "Are you sure you want to delete this dish?",
+      "delete_event_confirm_title":
+          "Are you sure you want to delete this event?",
       "currency_dzd": "DZD",
       "total_current_month_expenses": "Total current month expenses",
-      "automatically_updated_from_operations": "Automatically updated from operations",
-      "delete_expense_confirm_desc": "Delete expense ()?",
+      "automatically_updated_from_operations":
+          "Automatically updated from operations",
+      "delete_expense_confirm_desc":
+          "Are you sure you want to delete this expense?",
       "filter_by_date": "Filter by date",
       "cancel_date_filter": "Cancel date filter",
-      "delete_note_confirm_title": "Delete note \\n()?",
-      "do_you_want_to_delete": "Do you want to delete",
+      "delete_note_confirm_title": "Are you sure you want to delete this note?",
+      "do_you_want_to_delete": "Are you sure you want to delete this item?",
       "sunday": "Sunday",
       "monday": "Monday",
       "tuesday": "Tuesday",
@@ -1147,7 +1223,8 @@ class MyTranslation extends Translations {
       "date_time_4": "Oct 12, 09:45",
       "sar_amount_6": "6,200 SAR",
       "manage_your_notes": "Manage and track your notes",
-      "please_select_date_first_to_set_price": "Please select the date first to set the price",
+      "please_select_date_first_to_set_price":
+          "Please select the date first to set the price",
       "unread_msg": "Unread",
       "read_msg": "Read",
       "generate_test_notification": "Generate test notification",
@@ -1157,6 +1234,7 @@ class MyTranslation extends Translations {
       "account_status": "Account status: ",
       "activation_end_date": "Activation end date: ",
       "renew": "Renew",
+      "please_select_category": "Please select a category",
       "edit_account": "Edit account",
       "edit_password": "Edit password",
       "logout": "Logout",

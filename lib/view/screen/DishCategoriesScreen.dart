@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controller/DishCategoriesController.dart';
-import '../../core/constant/AppTheme.dart';
 import '../../core/functions/dialogDelete.dart';
 import '../widget/dish_categories/DishCategoryCard.dart';
 import '../widget/dish_categories/DishCategoryFormDialog.dart';
@@ -12,8 +11,6 @@ class DishCategoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.extension<AppColors>()!;
     final isArabic = Get.locale?.languageCode == 'ar';
 
     // Inject the DishCategoriesController
@@ -65,7 +62,6 @@ class DishCategoriesScreen extends StatelessWidget {
                         ),
                         itemBuilder: (context, index) {
                           final category = categories[index];
-                          final title = category.name;
 
                           return DishCategoryCard(
                             item: category,
@@ -79,8 +75,7 @@ class DishCategoriesScreen extends StatelessWidget {
                             onDelete: () {
                               dialogDelete(
                                 title: 'delete_confirm_btn'.tr,
-                                content:
-                                    'delete_category_confirm_title'.tr,
+                                content: 'delete_category_confirm_title'.tr,
                                 onConfirm: () {
                                   ctrl.deletecat(category.uuid!);
                                 },

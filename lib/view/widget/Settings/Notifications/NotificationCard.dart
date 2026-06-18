@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../../../../core/constant/Colorapp.dart';
 import '../../../../core/constant/AppTheme.dart';
 
 class NotificationCard extends StatelessWidget {
@@ -30,101 +28,153 @@ class NotificationCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final textColor = theme.colorScheme.onSurface;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      padding: const EdgeInsets.all(24),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isRead ? colors.cardColor : (isDark ? iconColor.withValues(alpha: 0.05) : iconColor.withValues(alpha: 0.03)),
-        borderRadius: BorderRadius.circular(24),
+        color: isDark ? colors.cardColor : Colors.white,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isRead ? colors.borderColor : iconColor.withValues(alpha: 0.3),
-          width: isRead ? 1 : 1.5,
+          color: isRead
+              ? (isDark
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.grey.shade200)
+              : iconColor.withValues(alpha: 0.3),
+          width: 1.5,
         ),
-        boxShadow: isRead ? [] : [
+        boxShadow: [
           BoxShadow(
-            color: iconColor.withValues(alpha: 0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          )
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.2)
+                : Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
-      child: Row(
-        textDirection: TextDirection.rtl,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: isRead ? colors.inputFillColor : iconColor.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          textDirection: TextDirection.rtl,
+          children: [
+            // Icon
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isRead
+                    ? colors.inputFillColor
+                    : iconColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: isRead ? Colors.grey : iconColor,
+                size: 24,
+              ),
             ),
-            child: Icon(icon, color: isRead ? Colors.grey : iconColor, size: 28),
-          ),
-          const SizedBox(width: 24),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  textDirection: TextDirection.rtl,
-                  children: [
-                    Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor, fontFamily: 'Cairo')),
-                    const SizedBox(width: 12),
-                    if (!isRead)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
-                        ),
+            const SizedBox(width: 16),
+            // Text Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    textDirection: TextDirection.rtl,
+                    children: [
+                      Expanded(
                         child: Row(
+                          textDirection: TextDirection.rtl,
                           children: [
-                            Container(width: 6, height: 6, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
-                            const SizedBox(width: 6),
-                            Text('unread_msg'.tr, style: TextStyle(fontSize: 10, color: Colors.red.shade700, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                          ],
-                        ),
-                      )
-                    else
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.done_all, color: Colors.green, size: 12),
-                            const SizedBox(width: 6),
-                             Text('read_msg'.tr, style: TextStyle(fontSize: 10, color: Colors.green, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                            Flexible(
+                              child: Text(
+                                title,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: isRead
+                                      ? FontWeight.w700
+                                      : FontWeight.w900,
+                                  color: textColor,
+                                  fontFamily: 'Cairo',
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            if (!isRead)
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
                           ],
                         ),
                       ),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
+                      const SizedBox(width: 8),
+                      Row(
                         children: [
-                          const Icon(Icons.access_time, size: 12, color: Colors.grey),
-                          const SizedBox(width: 6),
-                          Text(time, style: const TextStyle(fontSize: 11, color: Colors.grey, fontFamily: 'Cairo', fontWeight: FontWeight.w600)),
+                          const Icon(
+                            Icons.access_time_rounded,
+                            size: 12,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            time,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                              fontFamily: 'Cairo',
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    desc,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isRead
+                          ? colors.subtitleColor
+                          : textColor.withValues(alpha: 0.8),
+                      height: 1.5,
+                      fontFamily: 'Cairo',
                     ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(desc, style: TextStyle(fontSize: 14, color: isRead ? colors.subtitleColor : textColor.withValues(alpha: 0.8), height: 1.6, fontFamily: 'Cairo'), textAlign: TextAlign.right),
-              ],
+                    textAlign: TextAlign.right,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            if (onDelete != null) ...[
+              const SizedBox(width: 16),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: InkWell(
+                  onTap: onDelete,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.red,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
