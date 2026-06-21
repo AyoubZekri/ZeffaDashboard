@@ -30,7 +30,7 @@ class NotificationList extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.grey.shade600,
-                    fontFamily: 'Cairo',
+
                     fontWeight: FontWeight.bold,
                   ),
                 ),

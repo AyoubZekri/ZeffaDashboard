@@ -7,6 +7,7 @@ import '../../../core/functions/Snacpar.dart';
 import '../../../core/functions/valiedinput.dart';
 import '../CustemDropDownField.dart';
 import '../CustemTextField.dart';
+import 'ReservationDatePickerDialog.dart';
 
 enum ReservationFormMode { add, edit }
 
@@ -96,7 +97,6 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: textColor,
-                            fontFamily: 'Cairo',
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -183,7 +183,10 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               label: 'reservation_period'.tr,
                               hint: 'select_period'.tr,
                               value: ctrl.BookingBeriod,
-                              items: ctrl.bookingPeriods,
+                              items: ctrl.getAvailablePeriodsForDate(
+                                ctrl.date.text,
+                                excludeUuid: isEdit ? widget.reservationUuid : null,
+                              ),
                               onChanged: (val) {
                                 setState(() {
                                   ctrl.BookingBeriod = val;
@@ -237,16 +240,35 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                         icon: Icons.calendar_today_outlined,
                         readOnly: true,
                         onTap: () async {
-                          final picked = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2020),
-                            lastDate: DateTime(2030),
+                          final parsedDate = ctrl.date.text.isNotEmpty
+                              ? DateTime.tryParse(ctrl.date.text.replaceAll('/', '-'))
+                              : null;
+                          final picked = await Get.dialog<DateTime>(
+                            ReservationDatePickerDialog(
+                              initialDate: parsedDate,
+                              excludeUuid: isEdit ? widget.reservationUuid : null,
+                              selectedPeriod: ctrl.BookingBeriod,
+                            ),
                           );
                           if (picked != null) {
                             final formatted =
                                 "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
                             ctrl.date.text = formatted;
+
+                            // Check if current selected period is still available for the new date
+                            final availablePeriods = ctrl.getAvailablePeriodsForDate(
+                              formatted,
+                              excludeUuid: isEdit ? widget.reservationUuid : null,
+                            );
+                            if (ctrl.BookingBeriod != null) {
+                              final stillAvailable = availablePeriods.any((element) => element['key'] == ctrl.BookingBeriod);
+                              if (!stillAvailable) {
+                                setState(() {
+                                  ctrl.BookingBeriod = null;
+                                });
+                              }
+                            }
+
                             ctrl.calculatePrice();
                           }
                         },
@@ -492,11 +514,7 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                     ),
                     child: Text(
                       'cancel'.tr,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: subtitleColor,
-                        fontFamily: 'Cairo',
-                      ),
+                      style: TextStyle(fontSize: 16, color: subtitleColor),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -525,7 +543,6 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                   ),
@@ -560,7 +577,6 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: textColor,
-            fontFamily: 'Cairo',
           ),
         ),
       ],

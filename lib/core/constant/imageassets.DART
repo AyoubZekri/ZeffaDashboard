@@ -3,6 +3,10 @@ class  Appimageassets {
   static const rootlotte = "assets/lotte";
 
   static const String logo  ="$rootimage/Logo.png";
+  static const String logo2  ="$rootimage/Logo2.png";
+  static const String logo3  ="$rootimage/Logo3.png";
+
+
   static const String ALG ="$rootimage/ALG.png";
   static const String en ="$rootimage/EN.jpeg";
 

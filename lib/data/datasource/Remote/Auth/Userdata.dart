@@ -12,6 +12,7 @@ class Userdata {
     String phone,
     String adresse,
     String hallname,
+    String fieldPhone,
     File? file,
   ) async {
     var response;
@@ -22,6 +23,7 @@ class Userdata {
         "username": username,
         "hallname": hallname,
         "numperPhone": phone,
+        "fieldPhone": fieldPhone,
       });
     } else {
       response = await crud.addRequestWithImageOne(
@@ -31,6 +33,7 @@ class Userdata {
           "username": username,
           "hallname": hallname,
           "numperPhone": phone,
+          "fieldPhone": fieldPhone,
         },
         file,
         "image",

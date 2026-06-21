@@ -85,7 +85,6 @@ class _DishCategoryFormDialogState extends State<DishCategoryFormDialog> {
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: textColor,
-                              fontFamily: 'Cairo',
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -96,7 +95,6 @@ class _DishCategoryFormDialogState extends State<DishCategoryFormDialog> {
                             style: TextStyle(
                               fontSize: 12,
                               color: subtitleColor,
-                              fontFamily: 'Cairo',
                             ),
                           ),
                         ],
@@ -209,21 +207,18 @@ class _DishCategoryFormDialogState extends State<DishCategoryFormDialog> {
                           fontSize: 15,
                           color: subtitleColor,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                     ),
                     const SizedBox(width: 16),
                     ElevatedButton(
                       onPressed: () {
-                        
                         if (isEdit) {
                           ctrl.editCategory();
                         } else {
                           ctrl.addCategory();
                         }
                         Get.back();
-                     
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColor.primaryPurple,
@@ -242,7 +237,6 @@ class _DishCategoryFormDialogState extends State<DishCategoryFormDialog> {
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                     ),

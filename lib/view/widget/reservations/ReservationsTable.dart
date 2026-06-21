@@ -131,7 +131,7 @@ class ReservationsTable extends StatelessWidget {
         textDirection: TextDirection.rtl,
         children: [
           SizedBox(
-            width: 100,
+            width: 150,
             child: Text(
               'reservation_number'.tr,
               textAlign: TextAlign.right,
@@ -200,9 +200,9 @@ class ReservationsTable extends StatelessWidget {
         textDirection: TextDirection.rtl,
         children: [
           SizedBox(
-            width: 100,
+            width: 150,
             child: Text(
-              item.id.toString(),
+              "#${item.numperReservation}",
               style: TextStyle(
                 color: textColor,
                 fontWeight: FontWeight.bold,

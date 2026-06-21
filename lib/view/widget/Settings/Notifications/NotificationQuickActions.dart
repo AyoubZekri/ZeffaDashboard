@@ -30,7 +30,7 @@ class NotificationQuickActions extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 18),
           const SizedBox(width: 8),
-          Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Cairo')),
+          Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13, )),
         ],
       ),
     );

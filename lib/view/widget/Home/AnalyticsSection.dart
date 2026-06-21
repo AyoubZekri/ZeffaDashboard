@@ -54,7 +54,7 @@ class AnalyticsSection extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
+
                   color: titleColor,
                 ),
               ),
@@ -64,11 +64,7 @@ class AnalyticsSection extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'sales_performance_comparison'.tr,
-            style: TextStyle(
-              fontSize: 14,
-              color: colors.subtitleColor,
-              fontFamily: 'Cairo',
-            ),
+            style: TextStyle(fontSize: 14, color: colors.subtitleColor),
           ),
           const SizedBox(height: 48),
           SizedBox(
@@ -87,7 +83,6 @@ class AnalyticsSection extends StatelessWidget {
                         final style = TextStyle(
                           color: colors.subtitleColor,
                           fontSize: 10,
-                          fontFamily: 'Cairo',
                         );
                         String text;
                         switch (value.toInt()) {
@@ -166,9 +161,7 @@ class AnalyticsSection extends StatelessWidget {
       barRods: [
         BarChartRodData(
           toY: y,
-          color: isHighlighted
-              ? AppColor.primaryPurple
-              : colors.inputFillColor,
+          color: isHighlighted ? AppColor.primaryPurple : colors.inputFillColor,
           width: 32,
           borderRadius: BorderRadius.circular(4),
         ),
@@ -209,9 +202,7 @@ class AnalyticsSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: isActive
-            ? theme.colorScheme.surface
-            : Colors.transparent,
+        color: isActive ? theme.colorScheme.surface : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
         boxShadow: isActive
             ? [
@@ -226,12 +217,9 @@ class AnalyticsSection extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          color: isActive
-              ? AppColor.primaryPurple
-              : colors.subtitleColor,
+          color: isActive ? AppColor.primaryPurple : colors.subtitleColor,
           fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
           fontSize: 12,
-          fontFamily: 'Cairo',
         ),
       ),
     );
@@ -265,7 +253,7 @@ class AnalyticsSection extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Cairo',
+
               color: titleColor,
             ),
           ),
@@ -301,11 +289,7 @@ class AnalyticsSection extends StatelessWidget {
                 children: [
                   Text(
                     'total_active_stock'.tr,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: colors.subtitleColor,
-                      fontFamily: 'Cairo',
-                    ),
+                    style: TextStyle(fontSize: 12, color: colors.subtitleColor),
                   ),
                   Text(
                     '2,482',
@@ -313,7 +297,6 @@ class AnalyticsSection extends StatelessWidget {
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: titleColor,
-                      fontFamily: 'Cairo',
                     ),
                   ),
                 ],
@@ -335,7 +318,6 @@ class AnalyticsSection extends StatelessWidget {
                     color: Color(0xFF4CAF50),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'Cairo',
                   ),
                 ),
               ),
@@ -384,7 +366,7 @@ class AnalyticsSection extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Cairo',
+
                         color: titleColor,
                       ),
                     ),
@@ -393,7 +375,6 @@ class AnalyticsSection extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         color: colors.subtitleColor,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                   ],

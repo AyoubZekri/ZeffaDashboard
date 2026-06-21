@@ -4,6 +4,7 @@ class ReservationModel {
   final int? id;
   final String uuid;
   final int? userId;
+  final String? numperReservation;
   final String customerName;
   final String phoneNumber;
   final String bookingDate;
@@ -37,6 +38,7 @@ class ReservationModel {
     this.id,
     required this.uuid,
     this.userId,
+    this.numperReservation,
     required this.customerName,
     required this.phoneNumber,
     required this.bookingDate,
@@ -81,6 +83,11 @@ class ReservationModel {
   // Get dishes as a list of names
   List<String> get dishesNameList {
     if (dishesNames == null || dishesNames!.isEmpty) return [];
+    return dishesNameList_helper();
+  }
+
+  List<String> dishesNameList_helper() {
+    if (dishesNames == null || dishesNames!.isEmpty) return [];
     return dishesNames!.split(', ').where((s) => s.isNotEmpty).toList();
   }
 
@@ -89,6 +96,7 @@ class ReservationModel {
       id: json['id'],
       uuid: json['uuid'] ?? '',
       userId: json['user_id'],
+      numperReservation: json['numperReservation'],
       customerName: json['username'] ?? '',
       phoneNumber: json['phone_numper'] ?? '',
       bookingDate: json['booking_date'] ?? '',

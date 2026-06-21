@@ -43,50 +43,55 @@ class CalendarQuickActions extends StatelessWidget {
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onSurface,
-              fontFamily: 'Cairo',
             ),
           ),
           const SizedBox(height: 20),
           _buildActionItem(
             icon: Icons.edit_calendar_rounded,
             title: 'edit_weekend_prices'.tr,
-            onTap: onWeekendEdit ?? () {
-              Get.snackbar(
-                'quick_actions'.tr,
-                'edit_weekend_prices'.tr,
-                backgroundColor: AppColor.primaryPurple.withOpacity(0.1),
-                colorText: AppColor.primaryPurple,
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
+            onTap:
+                onWeekendEdit ??
+                () {
+                  Get.snackbar(
+                    'quick_actions'.tr,
+                    'edit_weekend_prices'.tr,
+                    backgroundColor: AppColor.primaryPurple.withOpacity(0.1),
+                    colorText: AppColor.primaryPurple,
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
+                },
           ),
           const SizedBox(height: 12),
           _buildActionItem(
             icon: Icons.block_flipped,
             title: 'block_specific_date'.tr,
-            onTap: onBlockDate ?? () {
-              Get.snackbar(
-                'quick_actions'.tr,
-                'block_specific_date'.tr,
-                backgroundColor: Colors.redAccent.withOpacity(0.1),
-                colorText: Colors.redAccent,
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
+            onTap:
+                onBlockDate ??
+                () {
+                  Get.snackbar(
+                    'quick_actions'.tr,
+                    'block_specific_date'.tr,
+                    backgroundColor: Colors.redAccent.withOpacity(0.1),
+                    colorText: Colors.redAccent,
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
+                },
           ),
           const SizedBox(height: 12),
           _buildActionItem(
             icon: Icons.cloud_download_outlined,
             title: 'download_occupancy_report'.tr,
-            onTap: onDownloadReport ?? () {
-              Get.snackbar(
-                'quick_actions'.tr,
-                'download_occupancy_report'.tr,
-                backgroundColor: Colors.green.withOpacity(0.1),
-                colorText: Colors.green.shade800,
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
+            onTap:
+                onDownloadReport ??
+                () {
+                  Get.snackbar(
+                    'quick_actions'.tr,
+                    'download_occupancy_report'.tr,
+                    backgroundColor: Colors.green.withOpacity(0.1),
+                    colorText: Colors.green.shade800,
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
+                },
           ),
         ],
       ),
@@ -110,11 +115,7 @@ class CalendarQuickActions extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: AppColor.primaryPurple,
-              size: 20,
-            ),
+            Icon(icon, color: AppColor.primaryPurple, size: 20),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
@@ -122,7 +123,6 @@ class CalendarQuickActions extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
                 ),
               ),
             ),

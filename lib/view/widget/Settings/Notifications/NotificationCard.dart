@@ -95,7 +95,6 @@ class NotificationCard extends StatelessWidget {
                                       ? FontWeight.w700
                                       : FontWeight.w900,
                                   color: textColor,
-                                  fontFamily: 'Cairo',
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -127,7 +126,7 @@ class NotificationCard extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
-                              fontFamily: 'Cairo',
+
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -144,7 +143,6 @@ class NotificationCard extends StatelessWidget {
                           ? colors.subtitleColor
                           : textColor.withValues(alpha: 0.8),
                       height: 1.5,
-                      fontFamily: 'Cairo',
                     ),
                     textAlign: TextAlign.right,
                   ),

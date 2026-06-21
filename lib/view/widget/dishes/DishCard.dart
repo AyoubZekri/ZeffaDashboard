@@ -43,26 +43,28 @@ class DishCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.file(
-            File(imageUrl),
-            height: 180,
-            width: double.infinity,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                height: 180,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(colors: AppColor.purpleGradient),
+          imageUrl != null &&
+                  imageUrl.isNotEmpty &&
+                  !imageUrl.startsWith('http') &&
+                  File(imageUrl).existsSync()
+              ? Image.file(
+                  File(imageUrl),
+                  height: 180,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                )
+              : Container(
+                  height: 180,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(colors: AppColor.purpleGradient),
+                  ),
+                  child: const Icon(
+                    Icons.flatware_rounded,
+                    color: Colors.white,
+                    size: 40,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.flatware_rounded,
-                  color: Colors.white,
-                  size: 40,
-                ),
-              );
-            },
-          ),
 
           // Content Section
           Expanded(
@@ -80,7 +82,6 @@ class DishCard extends StatelessWidget {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onSurface,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                   ),

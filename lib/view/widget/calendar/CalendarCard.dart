@@ -85,7 +85,10 @@ class CalendarCard extends StatelessWidget {
                   },
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     child: Row(
                       children: [
                         Text(
@@ -94,11 +97,13 @@ class CalendarCard extends StatelessWidget {
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: theme.colorScheme.onSurface,
-                            fontFamily: 'Cairo',
                           ),
                         ),
                         const SizedBox(width: 4),
-                        const Icon(Icons.arrow_drop_down_rounded, color: AppColor.primaryPurple),
+                        const Icon(
+                          Icons.arrow_drop_down_rounded,
+                          color: AppColor.primaryPurple,
+                        ),
                       ],
                     ),
                   ),
@@ -142,7 +147,6 @@ class CalendarCard extends StatelessWidget {
                               color: isFriday
                                   ? AppColor.primaryPurple
                                   : colors.subtitleColor,
-                              fontFamily: 'Cairo',
                             ),
                           ),
                         ),
@@ -226,7 +230,6 @@ class CalendarCard extends StatelessWidget {
                         color: AppColor.primaryPurple,
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                   ],
@@ -264,14 +267,26 @@ class CalendarCard extends StatelessWidget {
     ThemeData theme,
     AppColors colors,
   ) {
-    // final hasEvent = event != null;
+    final isDark = theme.brightness == Brightness.dark;
     final eventType = event?['type'] ?? 'available';
     Color cellBg = colors.inputFillColor;
     Border cellBorder = Border.all(color: colors.borderColor);
 
     if (eventType == 'reserved') {
-      cellBg = Colors.redAccent.withOpacity(0.05);
-      cellBorder = Border.all(color: Colors.redAccent);
+      final period = event?['booking_period'];
+      if (period == 3) {
+        // Evening period booked (Indigo style)
+        cellBg = Colors.indigo.withOpacity(0.05);
+        cellBorder = Border.all(color: Colors.indigo.shade300);
+      } else if (period == 4) {
+        // Morning period booked (Orange style)
+        cellBg = Colors.orange.withOpacity(0.05);
+        cellBorder = Border.all(color: Colors.orange.shade300);
+      } else {
+        // Full day (1) or both periods booked (5) (Red style)
+        cellBg = Colors.redAccent.withOpacity(0.05);
+        cellBorder = Border.all(color: Colors.redAccent.shade200);
+      }
     } else if (eventType == 'special_day') {
       cellBg = Colors.orange.withOpacity(0.08);
       cellBorder = Border.all(color: Colors.orange);
@@ -307,18 +322,39 @@ class CalendarCard extends StatelessWidget {
                       : theme.colorScheme.onSurface,
                 ),
               ),
-              // if (isFriday)
-              //   const Icon(
-              //     Icons.star_rounded,
-              //     color: AppColor.primaryPurple,
-              //     size: 20,
-              //   ),
             ],
           ),
           const Spacer(),
           // Event details
-          if (eventType == 'reserved')
-            const Icon(Icons.lock_outline_rounded, color: Colors.red),
+          if (eventType == 'reserved') ...[
+            if (event?['booking_period'] == 3)
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Icon(
+                  Icons.nights_stay_rounded,
+                  color: isDark ? Colors.indigo.shade300 : Colors.indigo,
+                  size: 18,
+                ),
+              )
+            else if (event?['booking_period'] == 4)
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Icon(
+                  Icons.light_mode_rounded,
+                  color: isDark ? Colors.orange.shade300 : Colors.orange,
+                  size: 18,
+                ),
+              )
+            else
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Icon(
+                  Icons.lock_outline_rounded,
+                  color: isDark ? Colors.red.shade300 : Colors.red,
+                  size: 18,
+                ),
+              ),
+          ],
           if (eventType == 'special_day')
             const Icon(Icons.star_rounded, color: Colors.orange),
           if (eventType == 'special_period')

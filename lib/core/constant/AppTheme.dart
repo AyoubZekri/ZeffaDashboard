@@ -88,9 +88,10 @@ class AppColors extends ThemeExtension<AppColors> {
 class AppTheme {
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
+    fontFamily: 'Cairo',
     primaryColor: AppColor.primaryPurple,
     scaffoldBackgroundColor: AppColor.backgroundLight,
-    fontFamily: 'Cairo',
+
     colorScheme: const ColorScheme.light(
       primary: AppColor.primaryPurple,
       secondary: AppColor.accentPurple,
@@ -108,7 +109,7 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColor.backgroundLight,
       iconTheme: IconThemeData(color: AppColor.textLight),
-      titleTextStyle: TextStyle(color: AppColor.textLight, fontFamily: 'Cairo', fontSize: 20),
+      titleTextStyle: TextStyle(color: AppColor.textLight, fontSize: 20),
       elevation: 0,
     ),
     dialogTheme: DialogThemeData(
@@ -117,7 +118,9 @@ class AppTheme {
     ),
     cardTheme: const CardThemeData(
       color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
@@ -144,15 +147,19 @@ class AppTheme {
       side: const BorderSide(color: Color(0xFFE0E0E0)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
-    dividerTheme: const DividerThemeData(color: Color(0xFFE0E0E0), thickness: 1),
+    dividerTheme: const DividerThemeData(
+      color: Color(0xFFE0E0E0),
+      thickness: 1,
+    ),
     extensions: const [AppColors.light],
   );
 
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
+    fontFamily: 'Cairo',
     primaryColor: AppColor.primaryPurple,
     scaffoldBackgroundColor: AppColor.backgroundDark,
-    fontFamily: 'Cairo',
+
     colorScheme: const ColorScheme.dark(
       primary: AppColor.primaryPurple,
       secondary: AppColor.accentPurple,
@@ -170,7 +177,7 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColor.backgroundDark,
       iconTheme: IconThemeData(color: AppColor.textDark),
-      titleTextStyle: TextStyle(color: AppColor.textDark, fontFamily: 'Cairo', fontSize: 20),
+      titleTextStyle: TextStyle(color: AppColor.textDark, fontSize: 20),
       elevation: 0,
     ),
     dialogTheme: DialogThemeData(
@@ -179,7 +186,9 @@ class AppTheme {
     ),
     cardTheme: const CardThemeData(
       color: AppColor.surfaceDark,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
@@ -206,7 +215,10 @@ class AppTheme {
       side: const BorderSide(color: Color(0x1AFFFFFF)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
-    dividerTheme: const DividerThemeData(color: Color(0x1AFFFFFF), thickness: 1),
+    dividerTheme: const DividerThemeData(
+      color: Color(0x1AFFFFFF),
+      thickness: 1,
+    ),
     extensions: const [AppColors.dark],
   );
 }

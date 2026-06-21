@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
+import '../../../controller/CalendarController.dart';
 
 class CalendarGuide extends StatelessWidget {
   const CalendarGuide({Key? key}) : super(key: key);
@@ -10,6 +11,7 @@ class CalendarGuide extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.extension<AppColors>()!;
+    final isArabic = Get.locale?.languageCode == 'ar';
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -34,7 +36,6 @@ class CalendarGuide extends StatelessWidget {
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onSurface,
-              fontFamily: 'Cairo',
             ),
           ),
           const SizedBox(height: 20),
@@ -54,6 +55,24 @@ class CalendarGuide extends StatelessWidget {
             iconColor: Colors.redAccent,
             title: 'reserved_date'.tr,
             subtitle: 'reserved_date_sub'.tr,
+          ),
+          const SizedBox(height: 16),
+          _buildGuideItemWithIcon(
+            color: Colors.orange.withOpacity(0.05),
+            borderColor: Colors.orange.shade300,
+            icon: Icons.light_mode_rounded,
+            iconColor: Colors.orange,
+            title: 'morning_booking_title'.tr,
+            subtitle: 'morning_booking_sub'.tr,
+          ),
+          const SizedBox(height: 16),
+          _buildGuideItemWithIcon(
+            color: Colors.indigo.withOpacity(0.05),
+            borderColor: Colors.indigo.shade300,
+            icon: Icons.nights_stay_rounded,
+            iconColor: Colors.indigo,
+            title: 'evening_booking_title'.tr,
+            subtitle: 'evening_booking_sub'.tr,
           ),
           const SizedBox(height: 16),
           _buildGuideItemWithIcon(
@@ -103,7 +122,6 @@ class CalendarGuide extends StatelessWidget {
               color: textColor,
               fontWeight: FontWeight.bold,
               fontSize: 14,
-              fontFamily: 'Cairo',
             ),
           ),
         ),
@@ -117,17 +135,12 @@ class CalendarGuide extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey,
-                  fontFamily: 'Cairo',
-                ),
+                style: const TextStyle(fontSize: 10, color: Colors.grey),
               ),
             ],
           ),
@@ -155,11 +168,7 @@ class CalendarGuide extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: borderColor, width: 1.5),
           ),
-          child: Icon(
-            icon,
-            color: iconColor,
-            size: 20,
-          ),
+          child: Icon(icon, color: iconColor, size: 20),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -171,17 +180,12 @@ class CalendarGuide extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey,
-                  fontFamily: 'Cairo',
-                ),
+                style: const TextStyle(fontSize: 10, color: Colors.grey),
               ),
             ],
           ),

@@ -102,7 +102,6 @@ class NotificationFilters extends StatelessWidget {
                 : colors.subtitleColor,
             fontWeight: active ? FontWeight.bold : FontWeight.w600,
             fontSize: 14,
-            fontFamily: 'Cairo',
           ),
         ),
       ),

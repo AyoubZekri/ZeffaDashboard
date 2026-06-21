@@ -6,11 +6,11 @@ validInput(String val, int max, int min, String type, {bool? empty = false}) {
   if (val.isEmpty && empty!) {
     return null;
   }
-  if (type == 'username') {
-    if (!GetUtils.isUsername(val)) {
-      return "not valid username".tr;
-    }
-  }
+  // if (type == 'username') {
+  //   if (!GetUtils.isUsername(val)) {
+  //     return "not valid username".tr;
+  //   }
+  // }
   if ((type == 'email' || type == 'Email')) {
     if (!GetUtils.isEmail(val)) {
       return "not valid Email".tr;

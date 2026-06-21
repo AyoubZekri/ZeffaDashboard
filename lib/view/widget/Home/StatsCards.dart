@@ -23,9 +23,7 @@ class StatsSection extends StatelessWidget {
             percentage: '+12.5%',
             isPositive: true,
             icon: Icons.trending_up,
-            iconBg: isDark
-                ? const Color(0xFF1E3A20)
-                : const Color(0xFFE8F5E9),
+            iconBg: isDark ? const Color(0xFF1E3A20) : const Color(0xFFE8F5E9),
             iconColor: const Color(0xFF4CAF50),
           ),
           _buildStatCard(
@@ -35,9 +33,7 @@ class StatsSection extends StatelessWidget {
             percentage: '+8.2%',
             isPositive: true,
             icon: Icons.account_balance_wallet_outlined,
-            iconBg: isDark
-                ? const Color(0xFF1A2E44)
-                : const Color(0xFFE3F2FD),
+            iconBg: isDark ? const Color(0xFF1A2E44) : const Color(0xFFE3F2FD),
             iconColor: const Color(0xFF2196F3),
           ),
           _buildStatCard(
@@ -47,9 +43,7 @@ class StatsSection extends StatelessWidget {
             percentage: 'near_depletion'.tr,
             isPositive: false,
             icon: Icons.warning_amber_rounded,
-            iconBg: isDark
-                ? const Color(0xFF3D1F1F)
-                : const Color(0xFFFFEBEE),
+            iconBg: isDark ? const Color(0xFF3D1F1F) : const Color(0xFFFFEBEE),
             iconColor: const Color(0xFFEF5350),
           ),
           _buildStatCard(
@@ -59,9 +53,7 @@ class StatsSection extends StatelessWidget {
             percentage: '8+',
             isPositive: true,
             icon: Icons.shopping_basket_outlined,
-            iconBg: isDark
-                ? const Color(0xFF3A2D1F)
-                : const Color(0xFFFFF3E0),
+            iconBg: isDark ? const Color(0xFF3A2D1F) : const Color(0xFFFFF3E0),
             iconColor: const Color(0xFFFFA726),
             hasAvatars: true,
           ),
@@ -129,7 +121,6 @@ class StatsSection extends StatelessWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: iconColor,
-                      fontFamily: 'Cairo',
                     ),
                   ),
                 ),
@@ -138,11 +129,7 @@ class StatsSection extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               title,
-              style: TextStyle(
-                fontSize: 14,
-                color: colors.subtitleColor,
-                fontFamily: 'Cairo',
-              ),
+              style: TextStyle(fontSize: 14, color: colors.subtitleColor),
             ),
             const SizedBox(height: 4),
             Text(
@@ -151,7 +138,6 @@ class StatsSection extends StatelessWidget {
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
                 color: theme.colorScheme.onSurface,
-                fontFamily: 'Cairo',
               ),
             ),
           ],

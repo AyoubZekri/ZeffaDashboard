@@ -19,18 +19,19 @@ class EventTypeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.extension<AppColors>()!;
-    
-    final title = type['titleKey'] != '' ? type['titleKey'].toString().tr : type['titleCustom'].toString();
-    final description = type['descKey'] != '' ? type['descKey'].toString().tr : type['descCustom'].toString();
+
+    final title = type['titleKey'] != ''
+        ? type['titleKey'].toString().tr
+        : type['titleCustom'].toString();
+    final description = type['descKey'] != ''
+        ? type['descKey'].toString().tr
+        : type['descCustom'].toString();
 
     return Container(
       decoration: BoxDecoration(
         color: colors.cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colors.borderColor,
-          width: 1,
-        ),
+        border: Border.all(color: colors.borderColor, width: 1),
         boxShadow: [
           BoxShadow(
             color: colors.shadowColor,
@@ -80,7 +81,6 @@ class EventTypeCard extends StatelessWidget {
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onSurface,
-              fontFamily: 'Cairo',
             ),
           ),
           const SizedBox(height: 8),
@@ -94,7 +94,7 @@ class EventTypeCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 color: colors.subtitleColor,
-                fontFamily: 'Cairo',
+
                 height: 1.5,
               ),
             ),
@@ -118,7 +118,6 @@ class EventTypeCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11,
                           color: colors.subtitleColor,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                       Text(
@@ -140,11 +139,12 @@ class EventTypeCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11,
                           color: colors.subtitleColor,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                       Text(
-                        type['seasonalPrice'].toString() + ' ' + 'sar_currency'.tr,
+                        type['seasonalPrice'].toString() +
+                            ' ' +
+                            'sar_currency'.tr,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w900,

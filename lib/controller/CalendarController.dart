@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/class/Statusrequest.dart';
+import '../../core/class/Sqldb.dart';
 import '../../core/functions/Snacpar.dart';
 import '../../data/datasource/Remote/SpecialDates.dart';
 import '../../data/model/SpecialDateModel.dart';
@@ -28,6 +29,7 @@ class CalendarController extends GetxController {
 
   // Special Dates Data Source
   late SpecialDates specialDatesRepo;
+  final SQLDB _db = SQLDB();
   Statusrequest statusrequest = Statusrequest.none;
 
   // Seasons (special_period)
@@ -102,16 +104,31 @@ class CalendarController extends GetxController {
     update();
     try {
       final result = await specialDatesRepo.viewdata();
-      if (result.isEmpty) {
-        statusrequest = Statusrequest.none;
-        seasons.clear();
-        specialDays.clear();
-        allDates.clear();
-      } else {
-        final models = SpecialDateModel.fromList(result);
+      
+      // Fetch actual reservations directly from SQLite
+      final int userId = specialDatesRepo.id;
+      final List<Map<String, dynamic>> resResult = await _db.readData(
+        '''
+        SELECT 
+          r.uuid,
+          r.id,
+          r.username,
+          r.phone_numper,
+          r.booking_date,
+          r.booking_period,
+          pt.name AS event_type
+        FROM reservations r
+        LEFT JOIN party_types pt ON r.type_of_party_uuid = pt.uuid
+        WHERE r.user_id = ?
+        ''',
+        [userId],
+      );
 
-        final loadedSeasons = <Map<String, dynamic>>[];
-        final loadedSpecialDays = <Map<String, dynamic>>[];
+      final loadedSeasons = <Map<String, dynamic>>[];
+      final loadedSpecialDays = <Map<String, dynamic>>[];
+
+      if (result.isNotEmpty) {
+        final models = SpecialDateModel.fromList(result);
 
         for (var item in models) {
           if (item.type == 'special_period') {
@@ -139,16 +156,45 @@ class CalendarController extends GetxController {
             });
           }
         }
+      }
 
-        seasons.assignAll(loadedSeasons);
-        specialDays.assignAll(loadedSpecialDays);
+      // Add actual reservations to loadedSpecialDays
+      for (var res in resResult) {
+        final String? dateStr = res['booking_date'];
+        if (dateStr == null || dateStr.isEmpty) continue;
 
-        // Combine them for the table, filtering out 'reserved' since they come from actual reservations
-        allDates.assignAll([
-          ...loadedSeasons,
-          ...loadedSpecialDays.where((e) => e['type'] != 'reserved'),
-        ]);
+        String normalizedDate = dateStr;
+        try {
+          final parsedDate = DateTime.parse(dateStr.replaceAll('/', '-'));
+          normalizedDate = "${parsedDate.year}-${parsedDate.month.toString().padLeft(2, '0')}-${parsedDate.day.toString().padLeft(2, '0')}";
+        } catch (e) {
+          // ignore/fallback
+        }
 
+        loadedSpecialDays.add({
+          'uuid': res['uuid'],
+          'title': res['event_type'] ?? 'حجز',
+          'type': 'reserved',
+          'booking_period': res['booking_period'],
+          'date': normalizedDate,
+          'customerName': res['username'] ?? '',
+          'customerPhone': res['phone_numper'] ?? '',
+          'bookingId': res['id'] != null ? '#${res['id']}' : '',
+        });
+      }
+
+      seasons.assignAll(loadedSeasons);
+      specialDays.assignAll(loadedSpecialDays);
+
+      // Combine them for the table, filtering out 'reserved' since they come from actual reservations
+      allDates.assignAll([
+        ...loadedSeasons,
+        ...loadedSpecialDays.where((e) => e['type'] != 'reserved'),
+      ]);
+
+      if (seasons.isEmpty && specialDays.isEmpty) {
+        statusrequest = Statusrequest.none;
+      } else {
         statusrequest = Statusrequest.success;
       }
       updateMonthlyStats();
@@ -336,15 +382,52 @@ class CalendarController extends GetxController {
   }
 
   Map<String, dynamic>? getEventForDate(DateTime date) {
+    final List<Map<String, dynamic>> matches = [];
+    
+    // Find all matching items in specialDays
     for (final event in specialDays) {
       if (event['date'] != null) {
         final eventDate = DateTime.parse(event['date']);
         if (eventDate.year == date.year &&
             eventDate.month == date.month &&
             eventDate.day == date.day) {
-          return event;
+          matches.add(event);
         }
       }
+    }
+
+    if (matches.isNotEmpty) {
+      final reservations = matches.where((e) => e['type'] == 'reserved').toList();
+      if (reservations.isNotEmpty) {
+        // If there's a full day booking
+        if (reservations.any((r) => r['booking_period'] == 1)) {
+          return {
+            'type': 'reserved',
+            'booking_period': 1,
+            'reservations': reservations,
+          };
+        }
+        
+        // If there are two reservations (morning & evening)
+        if (reservations.length >= 2) {
+          return {
+            'type': 'reserved',
+            'booking_period': 5, // custom code for both periods booked
+            'reservations': reservations,
+          };
+        }
+        
+        // If there is only one reservation
+        final singleRes = reservations.first;
+        return {
+          'type': 'reserved',
+          'booking_period': singleRes['booking_period'],
+          'reservations': [singleRes],
+        };
+      }
+      
+      // If no reservations, return the first special day (special_day/friday)
+      return matches.first;
     }
 
     for (final season in seasons) {

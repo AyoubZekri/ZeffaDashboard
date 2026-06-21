@@ -51,7 +51,11 @@ class CustemTextField extends StatelessWidget {
         if (label != null)
           Text(
             label!,
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textColor),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: textColor,
+            ),
           ),
         if (label != null) const SizedBox(height: 8),
         TextFormField(
@@ -68,7 +72,9 @@ class CustemTextField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(color: subtitleColor, fontSize: 13),
-            prefixIcon: icon != null ? Icon(icon, color: AppColor.primaryPurple, size: 20) : null,
+            prefixIcon: icon != null
+                ? Icon(icon, color: AppColor.primaryPurple, size: 20)
+                : null,
             suffixIcon: suffixIcon,
             filled: true,
             fillColor: inputFillColor,
@@ -82,7 +88,10 @@ class CustemTextField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColor.primaryPurple, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColor.primaryPurple,
+                width: 1.5,
+              ),
             ),
             contentPadding: const EdgeInsets.all(16),
           ),
@@ -102,7 +111,11 @@ class CustemTextField extends StatelessWidget {
                   color: AppColor.primaryPurple.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(sectionHeaderIcon, color: AppColor.primaryPurple, size: 20),
+                child: Icon(
+                  sectionHeaderIcon,
+                  color: AppColor.primaryPurple,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Text(
@@ -111,7 +124,6 @@ class CustemTextField extends StatelessWidget {
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: textColor,
-                  fontFamily: 'Cairo',
                 ),
               ),
             ],

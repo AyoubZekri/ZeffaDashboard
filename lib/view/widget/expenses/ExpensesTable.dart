@@ -92,7 +92,6 @@ class ExpensesTable extends StatelessWidget {
                                     style: TextStyle(
                                       color: colors.subtitleColor,
                                       fontSize: 16,
-                                      fontFamily: 'Cairo',
                                     ),
                                   ),
                                 ),
@@ -125,7 +124,6 @@ class ExpensesTable extends StatelessWidget {
       fontSize: 14,
       color: colors.subtitleColor,
       fontWeight: FontWeight.bold,
-      fontFamily: 'Cairo',
     );
     final isArabic = Get.locale?.languageCode == 'ar';
     return Padding(
@@ -226,7 +224,6 @@ class ExpensesTable extends StatelessWidget {
                           color: textColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
-                          fontFamily: 'Cairo',
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -247,7 +244,6 @@ class ExpensesTable extends StatelessWidget {
                             color: categoryColor,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Cairo',
                           ),
                         ),
                       ),
@@ -266,7 +262,6 @@ class ExpensesTable extends StatelessWidget {
                 color: textColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                fontFamily: 'Cairo',
               ),
             ),
           ),
@@ -279,7 +274,6 @@ class ExpensesTable extends StatelessWidget {
                 color: textColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
-                fontFamily: 'Cairo',
               ),
             ),
           ),
@@ -353,11 +347,7 @@ class ExpensesTable extends StatelessWidget {
       children: [
         Text(
           infoText,
-          style: TextStyle(
-            color: colors.subtitleColor,
-            fontSize: 14,
-            fontFamily: 'Cairo',
-          ),
+          style: TextStyle(color: colors.subtitleColor, fontSize: 14),
         ),
         Row(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -427,7 +417,6 @@ class ExpensesTable extends StatelessWidget {
                 : theme.colorScheme.onSurface.withOpacity(enabled ? 1.0 : 0.3),
             fontWeight: FontWeight.bold,
             fontSize: 14,
-            fontFamily: 'Cairo',
           ),
         ),
       ),

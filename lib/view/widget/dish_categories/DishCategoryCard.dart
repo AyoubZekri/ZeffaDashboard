@@ -47,26 +47,28 @@ class DishCategoryCard extends StatelessWidget {
           // Image Section with Badge
           Stack(
             children: [
-              Image.file(
-                imageUrl==null?File(''): File(imageUrl),
-                height: 180,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 180,
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(colors: AppColor.purpleGradient),
+              imageUrl != null &&
+                      imageUrl.isNotEmpty &&
+                      !imageUrl.startsWith('http') &&
+                      File(imageUrl).existsSync()
+                  ? Image.file(
+                      File(imageUrl),
+                      height: 180,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(
+                      height: 180,
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(colors: AppColor.purpleGradient),
+                      ),
+                      child: const Icon(
+                        Icons.flatware_rounded,
+                        color: Colors.white,
+                        size: 40,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.flatware_rounded,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                  );
-                },
-              ),
               // Items Count Badge overlay
             ],
           ),
@@ -87,7 +89,6 @@ class DishCategoryCard extends StatelessWidget {
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onSurface,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                     Row(
@@ -134,7 +135,7 @@ class DishCategoryCard extends StatelessWidget {
                 //           fontSize: 13,
                 //           fontWeight: FontWeight.bold,
                 //           color: AppColor.primaryPurple,
-                //           fontFamily: 'Cairo',
+                //
                 //         ),
                 //       ),
                 //       const SizedBox(width: 8),

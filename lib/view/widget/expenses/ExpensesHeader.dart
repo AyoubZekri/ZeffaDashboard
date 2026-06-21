@@ -33,17 +33,14 @@ class ExpensesHeader extends StatelessWidget {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: textColor,
-                fontFamily: 'Cairo',
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              'manage_dishes'.tr == 'manage_dishes' ? 'manage_daily_expenses'.tr : 'manage_daily_expenses'.tr, // Simple default desc
-              style: TextStyle(
-                fontSize: 14, 
-                color: colors.subtitleColor,
-                fontFamily: 'Cairo',
-              ),
+              'manage_dishes'.tr == 'manage_dishes'
+                  ? 'manage_daily_expenses'.tr
+                  : 'manage_daily_expenses'.tr, // Simple default desc
+              style: TextStyle(fontSize: 14, color: colors.subtitleColor),
             ),
           ],
         ),
@@ -66,7 +63,6 @@ class ExpensesHeader extends StatelessWidget {
                   hintStyle: TextStyle(
                     fontSize: 12,
                     color: colors.subtitleColor,
-                    fontFamily: 'Cairo',
                   ),
                   prefixIcon: Icon(
                     Icons.search_rounded,
@@ -87,10 +83,7 @@ class ExpensesHeader extends StatelessWidget {
               icon: const Icon(Icons.add, size: 18),
               label: Text(
                 'add_expense'.tr,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
-                ),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColor.primaryPurple,

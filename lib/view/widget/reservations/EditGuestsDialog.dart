@@ -71,7 +71,7 @@ class _EditGuestsDialogState extends State<EditGuestsDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('edit_guests'.tr, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor, fontFamily: 'Cairo')),
+                      Text('edit_guests'.tr, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor, )),
                       const SizedBox(height: 4),
                       Text('edit_guests_desc'.tr, style: TextStyle(fontSize: 12, color: subtitleColor)),
                     ],

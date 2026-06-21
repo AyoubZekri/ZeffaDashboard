@@ -15,6 +15,7 @@ class EditProfileController extends GetxController {
   
   late TextEditingController username;
   late TextEditingController phone;
+  late TextEditingController fieldPhone;
   late TextEditingController adresse;
   late TextEditingController hallname;
 
@@ -31,6 +32,7 @@ class EditProfileController extends GetxController {
     
     username = TextEditingController(text: myServices.sharedPreferences!.getString("username"));
     phone = TextEditingController(text: myServices.sharedPreferences!.getString("numperPhone"));
+    fieldPhone = TextEditingController(text: myServices.sharedPreferences!.getString("fieldPhone") ?? "");
     adresse = TextEditingController(text: myServices.sharedPreferences!.getString("adresse") ?? "");
     hallname = TextEditingController(text: myServices.sharedPreferences!.getString("hallname"));
     super.onInit();
@@ -47,53 +49,62 @@ class EditProfileController extends GetxController {
 
   void updateProfile() async {
     if (formstate.currentState!.validate()) {
+      // 1. Save changes locally immediately (Optimistic local update)
+      myServices.sharedPreferences!.setString("username", username.text);
+      myServices.sharedPreferences!.setString("numperPhone", phone.text);
+      myServices.sharedPreferences!.setString("fieldPhone", fieldPhone.text);
+      myServices.sharedPreferences!.setString("adresse", adresse.text);
+      myServices.sharedPreferences!.setString("hallname", hallname.text);
+
+      if (profileImage != null) {
+        try {
+          String? oldImagePath = myServices.sharedPreferences!.getString("image");
+          final directory = await getApplicationDocumentsDirectory();
+          final timestamp = DateTime.now().millisecondsSinceEpoch;
+          final fileName = "${timestamp}_${profileImage!.path.split('/').last}";
+          final filePath = "${directory.path}/$fileName";
+          File newFile = await profileImage!.copy(filePath);
+          myServices.sharedPreferences!.setString("image", newFile.path);
+          
+          if (oldImagePath != null && oldImagePath != newFile.path) {
+            File oldFile = File(oldImagePath);
+            if (await oldFile.exists()) {
+              await oldFile.delete();
+            }
+          }
+        } catch (e) {
+          print("Error saving local image: $e");
+        }
+      }
+
+      // Update the sidebar UI immediately so changes are shown without waiting
+      if (Get.isRegistered<Siedbarcontroller>()) {
+        Get.find<Siedbarcontroller>().loadProfileData();
+      }
+
       statusrequest = Statusrequest.loadeng;
       update();
 
+      // 2. Sync changes to the remote server
       var response = await userdata.updateuser(
         username.text,
         phone.text,
         adresse.text,
         hallname.text,
+        fieldPhone.text,
         profileImage,
       );
 
       statusrequest = handlingData(response);
       if (Statusrequest.success == statusrequest) {
         if (response['status'] == 1 || response['status'] == "success") {
-          // Update shared preferences locally
-          myServices.sharedPreferences!.setString("username", username.text);
-          myServices.sharedPreferences!.setString("numperPhone", phone.text);
-          myServices.sharedPreferences!.setString("adresse", adresse.text);
-          myServices.sharedPreferences!.setString("hallname", hallname.text);
-          if (profileImage != null) {
-            try {
-              String? oldImagePath = myServices.sharedPreferences!.getString("image");
-              final directory = await getApplicationDocumentsDirectory();
-              final timestamp = DateTime.now().millisecondsSinceEpoch;
-              final fileName = "${timestamp}_${profileImage!.path.split('/').last}";
-              final filePath = "${directory.path}/$fileName";
-              File newFile = await profileImage!.copy(filePath);
-              myServices.sharedPreferences!.setString("image", newFile.path);
-              
-              if (oldImagePath != null && oldImagePath != newFile.path) {
-                File oldFile = File(oldImagePath);
-                if (await oldFile.exists()) {
-                  await oldFile.delete();
-                }
-              }
-            } catch (e) {
-              print("Error saving local image: $e");
-            }
-          }
-          if (Get.isRegistered<Siedbarcontroller>()) {
-            Get.find<Siedbarcontroller>().loadProfileData();
-          }
           showSnackbar('نجاح'.tr, 'تم تحديث البيانات بنجاح'.tr, Colors.green);
           Get.back(); // Go back to settings or close screen
         } else {
-          showSnackbar('خطأ'.tr, 'حدث خطأ أثناء التحديث'.tr, Colors.red);
+          showSnackbar('خطأ'.tr, 'حدث خطأ أثناء التحديث على الخادم'.tr, Colors.red);
         }
+      } else {
+        showSnackbar('تنبيه'.tr, 'تم الحفظ محلياً، فشل المزامنة مع الخادم'.tr, Colors.orange);
       }
       update();
     }
@@ -103,6 +114,7 @@ class EditProfileController extends GetxController {
   void dispose() {
     username.dispose();
     phone.dispose();
+    fieldPhone.dispose();
     adresse.dispose();
     hallname.dispose();
     super.dispose();

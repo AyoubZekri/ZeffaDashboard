@@ -36,7 +36,11 @@ class NotificationHeader extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(Icons.notifications_active_rounded, color: Colors.white, size: 28),
+              child: const Icon(
+                Icons.notifications_active_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
             ),
             const SizedBox(width: 16),
             Text(
@@ -45,7 +49,7 @@ class NotificationHeader extends StatelessWidget {
                 fontSize: 28,
                 fontWeight: FontWeight.w900,
                 color: isDark ? Colors.white : const Color(0xFF1E1E1E),
-                fontFamily: 'Cairo',
+
                 letterSpacing: -0.5,
               ),
             ),
@@ -54,14 +58,14 @@ class NotificationHeader extends StatelessWidget {
         // Action Buttons (Left in LTR, Right in RTL - but user wants it on the left in RTL, so it must be second in the Row)
         Row(
           children: [
-            _buildHeaderAction(
-              context,
-              icon: Icons.notification_add_rounded,
-              label: 'generate_test_notification'.tr,
-              color: AppColor.primaryPurple,
-              onTap: () => controller.generateDummyNotification(),
-            ),
-            const SizedBox(width: 12),
+            // _buildHeaderAction(
+            //   context,
+            //   icon: Icons.notification_add_rounded,
+            //   label: 'generate_test_notification'.tr,
+            //   color: AppColor.primaryPurple,
+            //   onTap: () => controller.generateDummyNotification(),
+            // ),
+            // const SizedBox(width: 12),
             _buildHeaderAction(
               context,
               icon: Icons.done_all_rounded,
@@ -92,7 +96,13 @@ class NotificationHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderAction(BuildContext context, {required IconData icon, required String label, required Color color, required VoidCallback onTap}) {
+  Widget _buildHeaderAction(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -117,7 +127,7 @@ class NotificationHeader extends StatelessWidget {
                 style: TextStyle(
                   color: color,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'Cairo',
+
                   fontSize: 14,
                 ),
               ),

@@ -14,7 +14,7 @@ class EditProfileDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(EditProfileController());
+    Get.create(() => EditProfileController());
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     Color textColor = isDark ? AppColor.white : AppColor.deepPurple;
@@ -50,7 +50,6 @@ class EditProfileDialog extends StatelessWidget {
                       color: textColor,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Cairo',
                     ),
                   ),
                   InkWell(
@@ -107,7 +106,17 @@ class EditProfileDialog extends StatelessWidget {
                                             controller.profileImage!,
                                             fit: BoxFit.cover,
                                           )
-                                        : (controller.currentImagePath != null
+                                        : (controller.currentImagePath !=
+                                                      null &&
+                                                  controller
+                                                      .currentImagePath!
+                                                      .isNotEmpty &&
+                                                  !controller.currentImagePath!
+                                                      .startsWith('http') &&
+                                                  File(
+                                                    controller
+                                                        .currentImagePath!,
+                                                  ).existsSync()
                                               ? Image.file(
                                                   File(
                                                     controller
@@ -116,7 +125,7 @@ class EditProfileDialog extends StatelessWidget {
                                                   fit: BoxFit.cover,
                                                 )
                                               : Image.asset(
-                                                  Appimageassets.avater,
+                                                  Appimageassets.logo,
                                                   fit: BoxFit.cover,
                                                 )),
                                   ),
@@ -158,7 +167,7 @@ class EditProfileDialog extends StatelessWidget {
                               hint: 'أدخل اسم القاعة'.tr,
                               icon: Icons.business_outlined,
                               validator: (val) {
-                                return validInput(val!, 100, 1, "username");
+                                return validInput(val!, 100, 1, "Text");
                               },
                             ),
                           ),
@@ -172,7 +181,7 @@ class EditProfileDialog extends StatelessWidget {
                               hint: 'أدخل اسم المالك'.tr,
                               icon: Icons.person_outline,
                               validator: (val) {
-                                return validInput(val!, 100, 1, "username");
+                                return validInput(val!, 100, 1, "Text");
                               },
                             ),
                           ),
@@ -196,12 +205,33 @@ class EditProfileDialog extends StatelessWidget {
                           Directionality(
                             textDirection: TextDirection.rtl,
                             child: CustemTextField(
+                              controller: controller.fieldPhone,
+                              label: 'field_phone'.tr,
+                              hint: 'enter_field_phone'.tr,
+                              icon: Icons.phone_android_outlined,
+                              keyboardType: TextInputType.phone,
+                              validator: (val) {
+                                return validInput(
+                                  val!,
+                                  15,
+                                  10,
+                                  "phone",
+                                  empty: true,
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          Directionality(
+                            textDirection: TextDirection.rtl,
+                            child: CustemTextField(
                               controller: controller.adresse,
                               label: 'العنوان'.tr,
                               hint: 'أدخل عنوان القاعة'.tr,
                               icon: Icons.location_on_outlined,
                               validator: (val) {
-                                return validInput(val!, 200, 1, "username");
+                                return validInput(val!, 200, 1, "Text");
                               },
                             ),
                           ),
@@ -238,7 +268,6 @@ class EditProfileDialog extends StatelessWidget {
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
-                                        fontFamily: 'Cairo',
                                       ),
                                     ),
                             ),

@@ -13,6 +13,7 @@ import '../widget/reservations/ReservationDetailsDialog.dart';
 import '../widget/reservations/AddPaymentDialog.dart';
 import '../widget/reservations/EditGuestsDialog.dart';
 import '../widget/reservations/ReservationDateFilterDialog.dart';
+import '../../core/functions/print_reservation.dart';
 
 class ReservationsScreen extends StatefulWidget {
   const ReservationsScreen({Key? key}) : super(key: key);
@@ -96,13 +97,7 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
                   );
                 },
                 onPrint: (reservation) {
-                  Get.snackbar(
-                    'print_reservation'.tr,
-                    "${'print_preparing_msg'.tr} ${reservation.customerName}",
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.grey.shade800,
-                    colorText: Colors.white,
-                  );
+                  showPrintSelectionDialog(context, reservation);
                 },
                 onAddPayment: (reservation) {
                   Get.dialog(

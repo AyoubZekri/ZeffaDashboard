@@ -64,8 +64,7 @@ class VerifyCodeSignUpScreen extends StatelessWidget {
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
                             color: AppColor.deepPurple,
-                            fontFamily:
-                                'Serif', // Using a generic serif to mimic the image
+                             // Using a generic serif to mimic the image
                           ),
                         ),
                         const SizedBox(height: 30),

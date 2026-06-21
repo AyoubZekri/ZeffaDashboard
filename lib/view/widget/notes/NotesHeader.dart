@@ -33,17 +33,12 @@ class NotesHeader extends StatelessWidget {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: textColor,
-                fontFamily: 'Cairo',
               ),
             ),
             const SizedBox(height: 4),
             Text(
               'manage_your_notes'.tr, // "Manage and track your notes"
-              style: TextStyle(
-                fontSize: 14, 
-                color: colors.subtitleColor,
-                fontFamily: 'Cairo',
-              ),
+              style: TextStyle(fontSize: 14, color: colors.subtitleColor),
             ),
           ],
         ),
@@ -66,7 +61,6 @@ class NotesHeader extends StatelessWidget {
                   hintStyle: TextStyle(
                     fontSize: 12,
                     color: colors.subtitleColor,
-                    fontFamily: 'Cairo',
                   ),
                   prefixIcon: Icon(
                     Icons.search_rounded,
@@ -87,10 +81,7 @@ class NotesHeader extends StatelessWidget {
               icon: const Icon(Icons.add, size: 18),
               label: Text(
                 'add_note'.tr,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
-                ),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColor.primaryPurple,

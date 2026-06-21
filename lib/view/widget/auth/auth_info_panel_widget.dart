@@ -31,7 +31,7 @@ class AuthInfoPanelWidget extends StatelessWidget {
                 fontSize: 48,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
-                fontFamily: 'Serif',
+                
               ),
             ),
             const SizedBox(height: 15),

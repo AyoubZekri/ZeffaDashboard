@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,7 +8,6 @@ import 'package:zeffa/data/model/ReservationModel.dart';
 
 import '../core/class/Statusrequest.dart';
 import '../core/services/Services.dart';
-import '../core/class/Crud.dart';
 import '../data/datasource/Remote/ReservationsData.dart';
 import '../data/datasource/Remote/PartyTypes.dart';
 import '../data/datasource/Remote/Dishes.dart';
@@ -37,13 +37,19 @@ class Reservationscontroller extends GetxController {
         final matchesPhone = res.phoneNumber.toLowerCase().contains(query);
         if (!matchesName && !matchesPhone) return false;
       }
-      
+
       // 2. Date Filter
       if (startDateFilter.value != null || endDateFilter.value != null) {
         try {
-          DateTime resDate = DateTime.parse(res.bookingDate.replaceAll('/', '-'));
-          DateTime normalizedResDate = DateTime(resDate.year, resDate.month, resDate.day);
-          
+          DateTime resDate = DateTime.parse(
+            res.bookingDate.replaceAll('/', '-'),
+          );
+          DateTime normalizedResDate = DateTime(
+            resDate.year,
+            resDate.month,
+            resDate.day,
+          );
+
           if (startDateFilter.value != null) {
             DateTime sDate = startDateFilter.value!;
             DateTime nsDate = DateTime(sDate.year, sDate.month, sDate.day);
@@ -110,16 +116,20 @@ class Reservationscontroller extends GetxController {
       String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
 
       if (selectedDirectory != null) {
-        String filePath = '$selectedDirectory/reservations_export_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+        String filePath =
+            '$selectedDirectory/reservations_export_${DateTime.now().millisecondsSinceEpoch}.xlsx';
         var fileBytes = excel.save();
         if (fileBytes != null) {
           File(filePath)
             ..createSync(recursive: true)
             ..writeAsBytesSync(fileBytes);
-          showSnackbar('success'.tr, 'export_to_excel'.tr + ' ' + 'success'.tr, Colors.green);
+          showSnackbar(
+            'success'.tr,
+            'export_to_excel'.tr + ' ' + 'success'.tr,
+            Colors.green,
+          );
         }
       }
-
     } catch (e) {
       showSnackbar('error'.tr, e.toString(), Colors.red);
     } finally {
@@ -150,7 +160,6 @@ class Reservationscontroller extends GetxController {
 
   final List<Map<String, dynamic>> bookingPeriods = [
     {'key': 1, 'label': 'period_full_day'},
-    {'key': 2, 'label': 'period_half_day'},
     {'key': 3, 'label': 'period_evening'},
     {'key': 4, 'label': 'period_morning'},
   ];
@@ -300,6 +309,150 @@ class Reservationscontroller extends GetxController {
     remainingamount.text = rem > 0 ? rem.toString() : '0.0';
   }
 
+  String _generate13DigitNumber() {
+    final Random random = Random();
+    String number = (random.nextInt(9) + 1).toString();
+    for (int i = 0; i < 8; i++) {
+      number += random.nextInt(10).toString();
+    }
+    return number;
+  }
+
+  String? checkBookingConflict(
+    String dateStr,
+    int selectedPeriod, {
+    String? excludeUuid,
+  }) {
+    if (dateStr.isEmpty) return null;
+    try {
+      final normalizedSelected = DateTime.parse(dateStr.replaceAll('/', '-'));
+      final formattedSelected =
+          "${normalizedSelected.year}-${normalizedSelected.month.toString().padLeft(2, '0')}-${normalizedSelected.day.toString().padLeft(2, '0')}";
+
+      final List<int> bookedPeriods = [];
+      for (var res in allReservations) {
+        if (excludeUuid != null && res.uuid == excludeUuid) continue;
+
+        try {
+          final resDate = DateTime.parse(res.bookingDate.replaceAll('/', '-'));
+          final formattedRes =
+              "${resDate.year}-${resDate.month.toString().padLeft(2, '0')}-${resDate.day.toString().padLeft(2, '0')}";
+          if (formattedSelected == formattedRes) {
+            if (res.bookingPeriod != null) {
+              bookedPeriods.add(res.bookingPeriod!);
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      if (bookedPeriods.isEmpty) {
+        return null; // Date is completely free
+      }
+
+      // If already booked for full day, nothing else can be booked
+      if (bookedPeriods.contains(1)) {
+        return 'date_already_reserved'.tr;
+      }
+
+      // If selected period is full day (1), but there are already some bookings on that date, it is blocked
+      if (selectedPeriod == 1 && bookedPeriods.isNotEmpty) {
+        return 'date_already_reserved_period'.tr;
+      }
+
+      // If already booked for both morning and evening, nothing else can be booked
+      if (bookedPeriods.contains(3) && bookedPeriods.contains(4)) {
+        return 'date_already_reserved'.tr;
+      }
+
+      // If already booked for evening (3)
+      if (bookedPeriods.contains(3)) {
+        if (selectedPeriod == 3) {
+          return 'evening_period_reserved'.tr;
+        }
+        if (selectedPeriod == 1) {
+          return 'date_already_reserved_period'.tr;
+        }
+      }
+
+      // If already booked for morning (4)
+      if (bookedPeriods.contains(4)) {
+        if (selectedPeriod == 4) {
+          return 'morning_period_reserved'.tr;
+        }
+        if (selectedPeriod == 1) {
+          return 'date_already_reserved_period'.tr;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    return null;
+  }
+
+  List<Map<String, dynamic>> getAvailablePeriodsForDate(
+    String dateStr, {
+    String? excludeUuid,
+  }) {
+    if (dateStr.isEmpty) {
+      return bookingPeriods;
+    }
+
+    try {
+      final normalizedSelected = DateTime.parse(dateStr.replaceAll('/', '-'));
+      final formattedSelected =
+          "${normalizedSelected.year}-${normalizedSelected.month.toString().padLeft(2, '0')}-${normalizedSelected.day.toString().padLeft(2, '0')}";
+
+      final List<int> bookedPeriods = [];
+      for (var res in allReservations) {
+        if (excludeUuid != null && res.uuid == excludeUuid) continue;
+
+        try {
+          final resDate = DateTime.parse(res.bookingDate.replaceAll('/', '-'));
+          final formattedRes =
+              "${resDate.year}-${resDate.month.toString().padLeft(2, '0')}-${resDate.day.toString().padLeft(2, '0')}";
+          if (formattedSelected == formattedRes) {
+            if (res.bookingPeriod != null) {
+              bookedPeriods.add(res.bookingPeriod!);
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      if (bookedPeriods.isEmpty) {
+        return bookingPeriods;
+      }
+
+      // If booked for full day (1), nothing is available
+      if (bookedPeriods.contains(1)) {
+        return [];
+      }
+
+      // If booked for both morning and evening, nothing is available
+      if (bookedPeriods.contains(3) && bookedPeriods.contains(4)) {
+        return [];
+      }
+
+      final List<Map<String, dynamic>> available = [];
+
+      // If booked for evening (3), only morning (4) is available
+      if (bookedPeriods.contains(3)) {
+        available.addAll(bookingPeriods.where((p) => p['key'] == 4));
+      }
+      // If booked for morning (4), only evening (3) is available
+      else if (bookedPeriods.contains(4)) {
+        available.addAll(bookingPeriods.where((p) => p['key'] == 3));
+      }
+
+      return available;
+    } catch (e) {
+      return bookingPeriods;
+    }
+  }
+
   // عرض البيانات
   Future<void> addReservation() async {
     if (!formState.currentState!.validate()) {
@@ -315,10 +468,18 @@ class Reservationscontroller extends GetxController {
       return;
     }
 
+    final String selectedDateStr = date.text.trim();
+    final conflictError = checkBookingConflict(selectedDateStr, BookingBeriod!);
+    if (conflictError != null) {
+      showSnackbar('warning'.tr, conflictError, Colors.orange);
+      return;
+    }
+
     statusrequest = Statusrequest.loadeng;
     update();
 
     Map<String, dynamic> rawData = {
+      "numperReservation": _generate13DigitNumber(),
       "username": username.text,
       "phone_numper": phone.text,
       "booking_date": date.text,
@@ -392,6 +553,17 @@ class Reservationscontroller extends GetxController {
       return;
     }
 
+    final String selectedDateStr = date.text.trim();
+    final conflictError = checkBookingConflict(
+      selectedDateStr,
+      BookingBeriod!,
+      excludeUuid: uuid,
+    );
+    if (conflictError != null) {
+      showSnackbar('warning'.tr, conflictError, Colors.orange);
+      return;
+    }
+
     statusrequest = Statusrequest.loadeng;
     update();
 
@@ -418,6 +590,18 @@ class Reservationscontroller extends GetxController {
         Colors.green,
       );
       fetchInitialData();
+      username.clear();
+      phone.clear();
+      date.clear();
+      price.clear();
+      deposit.clear();
+      remainingamount.clear();
+      numberofmen.clear();
+      numberOfwomen.clear();
+      note.clear();
+      BookingBeriod = null;
+      typeOfPartyUuid = null;
+      selectedDishes.clear();
     } else {
       showSnackbar('error'.tr, 'failed_to_update_reservation'.tr, Colors.red);
     }

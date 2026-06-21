@@ -59,6 +59,7 @@ class SQLDB {
         id INTEGER PRIMARY KEY,
         uuid TEXT UNIQUE,
         user_id INTEGER,
+        numperReservation TEXT,
         username TEXT,
         phone_numper TEXT,
         booking_date TEXT,
@@ -183,6 +184,36 @@ class SQLDB {
         content TEXT,
         is_read INTEGER DEFAULT 0,
         type TEXT,
+        created_at TEXT,
+        updated_at TEXT
+      )
+      ''');
+
+    // ==============================
+    // Terms
+    // ==============================
+    batch.execute('''
+      CREATE TABLE terms(
+        id INTEGER PRIMARY KEY,
+        uuid TEXT UNIQUE,
+        user_id INTEGER,
+        title TEXT,
+        type TEXT, -- 'internal_rules','contract_terms','required_procedures','required_documents'
+        created_at TEXT,
+        updated_at TEXT
+      )
+      ''');
+
+    // ==============================
+    // Terms
+    // ==============================
+    batch.execute('''
+      CREATE TABLE terms_content(
+        id INTEGER PRIMARY KEY,
+        uuid TEXT UNIQUE,
+        term_uuid TEXT,
+        user_id INTEGER,
+        content TEXT,
         created_at TEXT,
         updated_at TEXT
       )

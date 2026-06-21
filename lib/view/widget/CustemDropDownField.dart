@@ -97,11 +97,7 @@ class CustemDropDownField<T> extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 6, right: 12, left: 12),
                 child: Text(
                   state.errorText!,
-                  style: TextStyle(
-                    color: Colors.red.shade400,
-                    fontSize: 12,
-                    fontFamily: 'Cairo',
-                  ),
+                  style: TextStyle(color: Colors.red.shade400, fontSize: 12),
                 ),
               ),
           ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../core/class/Statusrequest.dart';
+import '../../core/class/Sqldb.dart';
 import '../../core/functions/Snacpar.dart';
 import '../../data/datasource/Remote/Expenses.dart';
 import '../../data/model/ExpenseModel.dart';
@@ -18,6 +19,7 @@ class ExpensesController extends GetxController {
   final Rxn<DateTime> endDateFilter = Rxn<DateTime>();
 
   final RxList<ExpenseModel> allExpenses = <ExpenseModel>[].obs;
+  final RxList<Map<String, dynamic>> allReservations = <Map<String, dynamic>>[].obs;
   
   // Pagination
   final RxInt currentPage = 1.obs;
@@ -35,6 +37,7 @@ class ExpensesController extends GetxController {
   String? editUuid;
 
   final Expenses expensesRepo = Expenses(Get.find());
+  final SQLDB _db = SQLDB();
   Statusrequest statusrequest = Statusrequest.none;
 
   @override
@@ -73,11 +76,29 @@ class ExpensesController extends GetxController {
     editUuid = null;
   }
 
+  Future<List<Map<String, dynamic>>> fetchReservations() async {
+    try {
+      final int userId = expensesRepo.id;
+      final result = await _db.readData(
+        "SELECT deposit, booking_date FROM reservations WHERE user_id = ?",
+        [userId],
+      );
+      return result;
+    } catch (e) {
+      print("Error fetching reservations for expenses income: $e");
+      return [];
+    }
+  }
+
   Future<void> loadExpenses() async {
     statusrequest = Statusrequest.loadeng;
     update();
     try {
       final result = await expensesRepo.viewdata();
+      final resResult = await fetchReservations();
+      
+      allReservations.assignAll(resResult);
+      
       if (result.isEmpty) {
         statusrequest = Statusrequest.none;
         allExpenses.clear();
@@ -270,6 +291,63 @@ class ExpensesController extends GetxController {
   }
 
   double get totalExpensesSum {
-    return allExpenses.fold(0.0, (sum, item) => sum + (item.value ?? 0.0));
+    final hasFilter = searchQuery.value.isNotEmpty ||
+        selectedCategory.value != 0 ||
+        startDateFilter.value != null ||
+        endDateFilter.value != null;
+
+    if (hasFilter) {
+      return filteredExpenses.fold(0.0, (sum, item) => sum + (item.value ?? 0.0));
+    } else {
+      final now = DateTime.now();
+      return allExpenses.where((item) {
+        if (item.datePerry == null) return false;
+        try {
+          final date = DateFormat('yyyy-MM-dd').parse(item.datePerry!);
+          return date.month == now.month && date.year == now.year;
+        } catch (e) {
+          return false;
+        }
+      }).fold(0.0, (sum, item) => sum + (item.value ?? 0.0));
+    }
+  }
+
+  double get totalIncomeSum {
+    final start = startDateFilter.value;
+    final end = endDateFilter.value;
+    final hasDateFilter = start != null && end != null;
+
+    double sum = 0.0;
+    final now = DateTime.now();
+
+    for (var res in allReservations) {
+      final double deposit = double.tryParse(res['deposit']?.toString() ?? '0.0') ?? 0.0;
+      final String? dateStr = res['booking_date'];
+      if (dateStr == null || dateStr.isEmpty) continue;
+
+      try {
+        final date = DateTime.parse(dateStr.replaceAll('/', '-'));
+        if (hasDateFilter) {
+          final nDate = DateTime(date.year, date.month, date.day);
+          final nStart = DateTime(start.year, start.month, start.day);
+          final nEnd = DateTime(end.year, end.month, end.day);
+          if (!nDate.isBefore(nStart) && !nDate.isAfter(nEnd)) {
+            sum += deposit;
+          }
+        } else {
+          if (date.month == now.month && date.year == now.year) {
+            sum += deposit;
+          }
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+    }
+
+    return sum;
+  }
+
+  double get totalProfitsSum {
+    return totalIncomeSum - totalExpensesSum;
   }
 }

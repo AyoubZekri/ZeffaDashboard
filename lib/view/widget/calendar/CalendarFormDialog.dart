@@ -94,7 +94,6 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: textColor,
-                                fontFamily: 'Cairo',
                               ),
                             ),
                           ],
@@ -143,7 +142,6 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                                       : subtitleColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
-                                  fontFamily: 'Cairo',
                                 ),
                               ),
                             ),
@@ -172,7 +170,6 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                                       : subtitleColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
-                                  fontFamily: 'Cairo',
                                 ),
                               ),
                             ),
@@ -304,7 +301,6 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                             fontSize: 15,
                             color: subtitleColor,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Cairo',
                           ),
                         ),
                       ),
@@ -360,7 +356,6 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Cairo',
                           ),
                         ),
                       ),
@@ -407,7 +402,6 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
                 color: theme.colorScheme.onSurface,
-                fontFamily: 'Cairo',
               ),
             ),
             const SizedBox(height: 8),
@@ -437,7 +431,6 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                         color: currentVal == null
                             ? colors.subtitleColor
                             : theme.colorScheme.onSurface,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                     Icon(
@@ -456,11 +449,7 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
                 padding: const EdgeInsets.only(top: 6, right: 12, left: 12),
                 child: Text(
                   state.errorText!,
-                  style: TextStyle(
-                    color: Colors.red.shade400,
-                    fontSize: 12,
-                    fontFamily: 'Cairo',
-                  ),
+                  style: TextStyle(color: Colors.red.shade400, fontSize: 12),
                 ),
               ),
           ],

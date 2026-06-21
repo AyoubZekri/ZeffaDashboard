@@ -61,6 +61,7 @@ class ReservationsData {
       final data = {
         "uuid": uuid,
         "user_id": id,
+        "numperReservation": rawData["numperReservation"],
         "username": rawData["username"],
         "phone_numper": rawData["phone_numper"],
         "booking_date": rawData["booking_date"],

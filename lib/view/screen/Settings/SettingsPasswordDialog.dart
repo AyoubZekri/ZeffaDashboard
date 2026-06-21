@@ -13,7 +13,7 @@ class SettingsPasswordDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SettingsPasswordController());
+    Get.create(() => SettingsPasswordController());
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     Color textColor = isDark ? AppColor.white : AppColor.deepPurple;
@@ -63,7 +63,6 @@ class SettingsPasswordDialog extends StatelessWidget {
                           color: textColor,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                       InkWell(
@@ -277,7 +276,7 @@ class SettingsPasswordDialog extends StatelessWidget {
               ),
               validator: (val) {
                 return validInput(val!, 100, 6, "password");
-              },  
+              },
             ),
           ),
           const SizedBox(height: 16),
@@ -373,7 +372,6 @@ class SettingsPasswordDialog extends StatelessWidget {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
-                  fontFamily: 'Cairo',
                 ),
               ),
       ),

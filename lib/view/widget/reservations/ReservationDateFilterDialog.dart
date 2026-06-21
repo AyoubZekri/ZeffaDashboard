@@ -117,7 +117,6 @@ class _ReservationDateFilterDialogState
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: textColor,
-                            fontFamily: 'Cairo',
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -125,11 +124,7 @@ class _ReservationDateFilterDialogState
                           isArabic
                               ? 'choose_start_end_date'.tr
                               : 'Select start date and end date',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: subtitleColor,
-                            fontFamily: 'Cairo',
-                          ),
+                          style: TextStyle(fontSize: 12, color: subtitleColor),
                         ),
                       ],
                     ),
@@ -194,7 +189,6 @@ class _ReservationDateFilterDialogState
                         fontSize: 14,
                         color: Colors.red,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                   ),
@@ -214,7 +208,6 @@ class _ReservationDateFilterDialogState
                         fontSize: 14,
                         color: subtitleColor,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                   ),
@@ -243,7 +236,6 @@ class _ReservationDateFilterDialogState
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                   ),

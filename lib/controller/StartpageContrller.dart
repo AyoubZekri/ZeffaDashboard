@@ -30,15 +30,12 @@ class Startpagecontrller extends GetxController {
         Status = response['data']["data"][0]['status'];
         var user = response["data"]["data"][0];
         String imageUrl = user["image"] ?? "";
-        String fileName = imageUrl.split("/").last;
-        String localPath = "${Applink.image}/storage/$imageUrl";
-        print("==================================$localPath");
-
-        print("==================================$fileName");
+        String localPath = "";
         if (imageUrl.isNotEmpty) {
-          localPath = await downloadAndCacheImage(localPath, fileName);
+          String fileName = imageUrl.split("/").last;
+          String fullUrl = "${Applink.image}/storage/$imageUrl";
+          localPath = await downloadAndCacheImage(fullUrl, fileName);
         }
-        print("==================================$localPath");
         myServices.sharedPreferences!.setString("image", localPath);
 
         myServices.sharedPreferences!.setInt("id", user['id']);

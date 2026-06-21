@@ -28,32 +28,8 @@ class SidebarWidget extends StatelessWidget {
         children: [
           // Sidebar Header
           Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 40.0,
-              horizontal: 24.0,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'app_name'.tr,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
-                    color: AppColor.primaryPurple,
-                  ),
-                ),
-                Text(
-                  'system_management'.tr,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colors.subtitleColor,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Image.asset(Appimageassets.logo2, height: 90),
           ),
 
           // Menu Items
@@ -121,47 +97,47 @@ class SidebarWidget extends StatelessWidget {
           ),
 
           // Sidebar Footer
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Container(
-              width: double.infinity,
-              height: 54,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: const LinearGradient(colors: AppColor.purpleGradient),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColor.primaryPurple.withOpacity(0.3),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.add_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                label: Text(
-                  'add_sales'.tr,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(24.0),
+          //   child: Container(
+          //     width: double.infinity,
+          //     height: 54,
+          //     decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.circular(12),
+          //       gradient: const LinearGradient(colors: AppColor.purpleGradient),
+          //       boxShadow: [
+          //         BoxShadow(
+          //           color: AppColor.primaryPurple.withOpacity(0.3),
+          //           blurRadius: 10,
+          //           offset: const Offset(0, 4),
+          //         ),
+          //       ],
+          //     ),
+          //     child: ElevatedButton.icon(
+          //       onPressed: () {},
+          //       icon: const Icon(
+          //         Icons.add_rounded,
+          //         color: Colors.white,
+          //         size: 20,
+          //       ),
+          //       label: Text(
+          //         'add_sales'.tr,
+          //         style: const TextStyle(
+          //           color: Colors.white,
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 15,
+          //         ),
+          //       ),
+          //       style: ElevatedButton.styleFrom(
+          //         backgroundColor: Colors.transparent,
+          //         shadowColor: Colors.transparent,
+          //         shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(12),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -211,7 +187,6 @@ class SidebarWidget extends StatelessWidget {
                     color: isSelected
                         ? Colors.white
                         : theme.colorScheme.onSurface,
-                    fontFamily: 'Cairo',
                   ),
                 ),
               ),
@@ -275,7 +250,6 @@ class SidebarWidget extends StatelessWidget {
                   color: isSelected
                       ? AppColor.primaryPurple
                       : colors.subtitleColor,
-                  fontFamily: 'Cairo',
                 ),
               ),
             ),
@@ -369,33 +343,32 @@ class TopBar extends StatelessWidget {
             ),
 
           // Search Field
-          Container(
-            width: 300,
-            height: 40,
-            decoration: BoxDecoration(
-              color: colors.inputFillColor,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: TextField(
-              textAlign: TextAlign.right,
-              style: TextStyle(color: textColor, fontSize: 13),
-              decoration: InputDecoration(
-                hintText: 'search_system'.tr,
-                hintStyle: TextStyle(fontSize: 12, color: colors.subtitleColor),
-                prefixIcon: Icon(
-                  Icons.search_rounded,
-                  color: colors.subtitleColor,
-                  size: 18,
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 16,
-                ),
-              ),
-            ),
-          ),
-
+          // Container(
+          //   width: 300,
+          //   height: 40,
+          //   decoration: BoxDecoration(
+          //     color: colors.inputFillColor,
+          //     borderRadius: BorderRadius.circular(10),
+          //   ),
+          //   child: TextField(
+          //     textAlign: TextAlign.right,
+          //     style: TextStyle(color: textColor, fontSize: 13),
+          //     decoration: InputDecoration(
+          //       hintText: 'search_system'.tr,
+          //       hintStyle: TextStyle(fontSize: 12, color: colors.subtitleColor),
+          //       prefixIcon: Icon(
+          //         Icons.search_rounded,
+          //         color: colors.subtitleColor,
+          //         size: 18,
+          //       ),
+          //       border: InputBorder.none,
+          //       contentPadding: const EdgeInsets.symmetric(
+          //         vertical: 8,
+          //         horizontal: 16,
+          //       ),
+          //     ),
+          //   ),
+          // ),
           const Spacer(),
 
           _buildTopButton(
@@ -406,13 +379,13 @@ class TopBar extends StatelessWidget {
           const SizedBox(width: 12),
           _buildLanguageToggle(theme),
           const SizedBox(width: 12),
-          _buildTopButton(
-            onPressed: () {},
-            icon: Icons.notifications_none_rounded,
-            hasBadge: true,
-            theme: theme,
-          ),
-          const SizedBox(width: 20),
+          // _buildTopButton(
+          //   onPressed: () {},
+          //   icon: Icons.notifications_none_rounded,
+          //   hasBadge: true,
+          //   theme: theme,
+          // ),
+          // const SizedBox(width: 20),
 
           // Profile Section
           Obx(() {
@@ -430,7 +403,6 @@ class TopBar extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                         color: textColor,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                     Text(
@@ -451,10 +423,17 @@ class TopBar extends StatelessWidget {
                   },
                   child: CircleAvatar(
                     radius: 18,
-                    backgroundImage: controller.imagePath.value != null
-                        ? FileImage(File(controller.imagePath.value!))
-                              as ImageProvider
-                        : const AssetImage(Appimageassets.avater),
+                    backgroundColor: Colors.white,
+                    backgroundImage: () {
+                      final path = controller.imagePath.value;
+                      if (path != null &&
+                          path.isNotEmpty &&
+                          !path.startsWith('http') &&
+                          File(path).existsSync()) {
+                        return FileImage(File(path)) as ImageProvider;
+                      }
+                      return const AssetImage(Appimageassets.logo);
+                    }(),
                   ),
                 ),
               ],

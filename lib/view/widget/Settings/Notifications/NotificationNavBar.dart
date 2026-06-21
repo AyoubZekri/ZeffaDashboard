@@ -16,11 +16,7 @@ class NotificationNavBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 32),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        border: Border(
-          bottom: BorderSide(
-            color: colors.borderColor,
-          ),
-        ),
+        border: Border(bottom: BorderSide(color: colors.borderColor)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -35,7 +31,6 @@ class NotificationNavBar extends StatelessWidget {
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onSurface,
-                  fontFamily: 'Cairo',
                 ),
               ),
               const SizedBox(width: 32),
@@ -53,7 +48,6 @@ class NotificationNavBar extends StatelessWidget {
                     hintStyle: const TextStyle(
                       fontSize: 13,
                       color: Colors.grey,
-                      fontFamily: 'Cairo',
                     ),
                     prefixIcon: const Icon(
                       Icons.search,
@@ -105,7 +99,6 @@ class NotificationNavBar extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                           color: theme.colorScheme.onSurface,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                       Text(
@@ -113,7 +106,6 @@ class NotificationNavBar extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 11,
                           color: Colors.grey,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                     ],

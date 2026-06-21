@@ -65,7 +65,7 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('add_payment'.tr, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor, fontFamily: 'Cairo')),
+                      Text('add_payment'.tr, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor)),
                       const SizedBox(height: 4),
                       Text('add_payment_desc'.tr, style: TextStyle(fontSize: 12, color: subtitleColor)),
                     ],

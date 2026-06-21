@@ -6,10 +6,8 @@ import '../../../core/constant/AppTheme.dart';
 class DishCategoriesHeader extends StatelessWidget {
   final VoidCallback onAddPressed;
 
-  const DishCategoriesHeader({
-    Key? key,
-    required this.onAddPressed,
-  }) : super(key: key);
+  const DishCategoriesHeader({Key? key, required this.onAddPressed})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +28,6 @@ class DishCategoriesHeader extends StatelessWidget {
                   fontSize: 26,
                   fontWeight: FontWeight.w900,
                   color: theme.colorScheme.onSurface,
-                  fontFamily: 'Cairo',
                 ),
               ),
               const SizedBox(height: 6),
@@ -39,7 +36,7 @@ class DishCategoriesHeader extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   color: colors.subtitleColor,
-                  fontFamily: 'Cairo',
+
                   height: 1.5,
                 ),
               ),
@@ -56,11 +53,7 @@ class DishCategoriesHeader extends StatelessWidget {
               color: Colors.white.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.add_rounded,
-              color: Colors.white,
-              size: 16,
-            ),
+            child: const Icon(Icons.add_rounded, color: Colors.white, size: 16),
           ),
           label: Text(
             'add_new_category'.tr,
@@ -68,7 +61,6 @@ class DishCategoriesHeader extends StatelessWidget {
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 14,
-              fontFamily: 'Cairo',
             ),
           ),
           style: ElevatedButton.styleFrom(

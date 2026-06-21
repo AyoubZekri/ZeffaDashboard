@@ -68,7 +68,6 @@ class NoteFormDialog extends StatelessWidget {
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: textColor,
-                              fontFamily: 'Cairo',
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -79,7 +78,6 @@ class NoteFormDialog extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 12,
                               color: subtitleColor,
-                              fontFamily: 'Cairo',
                             ),
                           ),
                         ],
@@ -170,7 +168,6 @@ class NoteFormDialog extends StatelessWidget {
                           fontSize: 15,
                           color: subtitleColor,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                     ),
@@ -194,7 +191,6 @@ class NoteFormDialog extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                     ),

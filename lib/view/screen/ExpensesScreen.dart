@@ -48,115 +48,161 @@ class ExpensesScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // ── Summary Cards Section (Remaining budget removed, only total expenses is displayed) ──
+                // ── Summary Cards Section ──
                 Obx(() {
-                  final totalSum = ctrl.totalExpensesSum;
+                  final totalExpenses = ctrl.totalExpensesSum;
+                  final totalIncome = ctrl.totalIncomeSum;
+                  final totalProfits = ctrl.totalProfitsSum;
                   final currencyStr = isArabic ? 'currency_dzd'.tr : "DA";
 
-                  return Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: colors.cardColor,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colors.shadowColor,
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                      border: Border.all(color: colors.borderColor, width: 1),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      textDirection: isArabic
-                          ? TextDirection.rtl
-                          : TextDirection.ltr,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'status'.tr == 'status'.tr
-                                  ? 'total_current_month_expenses'.tr
-                                  : 'Total Month Expenses',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: colors.subtitleColor,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Cairo',
-                              ),
+                  final isDark = theme.brightness == Brightness.dark;
+                  final isSmallScreen = MediaQuery.of(context).size.width < 900;
+
+                  Widget buildCard({
+                    required String title,
+                    required double value,
+                    required IconData icon,
+                    required Color iconColor,
+                    required Color iconBg,
+                    Color? valueColor,
+                  }) {
+                    return Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: colors.cardColor,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: colors.borderColor, width: 1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.shadowColor,
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: iconBg,
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            const SizedBox(height: 12),
-                            Text(
-                              "${totalSum.toStringAsFixed(2)} $currencyStr",
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w900,
-                                color: AppColor.primaryPurple,
-                                fontFamily: 'Cairo',
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              textDirection: isArabic
-                                  ? TextDirection.rtl
-                                  : TextDirection.ltr,
+                            child: Icon(icon, color: iconColor, size: 26),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(
-                                  Icons.trending_up_rounded,
-                                  color: Colors.green,
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 4),
                                 Text(
-                                  'status'.tr == 'status'.tr
-                                      ? 'automatically_updated_from_operations'.tr
-                                      : 'Auto-updated from transactions',
+                                  title,
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.green.shade700,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                    color: colors.subtitleColor,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Cairo',
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  "${value.toStringAsFixed(2)} $currencyStr",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w900,
+                                    color: valueColor ?? textColor,
+                                    fontFamily: 'Cairo',
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'current_month_or_filter'.tr,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: colors.subtitleColor.withOpacity(
+                                      0.8,
+                                    ),
                                     fontFamily: 'Cairo',
                                   ),
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                        // Add action inside banner
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            Get.dialog(
-                              const ExpenseFormDialog(),
-                              barrierDismissible: true,
-                            );
-                          },
-                          icon: const Icon(Icons.add_rounded, size: 20),
-                          label: Text(
-                            'add_expense'.tr,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Cairo',
-                            ),
                           ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColor.primaryPurple,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 28,
-                              vertical: 18,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                          ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  final cardExpenses = buildCard(
+                    title: 'total_expenses'.tr,
+                    value: totalExpenses,
+                    icon: Icons.trending_down_rounded,
+                    iconColor: const Color(0xFFEF5350),
+                    iconBg: isDark
+                        ? const Color(0xFF3D1F1F)
+                        : const Color(0xFFFFEBEE),
+                    valueColor: const Color(0xFFEF5350),
                   );
+
+                  final cardIncome = buildCard(
+                    title: 'total_income'.tr,
+                    value: totalIncome,
+                    icon: Icons.trending_up_rounded,
+                    iconColor: const Color(0xFF4CAF50),
+                    iconBg: isDark
+                        ? const Color(0xFF1E3A20)
+                        : const Color(0xFFE8F5E9),
+                    valueColor: const Color(0xFF4CAF50),
+                  );
+
+                  final profitsColor = totalProfits >= 0
+                      ? (isDark
+                            ? const Color(0xFF66BB6A)
+                            : const Color(0xFF2E7D32))
+                      : (isDark
+                            ? const Color(0xFFEF5350)
+                            : const Color(0xFFC62828));
+
+                  final cardProfits = buildCard(
+                    title: 'total_profits'.tr,
+                    value: totalProfits,
+                    icon: totalProfits >= 0
+                        ? Icons.insights_rounded
+                        : Icons.trending_down_rounded,
+                    iconColor: totalProfits >= 0
+                        ? const Color(0xFF009688)
+                        : const Color(0xFFEF5350),
+                    iconBg: totalProfits >= 0
+                        ? (isDark
+                              ? const Color(0xFF143530)
+                              : const Color(0xFFE0F2F1))
+                        : (isDark
+                              ? const Color(0xFF3D1F1F)
+                              : const Color(0xFFFFEBEE)),
+                    valueColor: profitsColor,
+                  );
+
+                  if (isSmallScreen) {
+                    return Column(
+                      children: [
+                        cardExpenses,
+                        const SizedBox(height: 16),
+                        cardIncome,
+                        const SizedBox(height: 16),
+                        cardProfits,
+                      ],
+                    );
+                  } else {
+                    return Row(
+                      children: [
+                        Expanded(child: cardExpenses),
+                        const SizedBox(width: 16),
+                        Expanded(child: cardIncome),
+                        const SizedBox(width: 16),
+                        Expanded(child: cardProfits),
+                      ],
+                    );
+                  }
                 }),
                 const SizedBox(height: 24),
 
@@ -186,8 +232,7 @@ class ExpensesScreen extends StatelessWidget {
                     onDelete: (expense) {
                       dialogDelete(
                         title: 'delete_expense'.tr,
-                        content:
-                            'delete_expense_confirm_desc'.tr,
+                        content: 'delete_expense_confirm_desc'.tr,
                         onConfirm: () {
                           ctrl.deleteExpense(expense.uuid!);
                         },
@@ -236,7 +281,9 @@ class ExpensesScreen extends StatelessWidget {
                 label: Text(
                   label,
                   style: TextStyle(
-                    color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+                    color: isSelected
+                        ? Colors.white
+                        : theme.colorScheme.onSurface,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Cairo',
                   ),
@@ -249,10 +296,13 @@ class ExpensesScreen extends StatelessWidget {
                 },
                 selectedColor: AppColor.primaryPurple,
                 backgroundColor: colors.inputFillColor,
+                showCheckmark: false,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                   side: BorderSide(
-                    color: isSelected ? AppColor.primaryPurple : colors.borderColor,
+                    color: isSelected
+                        ? AppColor.primaryPurple
+                        : colors.borderColor,
                   ),
                 ),
               ),
@@ -273,11 +323,15 @@ class ExpensesScreen extends StatelessWidget {
               label: Text(
                 hasDateFilter
                     ? "${start.year}/${start.month.toString().padLeft(2, '0')}/${start.day.toString().padLeft(2, '0')} - ${end.year}/${end.month.toString().padLeft(2, '0')}/${end.day.toString().padLeft(2, '0')}"
-                    : 'status'.tr == 'status'.tr ? 'filter_by_date'.tr : 'Filter by Date',
+                    : 'status'.tr == 'status'.tr
+                    ? 'filter_by_date'.tr
+                    : 'Filter by Date',
                 style: TextStyle(
-                  color: hasDateFilter ? Colors.white : theme.colorScheme.onSurface,
+                  color: hasDateFilter
+                      ? Colors.white
+                      : theme.colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
+                  fontFamily: "Cairo",
                 ),
               ),
               selected: hasDateFilter,
@@ -292,7 +346,9 @@ class ExpensesScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
                 side: BorderSide(
-                  color: hasDateFilter ? AppColor.primaryPurple : colors.borderColor,
+                  color: hasDateFilter
+                      ? AppColor.primaryPurple
+                      : colors.borderColor,
                 ),
               ),
             ),
@@ -301,7 +357,9 @@ class ExpensesScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.clear_rounded, color: Colors.red),
               onPressed: () => ctrl.clearDateFilter(),
-              tooltip: 'status'.tr == 'status'.tr ? 'cancel_date_filter'.tr : 'Clear Date Filter',
+              tooltip: 'status'.tr == 'status'.tr
+                  ? 'cancel_date_filter'.tr
+                  : 'Clear Date Filter',
             ),
         ],
       );

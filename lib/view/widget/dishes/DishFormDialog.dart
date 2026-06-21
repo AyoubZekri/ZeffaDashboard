@@ -86,7 +86,6 @@ class _DishFormDialogState extends State<DishFormDialog> {
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: textColor,
-                              fontFamily: 'Cairo',
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -95,7 +94,6 @@ class _DishFormDialogState extends State<DishFormDialog> {
                             style: TextStyle(
                               fontSize: 12,
                               color: subtitleColor,
-                              fontFamily: 'Cairo',
                             ),
                           ),
                         ],
@@ -232,7 +230,6 @@ class _DishFormDialogState extends State<DishFormDialog> {
                           fontSize: 15,
                           color: subtitleColor,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                     ),
@@ -262,7 +259,6 @@ class _DishFormDialogState extends State<DishFormDialog> {
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                     ),

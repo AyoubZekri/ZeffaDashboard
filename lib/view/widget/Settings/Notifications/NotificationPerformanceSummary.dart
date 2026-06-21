@@ -30,9 +30,9 @@ class NotificationPerformanceSummary extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text("performance_summary".tr, style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13, fontWeight: FontWeight.w600, fontFamily: 'Cairo')),
+                Text("performance_summary".tr, style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13, fontWeight: FontWeight.w600, )),
                 const SizedBox(height: 12),
-                Text("performance_text".tr, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900, height: 1.4, fontFamily: 'Cairo'), textAlign: TextAlign.right),
+                Text("performance_text".tr, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900, height: 1.4, ), textAlign: TextAlign.right),
               ],
             ),
           ),
@@ -57,7 +57,7 @@ class NotificationPerformanceSummary extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(val, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w900)),
-          Text(label, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11, fontFamily: 'Cairo')),
+          Text(label, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11, )),
         ],
       ),
     );

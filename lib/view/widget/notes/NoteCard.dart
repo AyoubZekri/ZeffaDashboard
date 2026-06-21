@@ -63,7 +63,6 @@ class NoteCard extends StatelessWidget {
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onSurface,
-                      fontFamily: 'Cairo',
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -99,26 +98,22 @@ class NoteCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Description
             if (item.description != null && item.description!.isNotEmpty) ...[
               Text(
                 item.description!,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: colors.subtitleColor,
-                  fontFamily: 'Cairo',
-                ),
+                style: TextStyle(fontSize: 14, color: colors.subtitleColor),
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 16),
             ],
-            
+
             const Spacer(),
             const Divider(height: 1),
             const SizedBox(height: 12),
-            
+
             // Date
             Row(
               children: [
@@ -134,7 +129,6 @@ class NoteCard extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: AppColor.primaryPurple,
-                    fontFamily: 'Cairo',
                   ),
                 ),
               ],

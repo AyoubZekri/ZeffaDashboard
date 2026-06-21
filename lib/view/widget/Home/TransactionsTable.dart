@@ -38,7 +38,7 @@ class TransactionsTable extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
+
                   color: titleColor,
                 ),
               ),
@@ -46,10 +46,7 @@ class TransactionsTable extends StatelessWidget {
                 onPressed: () {},
                 child: Text(
                   'view_all'.tr,
-                  style: const TextStyle(
-                    color: AppColor.primaryPurple,
-                    fontFamily: 'Cairo',
-                  ),
+                  style: const TextStyle(color: AppColor.primaryPurple),
                 ),
               ),
             ],
@@ -111,7 +108,6 @@ class TransactionsTable extends StatelessWidget {
       fontWeight: FontWeight.bold,
       color: colors.subtitleColor,
       fontSize: 13,
-      fontFamily: 'Cairo',
     );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -203,7 +199,6 @@ class TransactionsTable extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     color: titleColor,
                     fontSize: 14,
-                    fontFamily: 'Cairo',
                   ),
                 ),
               ],
@@ -214,11 +209,7 @@ class TransactionsTable extends StatelessWidget {
             child: Text(
               date,
               textAlign: TextAlign.right,
-              style: TextStyle(
-                color: subtitleColor,
-                fontSize: 14,
-                fontFamily: 'Cairo',
-              ),
+              style: TextStyle(color: subtitleColor, fontSize: 14),
             ),
           ),
           Expanded(
@@ -226,11 +217,7 @@ class TransactionsTable extends StatelessWidget {
             child: Text(
               customer,
               textAlign: TextAlign.right,
-              style: TextStyle(
-                color: titleColor,
-                fontSize: 14,
-                fontFamily: 'Cairo',
-              ),
+              style: TextStyle(color: titleColor, fontSize: 14),
             ),
           ),
           Expanded(
@@ -252,7 +239,6 @@ class TransactionsTable extends StatelessWidget {
                     color: statusColor,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'Cairo',
                   ),
                 ),
               ),
@@ -267,7 +253,6 @@ class TransactionsTable extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: AppColor.primaryPurple,
                 fontSize: 14,
-                fontFamily: 'Cairo',
               ),
             ),
           ),

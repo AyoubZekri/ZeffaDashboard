@@ -66,6 +66,8 @@ class DishesScreen extends StatelessWidget {
                           },
                           selectedColor: AppColor.primaryPurple,
                           backgroundColor: colors.inputFillColor,
+                          showCheckmark: false,
+
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                             side: BorderSide(
@@ -93,6 +95,7 @@ class DishesScreen extends StatelessWidget {
                               ),
                             ),
                             selected: isSelected,
+
                             onSelected: (selected) {
                               if (selected) {
                                 ctrl.selectedCategoryUuid.value = cat.uuid;
@@ -100,6 +103,8 @@ class DishesScreen extends StatelessWidget {
                             },
                             selectedColor: AppColor.primaryPurple,
                             backgroundColor: colors.inputFillColor,
+                            showCheckmark: false,
+
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                               side: BorderSide(
@@ -161,8 +166,7 @@ class DishesScreen extends StatelessWidget {
                             onDelete: () {
                               dialogDelete(
                                 title: 'delete_confirm_btn'.tr,
-                                content:
-                                    'delete_dish_confirm_title'.tr,
+                                content: 'delete_dish_confirm_title'.tr,
                                 onConfirm: () {
                                   ctrl.deleteDishes(dish.uuid!);
                                   Get.snackbar(

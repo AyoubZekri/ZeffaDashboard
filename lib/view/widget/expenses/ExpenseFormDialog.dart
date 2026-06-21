@@ -84,7 +84,6 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: textColor,
-                              fontFamily: 'Cairo',
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -95,7 +94,6 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                             style: TextStyle(
                               fontSize: 12,
                               color: subtitleColor,
-                              fontFamily: 'Cairo',
                             ),
                           ),
                         ],
@@ -138,7 +136,6 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: textColor,
-                            fontFamily: 'Cairo',
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -159,30 +156,21 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                                 value: 1,
                                 child: Text(
                                   'maintenance_workers'.tr,
-                                  style: TextStyle(
-                                    color: textColor,
-                                    fontFamily: 'Cairo',
-                                  ),
+                                  style: TextStyle(color: textColor),
                                 ),
                               ),
                               DropdownMenuItem<int>(
                                 value: 2,
                                 child: Text(
                                   'cleaning_materials'.tr,
-                                  style: TextStyle(
-                                    color: textColor,
-                                    fontFamily: 'Cairo',
-                                  ),
+                                  style: TextStyle(color: textColor),
                                 ),
                               ),
                               DropdownMenuItem<int>(
                                 value: 3,
                                 child: Text(
                                   'other_expenses'.tr,
-                                  style: TextStyle(
-                                    color: textColor,
-                                    fontFamily: 'Cairo',
-                                  ),
+                                  style: TextStyle(color: textColor),
                                 ),
                               ),
                             ],
@@ -248,7 +236,6 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                           fontSize: 15,
                           color: subtitleColor,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                     ),
@@ -272,7 +259,6 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                     ),

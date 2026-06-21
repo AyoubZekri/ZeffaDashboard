@@ -83,11 +83,13 @@ dependencies:
   sqflite_common_ffi: ^2.4.0+3
   tray_manager: ^0.5.3
   excel: ^4.0.6
+  arabic_reshaper: ^0.0.1
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -130,3 +132,12 @@ flutter:
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/Logo.png"
+  windows:
+    generate: true
+    image_path: "assets/images/Logo.png"
+    icon_size: 256

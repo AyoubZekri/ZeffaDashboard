@@ -9,6 +9,7 @@ import '../../view/screen/DishesScreen.dart';
 import '../../view/screen/CalendarScreen.dart';
 import '../../view/screen/ExpensesScreen.dart';
 import '../../view/screen/NotesScreen.dart';
+import '../../view/screen/TermsScreen.dart';
 
 class Siedbarcontroller extends GetxController {
   late TextEditingController email;
@@ -72,6 +73,12 @@ class Siedbarcontroller extends GetxController {
       'name': 'notes',
       'icon': Icons.notes_rounded,
       'page': () => const NotesScreen(),
+      'subPages': [],
+    },
+    {
+      'name': 'terms',
+      'icon': Icons.gavel_rounded,
+      'page': () => const TermsScreen(),
       'subPages': [],
     },
     {

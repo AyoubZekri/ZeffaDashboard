@@ -356,6 +356,8 @@ class SyncService {
     await pushQueue("expenses");
     await pushQueue("notes");
     await pushQueue("notifications");
+    await pushQueue("terms");
+    await pushQueue("terms_content");
 
     await pullFromServer("party_types");
     await pullFromServer("cat_dishes");
@@ -366,6 +368,8 @@ class SyncService {
     await pullFromServer("expenses");
     await pullFromServer("notes");
     await pullFromServer("notifications");
+    await pullFromServer("terms");
+    await pullFromServer("terms_content");
 
     print('all_sync_completed_successfully'.tr);
 

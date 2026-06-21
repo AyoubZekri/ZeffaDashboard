@@ -7,21 +7,20 @@ import '../../../core/constant/AppTheme.dart';
 class BookingDetailsDialog extends StatelessWidget {
   final Map<String, dynamic> event;
 
-  const BookingDetailsDialog({
-    Key? key,
-    required this.event,
-  }) : super(key: key);
+  const BookingDetailsDialog({Key? key, required this.event}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.extension<AppColors>() ?? AppColors.light;
     final isArabic = Get.locale?.languageCode == 'ar';
-    
+
     final bookingId = event['bookingId'] ?? '#---';
     final eventType = event['eventType'] ?? event['title'] ?? '---';
     final customerName = event['customerName'] ?? '---';
     final customerPhone = event['customerPhone'] ?? '---';
+
+    final List<dynamic> reservations = event['reservations'] ?? [];
 
     final CalendarController ctrl = Get.find();
 
@@ -65,7 +64,6 @@ class BookingDetailsDialog extends StatelessWidget {
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: theme.colorScheme.onSurface,
-                            fontFamily: 'Cairo',
                           ),
                         ),
                       ],
@@ -73,7 +71,10 @@ class BookingDetailsDialog extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () => Get.back(),
-                    icon: Icon(Icons.close_rounded, color: colors.subtitleColor),
+                    icon: Icon(
+                      Icons.close_rounded,
+                      color: colors.subtitleColor,
+                    ),
                   ),
                 ],
               ),
@@ -82,67 +83,140 @@ class BookingDetailsDialog extends StatelessWidget {
               const SizedBox(height: 24),
 
               // ── Details Cards ──
-              _buildDetailItem(
-                context,
-                icon: Icons.tag_rounded,
-                label: 'booking_id_label'.tr,
-                value: bookingId,
-                colors: colors,
-                valueColor: AppColor.primaryPurple,
-                isBold: true,
-              ),
-              const SizedBox(height: 16),
-              
-              _buildDetailItem(
-                context,
-                icon: Icons.celebration_rounded,
-                label: 'event_type_label'.tr,
-                value: eventType,
-                colors: colors,
-              ),
-              const SizedBox(height: 16),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (reservations.isNotEmpty)
+                        ...reservations.map((res) {
+                          final resId = res['bookingId'] ?? '#---';
+                          final resType = res['eventType'] ?? res['title'] ?? '---';
+                          final resName = res['customerName'] ?? '---';
+                          final resPhone = res['customerPhone'] ?? '---';
+                          final periodKey = res['booking_period'];
+                          final periodStr = periodKey == 3 
+                              ? 'period_evening'.tr 
+                              : (periodKey == 4 ? 'period_morning'.tr : 'period_full_day'.tr);
 
-              _buildDetailItem(
-                context,
-                icon: Icons.person_rounded,
-                label: 'customer_name_label'.tr,
-                value: customerName,
-                colors: colors,
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: colors.inputFillColor,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: colors.borderColor),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${'booking_details'.tr} $resId ($periodStr)",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColor.primaryPurple,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                _buildDetailItem(
+                                  context,
+                                  icon: Icons.celebration_rounded,
+                                  label: 'event_type_label'.tr,
+                                  value: resType,
+                                  colors: colors,
+                                ),
+                                const SizedBox(height: 8),
+                                _buildDetailItem(
+                                  context,
+                                  icon: Icons.person_rounded,
+                                  label: 'customer_name_label'.tr,
+                                  value: resName,
+                                  colors: colors,
+                                ),
+                                const SizedBox(height: 8),
+                                _buildDetailItem(
+                                  context,
+                                  icon: Icons.phone_android_rounded,
+                                  label: 'phone_number_label'.tr,
+                                  value: resPhone,
+                                  colors: colors,
+                                  valueDirection: TextDirection.ltr,
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList()
+                      else ...[
+                        _buildDetailItem(
+                          context,
+                          icon: Icons.tag_rounded,
+                          label: 'booking_id_label'.tr,
+                          value: bookingId,
+                          colors: colors,
+                          valueColor: AppColor.primaryPurple,
+                          isBold: true,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildDetailItem(
+                          context,
+                          icon: Icons.celebration_rounded,
+                          label: 'event_type_label'.tr,
+                          value: eventType,
+                          colors: colors,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildDetailItem(
+                          context,
+                          icon: Icons.person_rounded,
+                          label: 'customer_name_label'.tr,
+                          value: customerName,
+                          colors: colors,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildDetailItem(
+                          context,
+                          icon: Icons.phone_android_rounded,
+                          label: 'phone_number_label'.tr,
+                          value: customerPhone,
+                          colors: colors,
+                          valueDirection: TextDirection.ltr,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-
-              _buildDetailItem(
-                context,
-                icon: Icons.phone_android_rounded,
-                label: 'phone_number_label'.tr,
-                value: customerPhone,
-                colors: colors,
-                valueDirection: TextDirection.ltr,
-              ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
               // ── Action Buttons ──
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // Show Delete only if we have a UUID (e.g. not a hardcoded placeholder missing it)
-                  if (event['uuid'] != null)
+                  // Show Delete only if we have a UUID (e.g. not a hardcoded placeholder missing it) and it's not a reservation
+                  if (event['uuid'] != null && event['type'] != 'reserved')
                     TextButton.icon(
                       onPressed: () async {
                         Get.back();
                         await ctrl.deleteSpecialDate(event['uuid']);
                       },
-                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+                      icon: const Icon(
+                        Icons.delete_outline_rounded,
+                        color: Colors.redAccent,
+                      ),
                       label: Text(
                         'delete'.tr,
                         style: const TextStyle(
                           color: Colors.redAccent,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo',
                         ),
                       ),
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 14,
+                        ),
                       ),
                     ),
                   const SizedBox(width: 16),
@@ -151,7 +225,10 @@ class BookingDetailsDialog extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColor.primaryPurple,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 14,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -162,7 +239,6 @@ class BookingDetailsDialog extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Cairo',
                       ),
                     ),
                   ),
@@ -201,11 +277,7 @@ class BookingDetailsDialog extends StatelessWidget {
               color: AppColor.primaryPurple.withOpacity(0.08),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(
-              icon,
-              color: AppColor.primaryPurple,
-              size: 20,
-            ),
+            child: Icon(icon, color: AppColor.primaryPurple, size: 20),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -214,11 +286,7 @@ class BookingDetailsDialog extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: colors.subtitleColor,
-                    fontFamily: 'Cairo',
-                  ),
+                  style: TextStyle(fontSize: 12, color: colors.subtitleColor),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -228,7 +296,6 @@ class BookingDetailsDialog extends StatelessWidget {
                     fontSize: 15,
                     fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
                     color: valueColor ?? theme.colorScheme.onSurface,
-                    fontFamily: 'Cairo',
                   ),
                 ),
               ],

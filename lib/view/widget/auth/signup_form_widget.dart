@@ -53,7 +53,7 @@ class SignupFormWidget extends StatelessWidget {
                             icon: Icons.business_outlined,
                             controller: controller.hallname,
                             validator: (val) {
-                              return validInput(val!, 100, 1, "username");
+                              return validInput(val!, 100, 1, "Text");
                             },
                           ),
                         ),
@@ -65,7 +65,7 @@ class SignupFormWidget extends StatelessWidget {
                             icon: Icons.person_outline,
                             controller: controller.Username,
                             validator: (val) {
-                              return validInput(val!, 100, 1, "username");
+                              return validInput(val!, 100, 1, "Text");
                             },
                           ),
                         ),
@@ -123,8 +123,6 @@ class SignupFormWidget extends StatelessWidget {
                               },
                             ),
                             validator: (val) {
-                              if (val != controller.Password.text)
-                                return "password_mismatch".tr;
                               return validInput(val!, 100, 6, "password");
                             },
                           ),
@@ -149,24 +147,12 @@ class SignupFormWidget extends StatelessWidget {
                               },
                             ),
                             validator: (val) {
+                              if (val != controller.Password.text) {
+                                return "password_mismatch".tr;
+                              }
                               return validInput(val!, 100, 6, "password");
                             },
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          'agree_terms'.tr,
-                          style: TextStyle(color: subtitleColor, fontSize: 12),
-                        ),
-                        Checkbox(
-                          value: false,
-                          onChanged: (val) {},
-                          activeColor: AppColor.primaryPurple,
                         ),
                       ],
                     ),

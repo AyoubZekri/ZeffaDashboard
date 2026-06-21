@@ -47,7 +47,6 @@ class SeasonsTable extends StatelessWidget {
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onSurface,
-                  fontFamily: 'Cairo',
                 ),
               ),
             ],
@@ -66,7 +65,6 @@ class SeasonsTable extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: colors.subtitleColor,
-                    fontFamily: 'Cairo',
                   ),
                 ),
               ),
@@ -78,7 +76,6 @@ class SeasonsTable extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: colors.subtitleColor,
-                    fontFamily: 'Cairo',
                   ),
                 ),
               ),
@@ -90,7 +87,6 @@ class SeasonsTable extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: colors.subtitleColor,
-                    fontFamily: 'Cairo',
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -103,7 +99,6 @@ class SeasonsTable extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: colors.subtitleColor,
-                    fontFamily: 'Cairo',
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -114,110 +109,117 @@ class SeasonsTable extends StatelessWidget {
           const Divider(height: 1),
           const SizedBox(height: 12),
 
-          Obx(() => ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: ctrl.allDates.length,
-            separatorBuilder: (context, index) => Column(
-              children: [
-                const SizedBox(height: 12),
-                Divider(color: colors.borderColor, height: 1),
-                const SizedBox(height: 12),
-              ],
-            ),
-            itemBuilder: (context, index) {
-              final item = ctrl.allDates[index];
-              final isSeason = item['type'] == 'special_period';
-              
-              final name = isSeason 
-                  ? (item['nameKey'] != '' ? item['nameKey'].toString().tr : item['nameCustom'].toString())
-                  : item['title'].toString();
-                  
-              final period = isSeason 
-                  ? (item['periodKey'] != '' ? item['periodKey'].toString().tr : item['periodCustom'].toString())
-                  : item['date'].toString();
-
-              return Row(
-                textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+          Obx(
+            () => ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: ctrl.allDates.length,
+              separatorBuilder: (context, index) => Column(
                 children: [
-                  // Season/Day Name
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
-                        fontFamily: 'Cairo',
-                      ),
-                    ),
-                  ),
-                  // Period Duration / Date
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      period,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: colors.subtitleColor,
-                        fontFamily: 'Cairo',
-                      ),
-                    ),
-                  ),
-                  // Performance
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      isSeason ? ctrl.getSeasonPerformance(item) : '---',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: _getPerformanceColor(isSeason ? ctrl.getSeasonPerformance(item) : ''),
-                        fontFamily: 'Cairo',
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  // Actions
-                  Expanded(
-                    flex: 2,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.edit_rounded,
-                            color: AppColor.primaryPurple,
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            ctrl.setEditData(item);
-                            Get.dialog(
-                              CalendarFormDialog(ctrl: ctrl),
-                              barrierDismissible: true,
-                            );
-                          },
-                          tooltip: 'edit'.tr,
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.delete_outline_rounded,
-                            color: Colors.redAccent,
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            ctrl.deleteSpecialDate(item['uuid']);
-                          },
-                          tooltip: 'delete'.tr,
-                        ),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: 12),
+                  Divider(color: colors.borderColor, height: 1),
+                  const SizedBox(height: 12),
                 ],
-              );
-            },
-          )),
+              ),
+              itemBuilder: (context, index) {
+                final item = ctrl.allDates[index];
+                final isSeason = item['type'] == 'special_period';
+
+                final name = isSeason
+                    ? (item['nameKey'] != ''
+                          ? item['nameKey'].toString().tr
+                          : item['nameCustom'].toString())
+                    : item['title'].toString();
+
+                final period = isSeason
+                    ? (item['periodKey'] != ''
+                          ? item['periodKey'].toString().tr
+                          : item['periodCustom'].toString())
+                    : item['date'].toString();
+
+                return Row(
+                  textDirection: isArabic
+                      ? TextDirection.rtl
+                      : TextDirection.ltr,
+                  children: [
+                    // Season/Day Name
+                    Expanded(
+                      flex: 3,
+                      child: Text(
+                        name,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                    // Period Duration / Date
+                    Expanded(
+                      flex: 3,
+                      child: Text(
+                        period,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colors.subtitleColor,
+                        ),
+                      ),
+                    ),
+                    // Performance
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        isSeason ? ctrl.getSeasonPerformance(item) : '---',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: _getPerformanceColor(
+                            isSeason ? ctrl.getSeasonPerformance(item) : '',
+                          ),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    // Actions
+                    Expanded(
+                      flex: 2,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.edit_rounded,
+                              color: AppColor.primaryPurple,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              ctrl.setEditData(item);
+                              Get.dialog(
+                                CalendarFormDialog(ctrl: ctrl),
+                                barrierDismissible: true,
+                              );
+                            },
+                            tooltip: 'edit'.tr,
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete_outline_rounded,
+                              color: Colors.redAccent,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              ctrl.deleteSpecialDate(item['uuid']);
+                            },
+                            tooltip: 'delete'.tr,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
