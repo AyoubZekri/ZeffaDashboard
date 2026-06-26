@@ -64,4 +64,10 @@ class DishCategoryModel {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
+  static List<DishCategoryModel> fromList(List data) {
+    return data
+        .map((e) => DishCategoryModel.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
 import '../../../data/model/TermModel.dart';
@@ -179,7 +180,7 @@ class TermCard extends StatelessWidget {
                               ),
                               Expanded(
                                 child: Text(
-                                  detail,
+                                  _parseDetail(detail, isArabic, item.type),
                                   style: TextStyle(
                                     fontSize: 12.5,
                                     color: colors.subtitleColor,
@@ -337,7 +338,7 @@ class TermCard extends StatelessWidget {
                             ),
                             Expanded(
                               child: Text(
-                                detail,
+                                _parseDetail(detail, isArabic, item.type),
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: theme.colorScheme.onSurface
@@ -374,5 +375,25 @@ class TermCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _parseDetail(String detail, bool isArabic, String? type) {
+    if (type == 'required_documents') {
+      try {
+        final decoded = jsonDecode(detail);
+        final name = decoded['name'] ?? item.title ?? '';
+        final qty = decoded['quantity'] ?? 1;
+        final unit = decoded['unit'] ?? '';
+        final guests = decoded['covers_guests'] ?? 100;
+        if (isArabic) {
+          return "$name: $qty $unit (تكفي $guests أشخاص)";
+        } else {
+          return "$name: $qty $unit (covers $guests guests)";
+        }
+      } catch (e) {
+        return detail;
+      }
+    }
+    return detail;
   }
 }

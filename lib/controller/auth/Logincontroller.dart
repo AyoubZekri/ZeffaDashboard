@@ -45,6 +45,10 @@ class Logincontroller extends GetxController {
       print("=============================== Controller $response ");
       if (statusrequest == Statusrequest.success) {
         if (response["status"] == 1) {
+          if (response["data"]["user"]["user"]["role_id"] != null) {
+            Get.offNamed(Approutes.mobileOnly);
+            return;
+          }
           print(response["data"]["user"]["token"]);
           myServices.sharedPreferences!.setInt(
             "id",
@@ -125,17 +129,27 @@ class Logincontroller extends GetxController {
               arguments: {"email": Email.text},
             );
             reset();
-          } else if (status >= 1) {
+          } else if (status == 1) {
             print("===========ok2");
-
-            Get.offNamed(Approutes.HomeScreen, arguments: {"fromlogin": 1});
-          } else if (experimentDate != null &&
-              today.isAfter(experimentDate) &&
-              response['data']["user"]["user"]['status'] == 1) {
+            Get.offNamed(Approutes.accountActivation);
+          } else if (status == 4) {
             print("===========ok3");
             Get.offNamed(Approutes.HomeScreen, arguments: {"fromlogin": 1});
-          } else {
+          } else if (status == 2 || status == 3) {
             print("===========ok4");
+            if (experimentDate != null) {
+              DateTime now = DateTime.now();
+              bool isValid = now.isBefore(experimentDate);
+              if (isValid) {
+                Get.offNamed(Approutes.HomeScreen, arguments: {"fromlogin": 1});
+              } else {
+                Get.offNamed(Approutes.accountActivation);
+              }
+            } else {
+              Get.offNamed(Approutes.accountActivation);
+            }
+          } else {
+            print("===========ok5");
             showSnackbar("error".tr, "contact_admin".tr, Colors.red);
           }
         }

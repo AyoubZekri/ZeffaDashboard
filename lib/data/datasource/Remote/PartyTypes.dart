@@ -36,6 +36,7 @@ class PartyTypes {
     String content,
     double basicPrice,
     double seasonalPrice,
+    String? guestPricingTiers,
     String icon,
   ) async {
     final String uuid = Uuid().v4();
@@ -48,6 +49,7 @@ class PartyTypes {
         "content": content,
         "basic_price": basicPrice,
         "seasonal_price": seasonalPrice,
+        "guest_pricing_tiers": guestPricingTiers,
         "icon": icon,
         "created_at": DateTime.now().toIso8601String(),
         "updated_at": DateTime.now().toIso8601String(),
@@ -72,6 +74,7 @@ class PartyTypes {
     String content,
     double basicPrice,
     double seasonalPrice,
+    String? guestPricingTiers,
     String icon,
   ) async {
     try {
@@ -80,6 +83,7 @@ class PartyTypes {
         "content": content,
         "basic_price": basicPrice,
         "seasonal_price": seasonalPrice,
+        "guest_pricing_tiers": guestPricingTiers,
         "icon": icon,
         "updated_at": DateTime.now().toIso8601String(),
       };
@@ -102,6 +106,14 @@ class PartyTypes {
 
   Future<bool> Deletedata(String uuid) async {
     try {
+      final check = await _db.readData(
+        "SELECT COUNT(*) as count FROM reservations WHERE type_of_party_uuid = ?",
+        [uuid],
+      );
+      if (check.isNotEmpty && (check[0]['count'] as int? ?? 0) > 0) {
+        throw 'linked_to_reservation';
+      }
+
       final result = await _db.delete("party_types", "uuid = ?", [uuid]);
 
       if (result > 0) {
@@ -113,6 +125,7 @@ class PartyTypes {
       }
       return false;
     } catch (e) {
+      if (e == 'linked_to_reservation') rethrow;
       print("❌ Deletedata error: $e");
       return false;
     }

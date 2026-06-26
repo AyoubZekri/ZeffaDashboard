@@ -175,63 +175,6 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                         textColor,
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          // Booking Period dropdown
-                          Expanded(
-                            child: _buildDropdownField(
-                              label: 'reservation_period'.tr,
-                              hint: 'select_period'.tr,
-                              value: ctrl.BookingBeriod,
-                              items: ctrl.getAvailablePeriodsForDate(
-                                ctrl.date.text,
-                                excludeUuid: isEdit ? widget.reservationUuid : null,
-                              ),
-                              onChanged: (val) {
-                                setState(() {
-                                  ctrl.BookingBeriod = val;
-                                });
-                              },
-                              isDark: isDark,
-                              inputFillColor: inputFillColor,
-                              textColor: textColor,
-                              subtitleColor: subtitleColor,
-                              borderColor: borderColor,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          // Event Type dropdown
-                          Expanded(
-                            child: Obx(
-                              () => _buildPartyTypeDropdownField(
-                                label: 'event_type'.tr,
-                                hint: 'select_event_type'.tr,
-                                value: ctrl.typeOfPartyUuid,
-                                items: ctrl.dbPartyTypes,
-                                onChanged: (val) {
-                                  if (ctrl.date.text.isEmpty) {
-                                    showSnackbar(
-                                      'warning'.tr,
-                                      'please_select_date_first_to_set_price'
-                                          .tr,
-                                      Colors.orange,
-                                    );
-                                    return;
-                                  }
-                                  ctrl.typeOfPartyUuid = val;
-                                  ctrl.calculatePrice();
-                                },
-                                isDark: isDark,
-                                inputFillColor: inputFillColor,
-                                textColor: textColor,
-                                subtitleColor: subtitleColor,
-                                borderColor: borderColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
                       // Date field
                       CustemTextField(
                         controller: ctrl.date,
@@ -247,13 +190,16 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                             ReservationDatePickerDialog(
                               initialDate: parsedDate,
                               excludeUuid: isEdit ? widget.reservationUuid : null,
-                              selectedPeriod: ctrl.BookingBeriod,
+                              selectedPeriod: ctrl.BookingBeriod != null ? int.tryParse(ctrl.BookingBeriod!) : null,
                             ),
                           );
                           if (picked != null) {
                             final formatted =
                                 "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
-                            ctrl.date.text = formatted;
+                            
+                            setState(() {
+                              ctrl.date.text = formatted;
+                            });
 
                             // Check if current selected period is still available for the new date
                             final availablePeriods = ctrl.getAvailablePeriodsForDate(
@@ -276,6 +222,54 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                           return validInput(val!, 1000, 0, "date");
                         },
                       ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          // Booking Period dropdown
+                          Expanded(
+                            child: _buildDropdownField(
+                              label: 'reservation_period'.tr,
+                              hint: 'select_period'.tr,
+                              value: ctrl.BookingBeriod,
+                              items: ctrl.getAvailablePeriodsForDate(
+                                ctrl.date.text,
+                                excludeUuid: isEdit ? widget.reservationUuid : null,
+                              ),
+                              onChanged: ctrl.date.text.isEmpty ? null : (val) {
+                                setState(() {
+                                  ctrl.BookingBeriod = val;
+                                });
+                              },
+                              isDark: isDark,
+                              inputFillColor: inputFillColor,
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                              borderColor: borderColor,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          // Event Type dropdown
+                          Expanded(
+                            child: _buildPartyTypeDropdownField(
+                              label: 'event_type'.tr,
+                              hint: 'select_event_type'.tr,
+                              value: ctrl.typeOfPartyUuid,
+                              items: ctrl.dbPartyTypes,
+                              onChanged: ctrl.date.text.isEmpty ? null : (val) {
+                                setState(() {
+                                  ctrl.typeOfPartyUuid = val;
+                                  ctrl.calculatePrice();
+                                });
+                              },
+                              isDark: isDark,
+                              inputFillColor: inputFillColor,
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                              borderColor: borderColor,
+                            ),
+                          ),
+                        ],
+                      ),
 
                       const SizedBox(height: 28),
 
@@ -297,6 +291,7 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               hint: '0',
                               icon: Icons.man_outlined,
                               keyboardType: TextInputType.number,
+                              onChanged: (_) => ctrl.calculatePrice(),
                               validator: (val) {
                                 return validInput(
                                   val!,
@@ -316,6 +311,7 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                               hint: '0',
                               icon: Icons.woman_outlined,
                               keyboardType: TextInputType.number,
+                              onChanged: (_) => ctrl.calculatePrice(),
                               validator: (val) {
                                 return validInput(
                                   val!,
@@ -409,18 +405,19 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: borderColor),
                         ),
-                        child: Obx(
-                          () => Wrap(
+                        child: Obx(() {
+                          ctrl.selectedDishes.isEmpty; // Register listener
+                          return Wrap(
                             spacing: 10,
                             runSpacing: 10,
                             children: ctrl.dbDishes.map((dish) {
                               final isSelected = ctrl.selectedDishes.contains(
-                                dish['uuid'],
+                                dish.uuid,
                               );
                               return FilterChip(
                                 selected: isSelected,
                                 label: Text(
-                                  dish['name'] as String,
+                                  dish.name ?? "",
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -458,18 +455,101 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
                                 onSelected: (selected) {
                                   if (selected) {
                                     ctrl.selectedDishes.add(
-                                      dish['uuid'] as String,
+                                      dish.uuid!,
                                     );
                                   } else {
                                     ctrl.selectedDishes.remove(
-                                      dish['uuid'] as String,
+                                      dish.uuid!,
                                     );
                                   }
                                 },
                               );
                             }).toList(),
-                          ),
+                          );
+                        }),
+                      ),
+
+                      const SizedBox(height: 28),
+
+                      // ═══════════════════════════════════════
+                      // Section 5.5: Additional Services Selection (Chips)
+                      // ═══════════════════════════════════════
+                      _buildSectionHeader(
+                        Icons.room_service_outlined,
+                        'additional_services'.tr,
+                        textColor,
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: borderColor),
                         ),
+                        child: Obx(() {
+                          ctrl.selectedServices.isEmpty; // Register listener unconditionally
+                          return Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: ctrl.dbServices.map((service) {
+                              final isSelected = ctrl.selectedServices.contains(
+                                service.uuid,
+                              );
+                              return FilterChip(
+                                selected: isSelected,
+                                label: Text(
+                                  "${service.name} (${service.price?.toInt()} DA)",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : (isDark
+                                              ? AppColor.textDark
+                                              : AppColor.textLight),
+                                  ),
+                                ),
+                                avatar: Icon(
+                                  Icons.add_circle_outline,
+                                  size: 18,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : AppColor.primaryPurple,
+                                ),
+                                selectedColor: AppColor.primaryPurple,
+                                checkmarkColor: Colors.white,
+                                backgroundColor: isDark
+                                    ? Colors.white.withOpacity(0.06)
+                                    : Colors.white,
+                                side: BorderSide(
+                                  color: isSelected
+                                      ? AppColor.primaryPurple
+                                      : borderColor,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 6,
+                                ),
+                                onSelected: (selected) {
+                                  double currentPrice = double.tryParse(ctrl.price.text) ?? 0.0;
+                                  if (selected) {
+                                    ctrl.selectedServices.add(service.uuid!);
+                                    ctrl.price.text = (currentPrice + (service.price ?? 0.0)).toInt().toString();
+                                  } else {
+                                    ctrl.selectedServices.remove(service.uuid!);
+                                    ctrl.price.text = (currentPrice - (service.price ?? 0.0)).toInt().toString();
+                                  }
+                                  ctrl.calculateRemaining(); // Update remaining amount
+                                },
+                              );
+                            }).toList(),
+                          );
+                        }),
                       ),
 
                       const SizedBox(height: 28),
@@ -586,53 +666,9 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
   Widget _buildDropdownField({
     required String label,
     required String hint,
-    required int? value,
-    required List<Map<String, dynamic>> items,
-    required ValueChanged<int?> onChanged,
-    required bool isDark,
-    required Color inputFillColor,
-    required Color textColor,
-    required Color subtitleColor,
-    required Color borderColor,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: textColor,
-          ),
-        ),
-        const SizedBox(height: 8),
-        CustemDropDownField<int>(
-          hint: hint,
-          value: value,
-          items: items
-              .map(
-                (item) => DropdownMenuItem<int>(
-                  value: item['key'] as int,
-                  child: Text(
-                    (item['label'] as String).tr,
-                    style: TextStyle(fontSize: 14, color: textColor),
-                  ),
-                ),
-              )
-              .toList(),
-          onChanged: onChanged,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPartyTypeDropdownField({
-    required String label,
-    required String hint,
     required String? value,
-    required List<dynamic> items, // dynamic because it's PartyTypeModel list
-    required ValueChanged<String?> onChanged,
+    required List<Map<String, dynamic>> items,
+    required ValueChanged<String?>? onChanged,
     required bool isDark,
     required Color inputFillColor,
     required Color textColor,
@@ -657,7 +693,51 @@ class _ReservationFormDialogState extends State<ReservationFormDialog> {
           items: items
               .map(
                 (item) => DropdownMenuItem<String>(
-                  value: item.name as String,
+                  value: item['key'].toString(),
+                  child: Text(
+                    (item['label'] as String).tr,
+                    style: TextStyle(fontSize: 14, color: textColor),
+                  ),
+                ),
+              )
+              .toList(),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPartyTypeDropdownField({
+    required String label,
+    required String hint,
+    required String? value,
+    required List<dynamic> items, // dynamic because it's PartyTypeModel list
+    required ValueChanged<String?>? onChanged,
+    required bool isDark,
+    required Color inputFillColor,
+    required Color textColor,
+    required Color subtitleColor,
+    required Color borderColor,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: textColor,
+          ),
+        ),
+        const SizedBox(height: 8),
+        CustemDropDownField<String>(
+          hint: hint,
+          value: value,
+          items: items
+              .map(
+                (item) => DropdownMenuItem<String>(
+                  value: item.uuid,
                   child: Text(
                     item.name,
                     style: TextStyle(fontSize: 14, color: textColor),

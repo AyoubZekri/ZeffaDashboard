@@ -1,9 +1,11 @@
 import 'package:uuid/uuid.dart';
 import '../../../core/class/Sqldb.dart';
+import '../../../core/class/SyncServer.dart';
 import '../../../core/services/Services.dart';
 
 class SpecialDates {
   final SQLDB sqldb = SQLDB();
+  final SyncService _syncService = SyncService();
 
   Myservices myServices;
 
@@ -20,6 +22,7 @@ class SpecialDates {
           r.username AS customer_name,
           r.phone_numper AS customer_phone,
           r.id AS booking_id,
+          r.type_of_party_uuid,
           pt.name AS event_type
         FROM special_dates sd
         LEFT JOIN reservations r ON sd.reservation_uuid = r.uuid
@@ -52,6 +55,9 @@ class SpecialDates {
       };
 
       int result = await sqldb.insert("special_dates", data);
+      if (result > 0) {
+        await _syncService.addToQueue("special_dates", uuid, "insert", data);
+      }
       return result > 0;
     } catch (e) {
       print("❌ AddSpecialDay Error: $e");
@@ -81,6 +87,9 @@ class SpecialDates {
       };
 
       int result = await sqldb.insert("special_dates", data);
+      if (result > 0) {
+        await _syncService.addToQueue("special_dates", uuid, "insert", data);
+      }
       return result > 0;
     } catch (e) {
       print("❌ AddSpecialPeriod Error: $e");
@@ -111,6 +120,9 @@ class SpecialDates {
       int result = await sqldb.update("special_dates", data, "uuid = ?", [
         uuid,
       ]);
+      if (result > 0) {
+        await _syncService.addToQueue("special_dates", uuid, "update", data);
+      }
       return result > 0;
     } catch (e) {
       print("❌ Updatedata Error: $e");
@@ -121,6 +133,11 @@ class SpecialDates {
   Future<bool> Deletedata(String uuid) async {
     try {
       int result = await sqldb.delete("special_dates", "uuid = ?", [uuid]);
+      if (result > 0) {
+        await _syncService.addToQueue("special_dates", uuid, "delete", {
+          "uuid": uuid,
+          "updated_at": DateTime.now().toIso8601String(),
+        });      }
       return result > 0;
     } catch (e) {
       print("❌ Deletedata Error: $e");

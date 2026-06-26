@@ -13,10 +13,7 @@ class LoginData {
     return response.fold((l) => l, (r) => r);
   }
 
-  logout() async {
-    var response = await crud.postDataheadersLogout(Applink.logout);
-    return response.fold((l) => l, (r) => r);
-  }
+
 
   getUser() async {
     var response = await crud.getData(Applink.getUser);

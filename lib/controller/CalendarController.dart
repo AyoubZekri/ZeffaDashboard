@@ -59,6 +59,7 @@ class CalendarController extends GetxController {
   }
 
   Future<void> updateMonthlyStats() async {
+
     final count = await specialDatesRepo.getReservationsCountForMonth(
       currentYear.value,
       currentMonth.value,
@@ -116,6 +117,7 @@ class CalendarController extends GetxController {
           r.phone_numper,
           r.booking_date,
           r.booking_period,
+          r.type_of_party_uuid,
           pt.name AS event_type
         FROM reservations r
         LEFT JOIN party_types pt ON r.type_of_party_uuid = pt.uuid
@@ -143,6 +145,7 @@ class CalendarController extends GetxController {
               'type': 'special_period',
               'title': item.title ?? '',
               'eventType': 'special_period'.tr,
+              "type_of_party_uuid": item.typeOfPartyUuid ?? '',
             });
           } else {
             loadedSpecialDays.add({
@@ -150,6 +153,7 @@ class CalendarController extends GetxController {
               'title': item.title ?? '',
               'type': item.type ?? 'special_day',
               'date': item.date,
+              "type_of_party_uuid": item.typeOfPartyUuid ?? '',
               'customerName': item.customerName ?? '',
               'customerPhone': item.customerPhone ?? '',
               'bookingId': item.bookingId != null ? '#${item.bookingId}' : '',
@@ -175,6 +179,7 @@ class CalendarController extends GetxController {
           'uuid': res['uuid'],
           'title': res['event_type'] ?? 'حجز',
           'type': 'reserved',
+          "type_of_party_uuid": res['type_of_party_uuid'] ?? '',
           'booking_period': res['booking_period'],
           'date': normalizedDate,
           'customerName': res['username'] ?? '',

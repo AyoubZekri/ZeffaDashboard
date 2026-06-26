@@ -21,6 +21,7 @@ class ExpensesScreen extends StatelessWidget {
     final textColor = theme.colorScheme.onSurface;
 
     // Inject/Find the ExpensesController
+    Get.delete<ExpensesController>();
     final ctrl = Get.put(ExpensesController());
 
     return Scaffold(
@@ -106,7 +107,7 @@ class ExpensesScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  "${value.toStringAsFixed(2)} $currencyStr",
+                                  "${value.toInt()} $currencyStr",
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w900,
@@ -182,6 +183,18 @@ class ExpensesScreen extends StatelessWidget {
                     valueColor: profitsColor,
                   );
 
+                  final totalDebts = ctrl.totalDebtsSum;
+                  final cardDebts = buildCard(
+                    title: 'debts'.tr,
+                    value: totalDebts,
+                    icon: Icons.account_balance_wallet_outlined,
+                    iconColor: const Color(0xFFE65100),
+                    iconBg: isDark
+                        ? const Color(0xFF3E2723)
+                        : const Color(0xFFFFF3E0),
+                    valueColor: const Color(0xFFE65100),
+                  );
+
                   if (isSmallScreen) {
                     return Column(
                       children: [
@@ -190,6 +203,8 @@ class ExpensesScreen extends StatelessWidget {
                         cardIncome,
                         const SizedBox(height: 16),
                         cardProfits,
+                        const SizedBox(height: 16),
+                        cardDebts,
                       ],
                     );
                   } else {
@@ -200,6 +215,8 @@ class ExpensesScreen extends StatelessWidget {
                         Expanded(child: cardIncome),
                         const SizedBox(width: 16),
                         Expanded(child: cardProfits),
+                        const SizedBox(width: 16),
+                        Expanded(child: cardDebts),
                       ],
                     );
                   }
@@ -255,7 +272,8 @@ class ExpensesScreen extends StatelessWidget {
 
     final List<Map<String, dynamic>> categories = [
       {'id': 0, 'label': 'all'.tr},
-      {'id': 1, 'label': 'maintenance_workers'.tr},
+      {'id': 1, 'label': 'workers'.tr},
+      {'id': 4, 'label': 'maintenance'.tr},
       {'id': 2, 'label': 'cleaning_materials'.tr},
       {'id': 3, 'label': 'other_expenses'.tr},
     ];

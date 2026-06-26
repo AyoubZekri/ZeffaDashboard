@@ -13,7 +13,8 @@ class SettingsPasswordDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.create(() => SettingsPasswordController());
+    Get.delete<SettingsPasswordController>();
+    Get.put(SettingsPasswordController());
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     Color textColor = isDark ? AppColor.white : AppColor.deepPurple;

@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zeffa/core/functions/dialogDelete.dart';
 import '../../controller/Reservationscontroller.dart';
-import '../../core/constant/Colorapp.dart';
-import '../../core/constant/AppTheme.dart';
-import '../../controller/SiedBarController.dart';
-import '../../data/model/ReservationModel.dart';
 import '../widget/reservations/ReservationsHeader.dart';
 import '../widget/reservations/ReservationsTable.dart';
 import '../widget/reservations/ReservationFormDialog.dart';
@@ -27,8 +23,6 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.extension<AppColors>()!;
 
     return Obx(() {
       final filteredReservations = controllerRe.filteredReservations;

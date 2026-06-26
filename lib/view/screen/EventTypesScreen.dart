@@ -17,6 +17,7 @@ class EventTypesScreen extends StatelessWidget {
     final isArabic = Get.locale?.languageCode == 'ar';
     
     // Inject/Find the EventTypesController
+    Get.delete<EventTypesController>();
     final ctrl = Get.put(EventTypesController());
 
     return Scaffold(

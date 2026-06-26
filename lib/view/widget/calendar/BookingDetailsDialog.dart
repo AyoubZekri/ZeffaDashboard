@@ -16,7 +16,7 @@ class BookingDetailsDialog extends StatelessWidget {
     final isArabic = Get.locale?.languageCode == 'ar';
 
     final bookingId = event['bookingId'] ?? '#---';
-    final eventType = event['eventType'] ?? event['title'] ?? '---';
+    final eventType = event['title'] ?? event['type_of_party_uuid'] ?? '---';
     final customerName = event['customerName'] ?? '---';
     final customerPhone = event['customerPhone'] ?? '---';
 
@@ -92,7 +92,7 @@ class BookingDetailsDialog extends StatelessWidget {
                       if (reservations.isNotEmpty)
                         ...reservations.map((res) {
                           final resId = res['bookingId'] ?? '#---';
-                          final resType = res['eventType'] ?? res['title'] ?? '---';
+                          final resType = res['title'] ?? res['type_of_party_uuid'] ?? '---';
                           final resName = res['customerName'] ?? '---';
                           final resPhone = res['customerPhone'] ?? '---';
                           final periodKey = res['booking_period'];

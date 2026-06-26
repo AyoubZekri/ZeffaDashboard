@@ -8,7 +8,7 @@ import '../../../core/constant/AppTheme.dart';
 class CustemDropDownField<T> extends StatelessWidget {
   final List<DropdownMenuItem<T>> items;
   final T? value;
-  final void Function(T?) onChanged;
+  final ValueChanged<T?>? onChanged;
   final String? hint;
   final FormFieldValidator<T>? validator;
 
@@ -16,7 +16,7 @@ class CustemDropDownField<T> extends StatelessWidget {
     super.key,
     required this.items,
     required this.value,
-    required this.onChanged,
+    this.onChanged,
     this.hint,
     this.validator,
   });
@@ -70,10 +70,12 @@ class CustemDropDownField<T> extends StatelessWidget {
                       : null,
                   items: items,
                   value: value,
-                  onChanged: (val) {
-                    onChanged(val);
-                    state.didChange(val);
-                  },
+                  onChanged: onChanged == null
+                      ? null
+                      : (val) {
+                          onChanged!(val);
+                          state.didChange(val);
+                        },
                   dropdownStyleData: DropdownStyleData(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),

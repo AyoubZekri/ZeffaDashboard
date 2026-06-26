@@ -109,9 +109,9 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
             // Current info row
             Row(
               children: [
-                Expanded(child: _buildInfoCard('reservation_price'.tr, reservationPrice.toStringAsFixed(1), AppColor.primaryPurple, colors)),
+                Expanded(child: _buildInfoCard('reservation_price'.tr, reservationPrice.toInt().toString(), AppColor.primaryPurple, colors)),
                 const SizedBox(width: 12),
-                Expanded(child: _buildInfoCard('current_deposit'.tr, currentDeposit.toStringAsFixed(1), Colors.green, colors)),
+                Expanded(child: _buildInfoCard('current_deposit'.tr, currentDeposit.toInt().toString(), Colors.green, colors)),
               ],
             ),
             const SizedBox(height: 20),
@@ -154,9 +154,9 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
                 ),
                 child: Column(
                   children: [
-                    _buildPreviewRow('new_total_deposit'.tr, newTotalDeposit.toStringAsFixed(1), exceedsPrice ? Colors.red : Colors.green),
+                    _buildPreviewRow('new_total_deposit'.tr, newTotalDeposit.toInt().toString(), exceedsPrice ? Colors.red : Colors.green),
                     const SizedBox(height: 8),
-                    _buildPreviewRow('new_remaining'.tr, exceedsPrice ? '---' : newRemaining.toStringAsFixed(1), textColor),
+                    _buildPreviewRow('new_remaining'.tr, exceedsPrice ? '---' : newRemaining.toInt().toString(), textColor),
                     if (exceedsPrice) ...[
                       const SizedBox(height: 12),
                       Row(

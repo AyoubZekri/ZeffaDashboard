@@ -106,14 +106,26 @@ class TermFormDialog extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CustemTextField(
-                          controller: ctrl.titleController,
-                          label: 'term_title'.tr,
-                          hint: 'term_title'.tr,
-                          icon: Icons.title_rounded,
-                          validator: (val) {
-                            return validInput(val!, 200, 1, "Text");
-                          },
+                        Obx(
+                          () => CustemTextField(
+                            controller: ctrl.titleController,
+                            label:
+                                ctrl.selectedType.value == 'required_documents'
+                                ? (isArabic
+                                      ? 'اسم الطلب (المادة)'
+                                      : 'Material Name')
+                                : 'term_title'.tr,
+                            hint:
+                                ctrl.selectedType.value == 'required_documents'
+                                ? (isArabic
+                                      ? 'مثال: قهوة، سكر، لحم...'
+                                      : 'e.g. Coffee, Sugar...')
+                                : 'term_title'.tr,
+                            icon: Icons.title_rounded,
+                            validator: (val) {
+                              return validInput(val!, 200, 1, "Text");
+                            },
+                          ),
                         ),
                         const SizedBox(height: 24),
 
@@ -180,131 +192,26 @@ class TermFormDialog extends StatelessWidget {
                         ),
                         const SizedBox(height: 24),
 
-                        // Details Section
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              isArabic
-                                  ? "تفاصيل البند (نقاط تفصيلية)"
-                                  : "Term Details (Bullet Points)",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: textColor,
-                              ),
-                            ),
-                            TextButton.icon(
-                              onPressed: ctrl.addDetailField,
-                              icon: const Icon(Icons.add_rounded, size: 18),
-                              label: Text(
-                                isArabic ? "إضافة تفصيل" : "Add Detail",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              style: TextButton.styleFrom(
-                                foregroundColor: AppColor.primaryPurple,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
                         Obx(() {
-                          if (ctrl.detailControllers.isEmpty) {
-                            return Container(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: colors.inputFillColor.withOpacity(0.5),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: borderColor.withOpacity(0.5),
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  isArabic
-                                      ? "لا توجد تفاصيل حالياً (اضغط إضافة تفصيل لإضافة نقاط)"
-                                      : "No details added yet (click Add Detail to add points)",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: subtitleColor,
-                                  ),
-                                ),
-                              ),
+                          if (ctrl.selectedType.value == 'required_documents') {
+                            return _buildMaterialDetailsSection(
+                              ctrl,
+                              isArabic,
+                              textColor,
+                              colors,
+                              borderColor,
+                              subtitleColor,
+                            );
+                          } else {
+                            return _buildNormalDetailsSection(
+                              ctrl,
+                              isArabic,
+                              textColor,
+                              colors,
+                              borderColor,
+                              subtitleColor,
                             );
                           }
-
-                          return Column(
-                            children: List.generate(
-                              ctrl.detailControllers.length,
-                              (index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 12.0),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextFormField(
-                                          controller:
-                                              ctrl.detailControllers[index],
-                                          decoration: InputDecoration(
-                                            hintText:
-                                                '${isArabic ? "تفصيل" : "Detail"} ${index + 1}',
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              borderSide: BorderSide(
-                                                color: borderColor,
-                                              ),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              borderSide: BorderSide(
-                                                color: borderColor,
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              borderSide: const BorderSide(
-                                                color: AppColor.primaryPurple,
-                                                width: 1.5,
-                                              ),
-                                            ),
-                                            filled: true,
-                                            fillColor: colors.inputFillColor,
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                  horizontal: 16,
-                                                  vertical: 12,
-                                                ),
-                                          ),
-                                          style: TextStyle(
-                                            color: textColor,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      IconButton(
-                                        onPressed: () =>
-                                            ctrl.removeDetailField(index),
-                                        icon: const Icon(
-                                          Icons.delete_outline_rounded,
-                                          color: Colors.redAccent,
-                                        ),
-                                        tooltip: isArabic
-                                            ? "حذف التفصيل"
-                                            : "Delete Detail",
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          );
                         }),
                       ],
                     ),
@@ -368,6 +275,262 @@ class TermFormDialog extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildNormalDetailsSection(
+    TermsController ctrl,
+    bool isArabic,
+    Color textColor,
+    AppColors colors,
+    Color borderColor,
+    Color subtitleColor,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              isArabic
+                  ? "تفاصيل البند (نقاط تفصيلية)"
+                  : "Term Details (Bullet Points)",
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
+            ),
+            TextButton.icon(
+              onPressed: ctrl.addDetailField,
+              icon: const Icon(Icons.add_rounded, size: 18),
+              label: Text(
+                isArabic ? "إضافة تفصيل" : "Add Detail",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColor.primaryPurple,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Obx(() {
+          if (ctrl.detailControllers.isEmpty) {
+            return _buildEmptyState(
+              isArabic
+                  ? "لا توجد تفاصيل حالياً (اضغط إضافة تفصيل لإضافة نقاط)"
+                  : "No details added yet",
+              colors,
+              borderColor,
+              subtitleColor,
+            );
+          }
+          return Column(
+            children: List.generate(ctrl.detailControllers.length, (index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: ctrl.detailControllers[index],
+                        decoration: _buildInputDeco(
+                          '${isArabic ? "تفصيل" : "Detail"} ${index + 1}',
+                          colors,
+                          borderColor,
+                        ),
+                        style: TextStyle(color: textColor, fontSize: 14),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    IconButton(
+                      onPressed: () => ctrl.removeDetailField(index),
+                      icon: const Icon(
+                        Icons.delete_outline_rounded,
+                        color: Colors.redAccent,
+                      ),
+                      tooltip: isArabic ? "حذف التفصيل" : "Delete Detail",
+                    ),
+                  ],
+                ),
+              );
+            }),
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildMaterialDetailsSection(
+    TermsController ctrl,
+    bool isArabic,
+    Color textColor,
+    AppColors colors,
+    Color borderColor,
+    Color subtitleColor,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              isArabic ? "تفاصيل المادة المطلوبة" : "Required Material Details",
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            border: Border.all(color: borderColor),
+            borderRadius: BorderRadius.circular(12),
+            color: colors.inputFillColor.withOpacity(0.3),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Obx(
+                      () => DropdownButtonFormField<String>(
+                        value: ctrl.singleMaterial.unit.value,
+                        dropdownColor: colors.inputFillColor,
+                        decoration:
+                            _buildInputDeco(
+                              isArabic ? "الوحدة" : "Unit",
+                              colors,
+                              borderColor,
+                            ).copyWith(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 12,
+                              ),
+                            ),
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 14,
+                          fontFamily: 'Cairo',
+                        ),
+                        items: [
+                          DropdownMenuItem(
+                            value: 'لتر',
+                            child: Text(isArabic ? "لتر" : "Liter"),
+                          ),
+                          DropdownMenuItem(
+                            value: 'كلغ',
+                            child: Text(isArabic ? "كلغ" : "Kg"),
+                          ),
+                          DropdownMenuItem(
+                            value: 'عدد',
+                            child: Text(isArabic ? "عدد" : "Count"),
+                          ),
+                        ],
+                        onChanged: (val) {
+                          if (val != null) ctrl.singleMaterial.unit.value = val;
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 1,
+                    child: TextFormField(
+                      controller: ctrl.singleMaterial.quantityController,
+                      keyboardType: TextInputType.number,
+                      decoration:
+                          _buildInputDeco(
+                            isArabic ? "الكمية الأساسية" : "Base Quantity",
+                            colors,
+                            borderColor,
+                          ).copyWith(
+                            prefixIcon: const Icon(Icons.numbers, size: 18),
+                          ),
+                      style: TextStyle(color: textColor, fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: ctrl.singleMaterial.coversGuestsController,
+                      keyboardType: TextInputType.number,
+                      decoration:
+                          _buildInputDeco(
+                            isArabic
+                                ? "تكفي لـ (عدد معزومين)"
+                                : "Covers Guests",
+                            colors,
+                            borderColor,
+                          ).copyWith(
+                            prefixIcon: const Icon(Icons.groups, size: 18),
+                          ),
+                      style: TextStyle(color: textColor, fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState(
+    String text,
+    AppColors colors,
+    Color borderColor,
+    Color subtitleColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: colors.inputFillColor.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor.withOpacity(0.5)),
+      ),
+      child: Center(
+        child: Text(text, style: TextStyle(fontSize: 12, color: subtitleColor)),
+      ),
+    );
+  }
+
+  InputDecoration _buildInputDeco(
+    String hint,
+    AppColors colors,
+    Color borderColor,
+  ) {
+    return InputDecoration(
+      hintText: hint,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: borderColor),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: borderColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColor.primaryPurple, width: 1.5),
+      ),
+      filled: true,
+      fillColor: colors.inputFillColor,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     );
   }
 }

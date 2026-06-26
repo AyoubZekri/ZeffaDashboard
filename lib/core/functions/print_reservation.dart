@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -305,13 +306,34 @@ Future<void> generateAndPrintPDF(
     requiredProcedures = dbRequiredProcedures;
   }
 
+  int totalGuests = (reservation.numberOfMen ?? 0) + (reservation.numberOfWomen ?? 0);
+  if (totalGuests <= 0) totalGuests = 1;
+
   List<String> requiredDocuments = [];
   if (dbRequiredDocuments.isNotEmpty) {
     for (final doc in dbRequiredDocuments) {
       final String title = doc["title"] ?? "";
       final List<String> contents = List<String>.from(doc["contents"] ?? []);
       if (contents.isNotEmpty) {
-        requiredDocuments.add("$title ........ ${contents.join(', ')}");
+        List<String> parsedItems = [];
+        for (String c in contents) {
+          try {
+            final decoded = jsonDecode(c);
+            final name = decoded['name'] ?? title; // Fallback to title
+            final double baseQty = (decoded['quantity'] as num?)?.toDouble() ?? 1.0;
+            final String unit = decoded['unit'] ?? '';
+            final int coversGuests = (decoded['covers_guests'] as num?)?.toInt() ?? 100;
+
+            int cGuests = coversGuests > 0 ? coversGuests : 100;
+            double scale = totalGuests / cGuests;
+            int finalQty = (baseQty * scale).ceil();
+
+            parsedItems.add("$name ........ $finalQty $unit");
+          } catch (e) {
+            parsedItems.add("$title ........ $c");
+          }
+        }
+        requiredDocuments.add(parsedItems.join('\n'));
       } else {
         requiredDocuments.add(title);
       }

@@ -2,8 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/class/Statusrequest.dart';
 import '../../core/functions/Snacpar.dart';
+import 'dart:convert';
 import '../../data/datasource/Remote/Terms.dart';
 import '../../data/model/TermModel.dart';
+
+class RequiredMaterialItem {
+  RxString unit = 'كلغ'.obs; // Default 'كلغ', 'لتر', 'عدد'
+  TextEditingController quantityController = TextEditingController();
+  TextEditingController coversGuestsController = TextEditingController();
+
+  void dispose() {
+    quantityController.dispose();
+    coversGuestsController.dispose();
+  }
+
+  void clear() {
+    unit.value = 'كلغ';
+    quantityController.clear();
+    coversGuestsController.clear();
+  }
+}
 
 class TermsController extends GetxController {
   late final TextEditingController searchController;
@@ -21,8 +39,11 @@ class TermsController extends GetxController {
   // Form Fields
   final GlobalKey<FormState> formState = GlobalKey<FormState>();
   late TextEditingController titleController;
-  late TextEditingController contentController; // Kept for backwards compatibility
-  final RxList<TextEditingController> detailControllers = <TextEditingController>[].obs;
+  late TextEditingController
+  contentController; // Kept for backwards compatibility
+  final RxList<TextEditingController> detailControllers =
+      <TextEditingController>[].obs;
+  final RequiredMaterialItem singleMaterial = RequiredMaterialItem();
   final RxString selectedType = "internal_rules".obs;
 
   bool isEdit = false;
@@ -54,6 +75,7 @@ class TermsController extends GetxController {
     for (var c in detailControllers) {
       c.dispose();
     }
+    singleMaterial.dispose();
     super.onClose();
   }
 
@@ -73,6 +95,7 @@ class TermsController extends GetxController {
       c.dispose();
     }
     detailControllers.clear();
+    singleMaterial.clear();
     selectedType.value = "internal_rules";
     isEdit = false;
     editUuid = null;
@@ -103,7 +126,8 @@ class TermsController extends GetxController {
     final filterType = selectedTypeFilter.value;
 
     return allTerms.where((term) {
-      final matchesSearch = query.isEmpty ||
+      final matchesSearch =
+          query.isEmpty ||
           (term.title?.toLowerCase().contains(query) ?? false) ||
           term.contents.any((c) => c.toLowerCase().contains(query));
 
@@ -153,10 +177,23 @@ class TermsController extends GetxController {
   Future<void> saveTerm() async {
     if (!formState.currentState!.validate()) return;
 
-    final List<String> details = detailControllers
-        .map((c) => c.text.trim())
-        .where((text) => text.isNotEmpty)
-        .toList();
+    List<String> details = [];
+
+    if (selectedType.value == 'required_documents') {
+      final Map<String, dynamic> data = {
+        "unit": singleMaterial.unit.value,
+        "quantity":
+            double.tryParse(singleMaterial.quantityController.text) ?? 1.0,
+        "covers_guests":
+            int.tryParse(singleMaterial.coversGuestsController.text) ?? 100,
+      };
+      details.add(jsonEncode(data));
+    } else {
+      details = detailControllers
+          .map((c) => c.text.trim())
+          .where((text) => text.isNotEmpty)
+          .toList();
+    }
 
     bool success = false;
     if (isEdit) {
@@ -178,7 +215,11 @@ class TermsController extends GetxController {
       Get.back();
       loadTerms();
       clearFields();
-      showSnackbar("success".tr, isEdit ? "term_updated_success".tr : "term_added_success".tr, Colors.green);
+      showSnackbar(
+        "success".tr,
+        isEdit ? "term_updated_success".tr : "term_added_success".tr,
+        Colors.green,
+      );
     } else {
       showSnackbar("error".tr, "operation_failed".tr, Colors.red);
     }
@@ -194,9 +235,37 @@ class TermsController extends GetxController {
     for (var c in detailControllers) {
       c.dispose();
     }
-    detailControllers.assignAll(
-      term.contents.map((detail) => TextEditingController(text: detail)).toList()
-    );
+    detailControllers.clear();
+
+    singleMaterial.clear();
+
+    if (term.type == 'required_documents') {
+      if (term.contents.isNotEmpty) {
+        try {
+          final decoded = jsonDecode(term.contents.first);
+
+          String loadedUnit = decoded['unit']?.toString() ?? 'كلغ';
+          if (loadedUnit == 'kg') loadedUnit = 'كلغ';
+          if (loadedUnit == 'liter') loadedUnit = 'لتر';
+          if (loadedUnit == 'count') loadedUnit = 'عدد';
+          singleMaterial.unit.value = loadedUnit;
+
+          singleMaterial.quantityController.text =
+              decoded['quantity']?.toString().replaceAll(RegExp(r'\.0$'), '') ??
+              '1';
+          singleMaterial.coversGuestsController.text =
+              decoded['covers_guests']?.toString() ?? '100';
+        } catch (e) {
+          // Fallback
+        }
+      }
+    } else {
+      detailControllers.assignAll(
+        term.contents
+            .map((detail) => TextEditingController(text: detail))
+            .toList(),
+      );
+    }
   }
 
   Future<void> deleteTerm(String uuid) async {

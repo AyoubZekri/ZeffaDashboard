@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/class/Statusrequest.dart';
@@ -12,6 +13,11 @@ class EventTypesController extends GetxController {
   late TextEditingController typePrice;
   late TextEditingController typeSeasonalPrice;
   var selectedIcon = Icons.favorite_rounded.obs;
+
+  // Block pricing fields
+  late TextEditingController maxNormalGuests;
+  late TextEditingController extraGuestsBlock;
+  late TextEditingController extraGuestsPrice;
 
   // Input fields for Edit
   late TextEditingController editTypeName;
@@ -48,6 +54,10 @@ class EventTypesController extends GetxController {
     typePrice = TextEditingController();
     typeSeasonalPrice = TextEditingController();
 
+    maxNormalGuests = TextEditingController();
+    extraGuestsBlock = TextEditingController();
+    extraGuestsPrice = TextEditingController();
+
     editTypeName = TextEditingController();
     editTypeDesc = TextEditingController();
     editTypePrice = TextEditingController();
@@ -63,6 +73,9 @@ class EventTypesController extends GetxController {
     typeDesc.dispose();
     typePrice.dispose();
     typeSeasonalPrice.dispose();
+    maxNormalGuests.dispose();
+    extraGuestsBlock.dispose();
+    extraGuestsPrice.dispose();
     editTypeName.dispose();
     editTypeDesc.dispose();
     editTypePrice.dispose();
@@ -107,6 +120,7 @@ class EventTypesController extends GetxController {
             'seasonalPrice': _formatPrice(
               item.seasonalPrice?.toString() ?? '0',
             ),
+            'guestPricingTiers': item.guestPricingTiers,
             'icon': icon,
             'iconBgColor': doubleColor.withOpacity(0.12),
             'iconColor': doubleColor,
@@ -129,6 +143,9 @@ class EventTypesController extends GetxController {
     typeDesc.clear();
     typePrice.clear();
     typeSeasonalPrice.clear();
+    maxNormalGuests.clear();
+    extraGuestsBlock.clear();
+    extraGuestsPrice.clear();
     selectedIcon.value = Icons.favorite_rounded;
     editUuid = null;
   }
@@ -147,11 +164,25 @@ class EventTypesController extends GetxController {
     );
     final doubleSeasonalPrice = double.tryParse(cleanSeasonalPrice) ?? 0.0;
 
+    String? guestPricingTiersStr;
+    final int maxGuests = int.tryParse(maxNormalGuests.text) ?? 0;
+    final int extraBlock = int.tryParse(extraGuestsBlock.text) ?? 0;
+    final double extraPrice = double.tryParse(extraGuestsPrice.text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+
+    if (maxGuests > 0 && extraBlock > 0 && extraPrice > 0) {
+      guestPricingTiersStr = jsonEncode([{
+        "max_normal_guests": maxGuests,
+        "extra_guests_block": extraBlock,
+        "extra_guests_price": extraPrice
+      }]);
+    }
+
     final success = await partyTypesRepo.Adddata(
       typeName.text,
       typeDesc.text,
       doublePrice,
       doubleSeasonalPrice,
+      guestPricingTiersStr,
       selectedIcon.value.codePoint.toString(),
     );
 
@@ -177,6 +208,43 @@ class EventTypesController extends GetxController {
       ',',
       '',
     );
+    
+    // Load tiers (now block-based)
+    maxNormalGuests.clear();
+    extraGuestsBlock.clear();
+    extraGuestsPrice.clear();
+    
+    print("========= DEBUG EDIT TIERS =========");
+    print("Tiers Type: ${item['guestPricingTiers'].runtimeType}");
+    print("Tiers Value: ${item['guestPricingTiers']}");
+    print("====================================");
+    
+    if (item['guestPricingTiers'] != null) {
+      dynamic blockData;
+      if (item['guestPricingTiers'] is String && item['guestPricingTiers'].toString().isNotEmpty) {
+        try {
+          final decoded = jsonDecode(item['guestPricingTiers']);
+          if (decoded is List && decoded.isNotEmpty) {
+            blockData = decoded[0];
+          } else if (decoded is Map) {
+            blockData = decoded;
+          }
+        } catch (e) {
+          print("Error decoding guestPricingTiers: $e");
+        }
+      } else if (item['guestPricingTiers'] is List && (item['guestPricingTiers'] as List).isNotEmpty) {
+        blockData = item['guestPricingTiers'][0];
+      } else if (item['guestPricingTiers'] is Map) {
+        blockData = item['guestPricingTiers'];
+      }
+
+      if (blockData != null && blockData is Map) {
+        maxNormalGuests.text = blockData['max_normal_guests']?.toString() ?? '';
+        extraGuestsBlock.text = blockData['extra_guests_block']?.toString() ?? '';
+        extraGuestsPrice.text = blockData['extra_guests_price']?.toString() ?? '';
+      }
+    }
+
     editSelectedIcon.value = item['icon'] as IconData;
   }
 
@@ -191,12 +259,26 @@ class EventTypesController extends GetxController {
     );
     final doubleSeasonalPrice = double.tryParse(cleanSeasonalPrice) ?? 0.0;
 
+    String? guestPricingTiersStr;
+    final int maxGuests = int.tryParse(maxNormalGuests.text) ?? 0;
+    final int extraBlock = int.tryParse(extraGuestsBlock.text) ?? 0;
+    final double extraPrice = double.tryParse(extraGuestsPrice.text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+
+    if (maxGuests > 0 && extraBlock > 0 && extraPrice > 0) {
+      guestPricingTiersStr = jsonEncode([{
+        "max_normal_guests": maxGuests,
+        "extra_guests_block": extraBlock,
+        "extra_guests_price": extraPrice
+      }]);
+    }
+
     final success = await partyTypesRepo.Updatedata(
       uuid,
       editTypeName.text,
       editTypeDesc.text,
       doublePrice,
       doubleSeasonalPrice,
+      guestPricingTiersStr,
       editSelectedIcon.value.codePoint.toString(),
     );
 
@@ -209,12 +291,20 @@ class EventTypesController extends GetxController {
 
   // Delete Event Type
   Future<void> deleteEventType(String uuid) async {
-    final success = await partyTypesRepo.Deletedata(uuid);
-    if (success) {
-      loadEventTypes();
-      Get.back();
-    } else {
-      showSnackbar("error".tr, "operation_failed".tr, Colors.red);
+    try {
+      final success = await partyTypesRepo.Deletedata(uuid);
+      if (success) {
+        loadEventTypes();
+        Get.back();
+      } else {
+        showSnackbar("error".tr, "operation_failed".tr, Colors.red);
+      }
+    } catch (e) {
+      if (e == 'linked_to_reservation') {
+        showSnackbar("warning".tr, "cannot_delete_linked_item".tr, Colors.orange);
+      } else {
+        showSnackbar("error".tr, "operation_failed".tr, Colors.red);
+      }
     }
   }
 
@@ -232,12 +322,17 @@ class EventTypesController extends GetxController {
 
   // Helper to format price with commas
   String _formatPrice(String priceStr) {
-    final clean = priceStr.replaceAll(RegExp(r'[^0-9]'), '');
+    final clean = priceStr.replaceAll(RegExp(r'[^0-9.]'), '');
     if (clean.isEmpty) return '0';
-    final value = int.parse(clean);
-    return value.toString().replaceAllMapped(
+    final doubleValue = double.tryParse(clean) ?? 0.0;
+    String formatted = doubleValue.toInt().toString();
+    
+    // Add commas to the integer part
+    final parts = formatted.split('.');
+    parts[0] = parts[0].replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
       (Match m) => '${m[1]},',
     );
+    return parts.join('.');
   }
 }

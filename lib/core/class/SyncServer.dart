@@ -24,6 +24,12 @@ class SyncService {
     String operation,
     Map<String, dynamic>? data,
   ) async {
+    if (operation == "delete") {
+      operation = "update";
+      data ??= {};
+      data["is_delete"] = 1;
+    }
+
     data?["uuid"] = uuid;
     data?["updated_at"] = DateTime.now().toIso8601String();
 
@@ -219,17 +225,17 @@ class SyncService {
           break;
         }
         final serverCount = serverData.length;
-        // if (table != "zakats" && table != "products" && table != "categoris") {
-        //   final deletedUuids = serverData
-        //       .where((e) => e["is_delete"] == 1 || e["is_delete"] == "1")
-        //       .map((e) => e["uuid"].toString())
-        //       .toList();
-        //   if (deletedUuids.isNotEmpty) {
-        //     await _syncDeletedLocalRows(table, deletedUuids);
-        //   }
-        //   serverData
-        //       .removeWhere((e) => e["is_delete"] == 1 || e["is_delete"] == "1");
-        // }
+        if (table != "zakats" && table != "products" && table != "categoris") {
+          final deletedUuids = serverData
+              .where((e) => e["is_delete"] == 1 || e["is_delete"] == "1")
+              .map((e) => e["uuid"].toString())
+              .toList();
+          if (deletedUuids.isNotEmpty) {
+            await _syncDeletedLocalRows(table, deletedUuids);
+          }
+          serverData
+              .removeWhere((e) => e["is_delete"] == 1 || e["is_delete"] == "1");
+        }
 
         await _syncServerRecords(table, serverData);
 
@@ -288,22 +294,29 @@ class SyncService {
         } else {
           final local = existing.first;
 
-          final serverUpdated =
-              DateTime.tryParse(record["updated_at"] ?? "") ?? DateTime(1970);
+          final unpushedEdits = await _db.readData(
+            "SELECT COUNT(*) as count FROM sync_queue WHERE table_name = ? AND row_id = ? AND synced = 0",
+            [table, uuid],
+          );
+          final hasUnpushedEdits = (int.tryParse(unpushedEdits.first['count'].toString()) ?? 0) > 0;
 
-          final rawDate = local["updated_at"];
-          final localUpdated = (rawDate != null)
-              ? DateTime.tryParse(rawDate.toString()) ?? DateTime(1970)
-              : DateTime(1970);
-
-          if (serverUpdated.isAfter(localUpdated)) {
+          if (!hasUnpushedEdits) {
             await _db.update(table, filtered, "uuid = ?", [uuid]);
             print("🔄 تم تحديث سجل موجود: $uuid في جدول $table");
+          } else {
+            print("⏳ تم تجاهل تحديث $uuid في $table لوجود تعديلات محلية قيد الانتظار");
           }
         }
       } catch (e) {
         print("❌ فشل معالجة سجل في جدول $table: $e");
       }
+    }
+  }
+
+  Future<void> _syncDeletedLocalRows(String table, List<String> uuids) async {
+    for (String uuid in uuids) {
+      await _db.delete(table, "uuid = ?", [uuid]);
+      print("🗑️ تم حذف السجل $uuid من جدول $table محلياً بناءً على الخادم");
     }
   }
 
@@ -351,8 +364,10 @@ class SyncService {
     await pushQueue("cat_dishes");
     await pushQueue("dishes");
     await pushQueue("special_dates");
-    await pushQueue("reservations");
+    await pushQueue("additional_services");
+    await pushQueue("reservation_services");
     await pushQueue("reservation_dishes");
+    await pushQueue("reservations");
     await pushQueue("expenses");
     await pushQueue("notes");
     await pushQueue("notifications");
@@ -363,8 +378,10 @@ class SyncService {
     await pullFromServer("cat_dishes");
     await pullFromServer("dishes");
     await pullFromServer("special_dates");
-    await pullFromServer("reservations");
+    await pullFromServer("additional_services");
+    await pullFromServer("reservation_services");
     await pullFromServer("reservation_dishes");
+    await pullFromServer("reservations");
     await pullFromServer("expenses");
     await pullFromServer("notes");
     await pullFromServer("notifications");

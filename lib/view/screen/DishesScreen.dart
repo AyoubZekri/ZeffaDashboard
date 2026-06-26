@@ -18,6 +18,7 @@ class DishesScreen extends StatelessWidget {
     final isArabic = Get.locale?.languageCode == 'ar';
 
     // Inject the DishesController
+    Get.delete<DishesController>();
     final ctrl = Get.put(DishesController());
 
     return Scaffold(

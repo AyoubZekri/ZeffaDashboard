@@ -2,6 +2,7 @@ class SpecialDateModel {
   final int? id;
   final String? uuid;
   final String? reservationUuid;
+  final String? typeOfPartyUuid;
   final int? userId;
   final String? title;
   final String? type; // 'special_day', 'friday', 'reserved', 'special_period'
@@ -33,6 +34,7 @@ class SpecialDateModel {
     this.customerPhone,
     this.bookingId,
     this.eventType,
+    this.typeOfPartyUuid,
   });
 
   factory SpecialDateModel.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class SpecialDateModel {
       id: json['id'],
       uuid: json['uuid'],
       reservationUuid: json['reservation_uuid'],
+      typeOfPartyUuid: json['type_of_party_uuid'],
       userId: json['user_id'],
       title: json['title'],
       type: json['type'],
@@ -60,6 +63,7 @@ class SpecialDateModel {
       'id': id,
       'uuid': uuid,
       'reservation_uuid': reservationUuid,
+      'type_of_party_uuid': typeOfPartyUuid,
       'user_id': userId,
       'title': title,
       'type': type,

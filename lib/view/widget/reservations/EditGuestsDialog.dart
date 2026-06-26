@@ -17,6 +17,7 @@ class EditGuestsDialog extends StatefulWidget {
 class _EditGuestsDialogState extends State<EditGuestsDialog> {
   late TextEditingController menController;
   late TextEditingController womenController;
+  late TextEditingController priceController;
 
   int get menCount => int.tryParse(menController.text) ?? 0;
   int get womenCount => int.tryParse(womenController.text) ?? 0;
@@ -27,12 +28,17 @@ class _EditGuestsDialogState extends State<EditGuestsDialog> {
     super.initState();
     menController = TextEditingController(text: widget.reservation.numberOfMen.toString());
     womenController = TextEditingController(text: widget.reservation.numberOfWomen.toString());
+    
+    final ctrl = Get.find<Reservationscontroller>();
+    double initialPrice = ctrl.calculateNewPriceForGuests(widget.reservation.uuid, menCount, womenCount);
+    priceController = TextEditingController(text: initialPrice.toInt().toString());
   }
 
   @override
   void dispose() {
     menController.dispose();
     womenController.dispose();
+    priceController.dispose();
     super.dispose();
   }
 
@@ -146,17 +152,50 @@ class _EditGuestsDialogState extends State<EditGuestsDialog> {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColor.primaryPurple.withValues(alpha: 0.2)),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.people, color: AppColor.primaryPurple, size: 20),
-                      const SizedBox(width: 8),
-                      Text('total_guests'.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: textColor)),
+                      Row(
+                        children: [
+                          Icon(Icons.people, color: AppColor.primaryPurple, size: 20),
+                          const SizedBox(width: 8),
+                          Text('total_guests'.tr, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: textColor)),
+                        ],
+                      ),
+                      Text('$totalGuests', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColor.primaryPurple)),
                     ],
                   ),
-                  Text('$totalGuests', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColor.primaryPurple)),
+                  const SizedBox(height: 12),
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.attach_money, color: Colors.green, size: 20),
+                          const SizedBox(width: 8),
+                          Text('new_total_price'.tr ?? 'السعر الإجمالي الجديد', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: textColor)),
+                        ],
+                      ),
+                      SizedBox(
+                        width: 120,
+                        child: TextFormField(
+                          controller: priceController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.end,
+                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.green),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -182,7 +221,7 @@ class _EditGuestsDialogState extends State<EditGuestsDialog> {
                   child: ElevatedButton(
                     onPressed: () {
                       final ctrl = Get.find<Reservationscontroller>();
-                      ctrl.updateGuestCount(widget.reservation.uuid, menCount, womenCount);
+                      ctrl.updateGuestCount(widget.reservation.uuid, menCount, womenCount, double.tryParse(priceController.text) ?? 0.0);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColor.primaryPurple,
@@ -220,7 +259,12 @@ class _EditGuestsDialogState extends State<EditGuestsDialog> {
           controller: controller,
           keyboardType: TextInputType.number,
           style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
-          onChanged: (_) => setState(() {}),
+          onChanged: (_) {
+            setState(() {});
+            final ctrl = Get.find<Reservationscontroller>();
+            double newPrice = ctrl.calculateNewPriceForGuests(widget.reservation.uuid, menCount, womenCount);
+            priceController.text = newPrice.toInt().toString();
+          },
           decoration: InputDecoration(
             hintText: '0',
             hintStyle: TextStyle(color: subtitleColor, fontSize: 13),

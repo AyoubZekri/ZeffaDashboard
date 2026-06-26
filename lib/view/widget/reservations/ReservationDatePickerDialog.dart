@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
 import '../../../controller/Reservationscontroller.dart';
+import '../../../controller/CalendarController.dart';
 
 class ReservationDatePickerDialog extends StatefulWidget {
   final DateTime? initialDate;
@@ -23,11 +24,13 @@ class _ReservationDatePickerDialogState extends State<ReservationDatePickerDialo
   late int currentMonth;
   late int currentYear;
   late Reservationscontroller ctrl;
+  late CalendarController calCtrl;
 
   @override
   void initState() {
     super.initState();
     ctrl = Get.find<Reservationscontroller>();
+    calCtrl = Get.put(CalendarController());
     final initial = widget.initialDate ?? DateTime.now();
     currentMonth = initial.month;
     currentYear = initial.year;
@@ -85,8 +88,8 @@ class _ReservationDatePickerDialogState extends State<ReservationDatePickerDialo
 
   String getMonthName(int monthNum) {
     final monthsAr = [
-      'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+      'جانفي', 'فيفري', 'مارس', 'أفريل', 'ماي', 'جوان',
+      'جويلية', 'أوت', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
     ];
     final monthsEn = [
       'January', 'February', 'March', 'April', 'May', 'June',
@@ -126,7 +129,6 @@ class _ReservationDatePickerDialogState extends State<ReservationDatePickerDialo
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Header with month navigation
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -186,7 +188,6 @@ class _ReservationDatePickerDialogState extends State<ReservationDatePickerDialo
                   ],
                 ),
                 const SizedBox(height: 12),
-                // Weekdays header
                 Row(
                   children: [
                     'sunday'.tr, 'monday'.tr, 'tuesday'.tr, 'wednesday'.tr, 'thursday'.tr, 'friday'.tr, 'saturday'.tr
@@ -207,147 +208,157 @@ class _ReservationDatePickerDialogState extends State<ReservationDatePickerDialo
                   }).toList(),
                 ),
                 const Divider(height: 16),
-                // Calendar Grid
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: totalGridItems,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 7,
-                    crossAxisSpacing: 6,
-                    mainAxisSpacing: 6,
-                    mainAxisExtent: 52,
-                  ),
-                  itemBuilder: (context, index) {
-                    if (index < offset) {
-                      final prevDay = prevTotalDays - offset + index + 1;
-                      return Center(
-                        child: Text(
-                          "$prevDay",
-                          style: TextStyle(
-                            color: colors.subtitleColor.withOpacity(0.3),
-                            fontSize: 12,
-                          ),
-                        ),
-                      );
-                    }
+                GetBuilder<CalendarController>(
+                  builder: (calCtrl) {
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: totalGridItems,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 7,
+                        crossAxisSpacing: 6,
+                        mainAxisSpacing: 6,
+                        mainAxisExtent: 52,
+                      ),
+                      itemBuilder: (context, index) {
+                        if (index < offset) {
+                          final prevDay = prevTotalDays - offset + index + 1;
+                          return Center(
+                            child: Text(
+                              "$prevDay",
+                              style: TextStyle(
+                                color: colors.subtitleColor.withOpacity(0.3),
+                                fontSize: 12,
+                              ),
+                            ),
+                          );
+                        }
 
-                    if (index < offset + totalDays) {
-                      final day = index - offset + 1;
-                      final currentDate = DateTime(currentYear, currentMonth, day);
-                      final isFriday = currentDate.weekday == DateTime.friday;
-                      final status = getDayBookingStatus(currentDate);
+                        if (index < offset + totalDays) {
+                          final day = index - offset + 1;
+                          final currentDate = DateTime(currentYear, currentMonth, day);
+                          final isFriday = currentDate.weekday == DateTime.friday;
+                          final status = getDayBookingStatus(currentDate);
+                          final event = calCtrl.getEventForDate(currentDate);
 
-                      Color cellBg = colors.inputFillColor;
-                      Border cellBorder = Border.all(color: colors.borderColor);
-                      Widget? iconWidget;
-                      bool isDisabled = false;
+                          Color cellBg = colors.inputFillColor;
+                          Border cellBorder = Border.all(color: colors.borderColor);
+                          Widget? iconWidget;
+                          Widget? secondaryIcon;
+                          bool isDisabled = false;
 
-                      if (status != null) {
-                        final bookingStatus = status['status'];
-                        final period = status['period'];
-
-                        if (bookingStatus == 'fully_booked') {
-                          cellBg = Colors.redAccent.withOpacity(0.06);
-                          cellBorder = Border.all(color: Colors.redAccent.shade200);
-                          iconWidget = const Icon(Icons.lock_outline_rounded, color: Colors.redAccent, size: 12);
-                          isDisabled = true;
-                        } else if (bookingStatus == 'partially_booked') {
-                          if (period == 3) {
-                            cellBg = Colors.indigo.withOpacity(0.06);
-                            cellBorder = Border.all(color: Colors.indigo.shade300);
-                            iconWidget = const Icon(Icons.nights_stay_rounded, color: Colors.indigo, size: 12);
-                            
-                            if (widget.selectedPeriod == 3 || widget.selectedPeriod == 1) {
-                              isDisabled = true;
+                          if (event != null && event['type'] != 'reserved') {
+                            if (event['type'] == 'special_day') {
+                              cellBg = Colors.orange.withOpacity(0.08);
+                              cellBorder = Border.all(color: Colors.orange.withOpacity(0.4));
+                              secondaryIcon = const Icon(Icons.star_rounded, color: Colors.orange, size: 14);
+                            } else if (event['type'] == 'special_period') {
+                              cellBg = AppColor.primaryPurple.withOpacity(0.08);
+                              cellBorder = Border.all(color: AppColor.primaryPurple.withOpacity(0.4));
+                              secondaryIcon = const Icon(Icons.auto_awesome_rounded, color: AppColor.primaryPurple, size: 14);
                             }
-                          } else if (period == 4) {
-                            cellBg = Colors.orange.withOpacity(0.06);
-                            cellBorder = Border.all(color: Colors.orange.shade300);
-                            iconWidget = const Icon(Icons.light_mode_rounded, color: Colors.orange, size: 12);
-                            
-                            if (widget.selectedPeriod == 4 || widget.selectedPeriod == 1) {
+                          } else if (isFriday) {
+                            cellBg = AppColor.primaryPurple.withOpacity(0.04);
+                            cellBorder = Border.all(color: AppColor.primaryPurple.withOpacity(0.3));
+                          }
+
+                          if (status != null) {
+                            final bookingStatus = status['status'];
+                            final period = status['period'];
+
+                            if (bookingStatus == 'fully_booked') {
+                              cellBg = Colors.redAccent.withOpacity(0.06);
+                              cellBorder = Border.all(color: Colors.redAccent.shade200);
+                              iconWidget = const Icon(Icons.lock_outline_rounded, color: Colors.redAccent, size: 14);
                               isDisabled = true;
+                            } else if (bookingStatus == 'partially_booked') {
+                              if (period == 3) {
+                                cellBg = Colors.indigo.withOpacity(0.06);
+                                cellBorder = Border.all(color: Colors.indigo.shade300);
+                                iconWidget = const Icon(Icons.nights_stay_rounded, color: Colors.indigo, size: 14);
+                                
+                                if (widget.selectedPeriod == 3 || widget.selectedPeriod == 1) {
+                                  isDisabled = true;
+                                }
+                              } else if (period == 4) {
+                                cellBg = Colors.orange.withOpacity(0.06);
+                                cellBorder = Border.all(color: Colors.orange.shade300);
+                                iconWidget = const Icon(Icons.light_mode_rounded, color: Colors.orange, size: 14);
+                                
+                                if (widget.selectedPeriod == 4 || widget.selectedPeriod == 1) {
+                                  isDisabled = true;
+                                }
+                              }
                             }
                           }
-                        }
-                      } else if (isFriday) {
-                        cellBg = AppColor.primaryPurple.withOpacity(0.04);
-                        cellBorder = Border.all(color: AppColor.primaryPurple.withOpacity(0.3));
-                      }
 
-                      if (isDisabled) {
-                        cellBg = colors.inputFillColor.withOpacity(0.4);
-                        cellBorder = Border.all(color: colors.borderColor.withOpacity(0.3));
-                      }
+                          if (isDisabled) {
+                            cellBg = colors.inputFillColor.withOpacity(0.4);
+                            cellBorder = Border.all(color: colors.borderColor.withOpacity(0.3));
+                          }
 
-                      return InkWell(
-                        onTap: isDisabled
-                            ? null
-                            : () {
-                                Navigator.pop(context, currentDate);
-                              },
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: cellBg,
+                          return InkWell(
+                            onTap: isDisabled
+                                ? null
+                                : () {
+                                    Navigator.pop(context, currentDate);
+                                  },
                             borderRadius: BorderRadius.circular(8),
-                            border: cellBorder,
-                          ),
-                          padding: const EdgeInsets.all(4),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "$day",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDisabled
-                                      ? colors.subtitleColor.withOpacity(0.4)
-                                      : (isFriday
-                                          ? AppColor.primaryPurple
-                                          : theme.colorScheme.onSurface),
-                                ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: cellBg,
+                                borderRadius: BorderRadius.circular(8),
+                                border: cellBorder,
                               ),
-                              if (iconWidget != null)
-                                Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: Opacity(
-                                    opacity: isDisabled ? 0.35 : 1.0,
-                                    child: iconWidget,
+                              padding: const EdgeInsets.all(4),
+                              child: Stack(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                      "$day",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDisabled
+                                            ? colors.subtitleColor.withOpacity(0.4)
+                                            : (isFriday
+                                                ? AppColor.primaryPurple
+                                                : theme.colorScheme.onSurface),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
+                                  Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (secondaryIcon != null) secondaryIcon,
+                                        if (iconWidget != null) iconWidget,
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
 
-                    final nextDay = index - (offset + totalDays) + 1;
-                    return Center(
-                      child: Text(
-                        "$nextDay",
-                        style: TextStyle(
-                          color: colors.subtitleColor.withOpacity(0.3),
-                          fontSize: 12,
-                        ),
-                      ),
+                        final nextDay = index - (offset + totalDays) + 1;
+                        return Center(
+                          child: Text(
+                            "$nextDay",
+                            style: TextStyle(
+                              color: colors.subtitleColor.withOpacity(0.3),
+                              fontSize: 12,
+                            ),
+                          ),
+                        );
+                      },
                     );
-                  },
+                  }
                 ),
                 const Divider(height: 16),
-                // Guide legend
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildMiniGuide(Icons.light_mode_rounded, Colors.orange, 'morning_booking_title'.tr),
-                    _buildMiniGuide(Icons.nights_stay_rounded, Colors.indigo, 'evening_booking_title'.tr),
-                    _buildMiniGuide(Icons.lock_outline_rounded, Colors.redAccent, 'fully_booked'.tr == 'fully_booked' ? 'محجوز بالكامل' : 'fully_booked'.tr),
-                  ],
-                ),
-                const SizedBox(height: 12),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -360,19 +371,6 @@ class _ReservationDatePickerDialogState extends State<ReservationDatePickerDialo
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildMiniGuide(IconData icon, Color color, String label) {
-    return Row(
-      children: [
-        Icon(icon, color: color, size: 16),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-        ),
-      ],
     );
   }
 }

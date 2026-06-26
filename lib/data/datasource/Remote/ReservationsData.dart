@@ -18,11 +18,20 @@ class ReservationsData {
         '''
         SELECT 
           r.*,
-          GROUP_CONCAT(d.name, ', ') AS dishes_names,
-          GROUP_CONCAT(rd.dishes_uuid, ',') AS dishes_uuids
+          GROUP_CONCAT(DISTINCT d.name) AS dishes_names,
+          GROUP_CONCAT(DISTINCT rd.dishes_uuid) AS dishes_uuids,
+          GROUP_CONCAT(DISTINCT s.name) AS services_names,
+          GROUP_CONCAT(DISTINCT rs.service_uuid) AS services_uuids,
+          pt.name AS party_type_name,
+          pt.basic_price,
+          pt.seasonal_price,
+          pt.icon AS party_icon
         FROM reservations r
+        LEFT JOIN party_types pt ON r.type_of_party_uuid = pt.uuid
         LEFT JOIN reservation_dishes rd ON r.uuid = rd.reservation_uuid
         LEFT JOIN dishes d ON rd.dishes_uuid = d.uuid
+        LEFT JOIN reservation_services rs ON r.uuid = rs.reservation_uuid
+        LEFT JOIN additional_services s ON rs.service_uuid = s.uuid
         WHERE r.user_id = ?
         GROUP BY r.uuid
         ORDER BY r.created_at DESC
@@ -52,9 +61,25 @@ class ReservationsData {
     }
   }
 
+  Future<List<Map<String, dynamic>>> viewReservationServices(
+    String reservationUuid,
+  ) async {
+    try {
+      final result = await _db.readData(
+        "SELECT * FROM reservation_services WHERE reservation_uuid = ?",
+        [reservationUuid],
+      );
+      return result;
+    } catch (e) {
+      print("❌ viewReservationServices error: $e");
+      return [];
+    }
+  }
+
   Future<bool> Adddata(
     Map<String, dynamic> rawData,
     List<String> dishesUuids,
+    List<String> servicesUuids,
   ) async {
     final String uuid = Uuid().v4();
     try {
@@ -73,6 +98,7 @@ class ReservationsData {
         "remaining_amount": rawData["remaining_amount"],
         "number_of_men": rawData["number_of_men"],
         "number_of_women": rawData["number_of_women"],
+        "added_by_name": rawData["added_by_name"],
         "created_at": DateTime.now().toIso8601String(),
         "updated_at": DateTime.now().toIso8601String(),
       };
@@ -98,6 +124,25 @@ class ReservationsData {
             rdData,
           );
         }
+
+        for (String serviceUuid in servicesUuids) {
+          final rsUuid = Uuid().v4();
+          final rsData = {
+            "uuid": rsUuid,
+            "reservation_uuid": uuid,
+            "service_uuid": serviceUuid,
+            "user_id": id,
+            "created_at": DateTime.now().toIso8601String(),
+            "updated_at": DateTime.now().toIso8601String(),
+          };
+          await _db.insert("reservation_services", rsData);
+          await _syncService.addToQueue(
+            "reservation_services",
+            rsUuid,
+            "insert",
+            rsData,
+          );
+        }
         return true;
       }
       return false;
@@ -111,6 +156,7 @@ class ReservationsData {
     String uuid,
     Map<String, dynamic> rawData,
     List<String> dishesUuids,
+    List<String> servicesUuids,
   ) async {
     try {
       final data = {
@@ -136,6 +182,13 @@ class ReservationsData {
         });
 
         // Delete old dishes and add new ones
+        final oldDishes = await _db.readData("SELECT uuid FROM reservation_dishes WHERE reservation_uuid = ?", [uuid]);
+        for(var row in oldDishes) {
+          await _syncService.addToQueue("reservation_dishes", row['uuid'].toString(), "delete", {
+            "uuid": row['uuid'],
+            "updated_at": DateTime.now().toIso8601String(),
+          });
+        }
         await _db.delete("reservation_dishes", "reservation_uuid = ?", [uuid]);
 
         for (String dishUuid in dishesUuids) {
@@ -155,6 +208,35 @@ class ReservationsData {
             rdData,
           );
         }
+
+        // Delete old services and add new ones
+        final oldServices = await _db.readData("SELECT uuid FROM reservation_services WHERE reservation_uuid = ?", [uuid]);
+        for(var row in oldServices) {
+          await _syncService.addToQueue("reservation_services", row['uuid'].toString(), "delete", {
+            "uuid": row['uuid'],
+            "updated_at": DateTime.now().toIso8601String(),
+          });
+        }
+        await _db.delete("reservation_services", "reservation_uuid = ?", [uuid]);
+
+        for (String serviceUuid in servicesUuids) {
+          final rsUuid = Uuid().v4();
+          final rsData = {
+            "uuid": rsUuid,
+            "reservation_uuid": uuid,
+            "service_uuid": serviceUuid,
+            "user_id": id,
+            "created_at": DateTime.now().toIso8601String(),
+            "updated_at": DateTime.now().toIso8601String(),
+          };
+          await _db.insert("reservation_services", rsData);
+          await _syncService.addToQueue(
+            "reservation_services",
+            rsUuid,
+            "insert",
+            rsData,
+          );
+        }
         return true;
       }
       return false;
@@ -166,7 +248,23 @@ class ReservationsData {
 
   Future<bool> Deletedata(String uuid) async {
     try {
+      final oldDishes = await _db.readData("SELECT uuid FROM reservation_dishes WHERE reservation_uuid = ?", [uuid]);
+      for(var row in oldDishes) {
+        await _syncService.addToQueue("reservation_dishes", row['uuid'].toString(), "delete", {
+          "uuid": row['uuid'],
+          "updated_at": DateTime.now().toIso8601String(),
+        });
+      }
       await _db.delete("reservation_dishes", "reservation_uuid = ?", [uuid]);
+
+      final oldServices = await _db.readData("SELECT uuid FROM reservation_services WHERE reservation_uuid = ?", [uuid]);
+      for(var row in oldServices) {
+        await _syncService.addToQueue("reservation_services", row['uuid'].toString(), "delete", {
+          "uuid": row['uuid'],
+          "updated_at": DateTime.now().toIso8601String(),
+        });
+      }
+      await _db.delete("reservation_services", "reservation_uuid = ?", [uuid]);
       final result = await _db.delete("reservations", "uuid = ?", [uuid]);
 
       if (result > 0) {

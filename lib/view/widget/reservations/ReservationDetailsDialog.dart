@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
 import '../../../data/model/ReservationModel.dart';
+import '../../../core/services/Services.dart';
 
 class ReservationDetailsDialog extends StatelessWidget {
   final ReservationModel reservation;
@@ -21,6 +22,12 @@ class ReservationDetailsDialog extends StatelessWidget {
     final subtitleColor = colors.subtitleColor;
     final cardColor = colors.cardColor;
     final borderColor = colors.borderColor;
+
+    final myServices = Get.find<Myservices>();
+    final supervisorName = myServices.sharedPreferences?.getString("username") ?? '';
+    final addedBy = (reservation.addedByName != null && reservation.addedByName!.isNotEmpty)
+        ? reservation.addedByName!
+        : supervisorName;
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -67,7 +74,7 @@ class ReservationDetailsDialog extends StatelessWidget {
                               ),
                               const TextSpan(text: ' '),
                               TextSpan(
-                                text: reservation.id?.toString() ?? '',
+                                text: reservation.numperReservation,
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -78,9 +85,27 @@ class ReservationDetailsDialog extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          reservation.statusKey.tr,
-                          style: TextStyle(fontSize: 14, color: subtitleColor),
+                        Row(
+                          children: [
+                            Text(
+                              reservation.statusKey.tr,
+                              style: TextStyle(fontSize: 14, color: subtitleColor),
+                            ),
+                            if (addedBy.isNotEmpty) ...[
+                              const SizedBox(width: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  '${Get.locale?.languageCode == 'ar' ? 'بواسطة' : 'By'}: $addedBy',
+                                  style: const TextStyle(fontSize: 12, color: Colors.blue, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ]
+                          ],
                         ),
                       ],
                     ),
@@ -213,7 +238,7 @@ class ReservationDetailsDialog extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  reservation.typeOfPartyUuid,
+                                  reservation.partyTypeName ?? reservation.typeOfPartyUuid,
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -402,13 +427,13 @@ class ReservationDetailsDialog extends StatelessWidget {
                                 const SizedBox(height: 16),
                                 _buildFinancialRow(
                                   'paid_amount'.tr,
-                                  "\$${reservation.deposit}",
+                                  "\$${reservation.deposit?.toInt() ?? 0}",
                                   AppColor.primaryPurple,
                                 ),
                                 const SizedBox(height: 8),
                                 _buildFinancialRow(
                                   'remaining_amount'.tr,
-                                  "\$${reservation.remainingAmount}",
+                                  "\$${reservation.remainingAmount?.toInt() ?? 0}",
                                   Colors.white,
                                 ),
                                 const SizedBox(height: 16),
@@ -416,7 +441,7 @@ class ReservationDetailsDialog extends StatelessWidget {
                                 const SizedBox(height: 16),
                                 _buildFinancialRow(
                                   'total_label'.tr,
-                                  "\$${reservation.price}",
+                                  "\$${reservation.price?.toInt() ?? 0}",
                                   Colors.white,
                                   isBold: true,
                                 ),
@@ -434,7 +459,7 @@ class ReservationDetailsDialog extends StatelessWidget {
                       children: [
                         // Culinary Selection
                         Expanded(
-                          flex: 3,
+                          flex: 2,
                           child: _buildCard(
                             cardColor,
                             borderColor,
@@ -458,6 +483,44 @@ class ReservationDetailsDialog extends StatelessWidget {
                                       : [
                                           Text(
                                             'no_dishes_selected'.tr,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: subtitleColor,
+                                            ),
+                                          ),
+                                        ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        // Additional Services
+                        Expanded(
+                          flex: 2,
+                          child: _buildCard(
+                            cardColor,
+                            borderColor,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildCardHeader(
+                                  Get.locale?.languageCode == 'ar' ? 'خدمات إضافية' : 'Additional Services',
+                                  Icons.room_service_outlined,
+                                  AppColor.primaryPurple,
+                                ),
+                                const SizedBox(height: 16),
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children:
+                                      reservation.servicesNameList.isNotEmpty
+                                      ? reservation.servicesNameList
+                                            .map((name) => _buildChip(name))
+                                            .toList()
+                                      : [
+                                          Text(
+                                            Get.locale?.languageCode == 'ar' ? 'لا توجد خدمات إضافية' : 'No additional services',
                                             style: TextStyle(
                                               fontSize: 13,
                                               color: subtitleColor,
@@ -509,46 +572,7 @@ class ReservationDetailsDialog extends StatelessWidget {
             ),
 
             const SizedBox(height: 24),
-            // Footer
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Get.back(),
-                  child: Text(
-                    'dismiss'.tr,
-                    style: TextStyle(
-                      color: textColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 24),
-                ElevatedButton(
-                  onPressed: () => Get.back(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.primaryPurple,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 18,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    'send_receipt'.tr,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            // Footer removed per user request
           ],
         ),
       ),

@@ -80,7 +80,7 @@ class ExpensesController extends GetxController {
     try {
       final int userId = expensesRepo.id;
       final result = await _db.readData(
-        "SELECT deposit, booking_date FROM reservations WHERE user_id = ?",
+        "SELECT deposit, remaining_amount, booking_date FROM reservations WHERE user_id = ?",
         [userId],
       );
       return result;
@@ -267,7 +267,7 @@ class ExpensesController extends GetxController {
     isEdit = true;
     editUuid = expense.uuid;
     nameController.text = expense.description ?? "";
-    amountController.text = expense.value?.toString() ?? "";
+    amountController.text = expense.value?.toInt().toString() ?? "";
     dateController.text = expense.datePerry ?? "";
     formCategory.value = expense.type;
     
@@ -337,6 +337,41 @@ class ExpensesController extends GetxController {
         } else {
           if (date.month == now.month && date.year == now.year) {
             sum += deposit;
+          }
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+    }
+
+    return sum;
+  }
+
+  double get totalDebtsSum {
+    final start = startDateFilter.value;
+    final end = endDateFilter.value;
+    final hasDateFilter = start != null && end != null;
+
+    double sum = 0.0;
+    final now = DateTime.now();
+
+    for (var res in allReservations) {
+      final double debt = double.tryParse(res['remaining_amount']?.toString() ?? '0.0') ?? 0.0;
+      final String? dateStr = res['booking_date'];
+      if (dateStr == null || dateStr.isEmpty) continue;
+
+      try {
+        final date = DateTime.parse(dateStr.replaceAll('/', '-'));
+        if (hasDateFilter) {
+          final nDate = DateTime(date.year, date.month, date.day);
+          final nStart = DateTime(start.year, start.month, start.day);
+          final nEnd = DateTime(end.year, end.month, end.day);
+          if (!nDate.isBefore(nStart) && !nDate.isAfter(nEnd)) {
+            sum += debt;
+          }
+        } else {
+          if (date.month == now.month && date.year == now.year) {
+            sum += debt;
           }
         }
       } catch (e) {

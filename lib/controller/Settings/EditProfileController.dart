@@ -12,7 +12,7 @@ import 'package:zeffa/core/functions/Snacpar.dart';
 
 class EditProfileController extends GetxController {
   GlobalKey<FormState> formstate = GlobalKey<FormState>();
-  
+
   late TextEditingController username;
   late TextEditingController phone;
   late TextEditingController fieldPhone;
@@ -24,17 +24,28 @@ class EditProfileController extends GetxController {
   Myservices myServices = Get.find();
   late Userdata userdata;
 
-  String? get currentImagePath => myServices.sharedPreferences!.getString("image");
+  String? get currentImagePath =>
+      myServices.sharedPreferences!.getString("image");
 
   @override
   void onInit() {
     userdata = Userdata(Get.find());
-    
-    username = TextEditingController(text: myServices.sharedPreferences!.getString("username"));
-    phone = TextEditingController(text: myServices.sharedPreferences!.getString("numperPhone"));
-    fieldPhone = TextEditingController(text: myServices.sharedPreferences!.getString("fieldPhone") ?? "");
-    adresse = TextEditingController(text: myServices.sharedPreferences!.getString("adresse") ?? "");
-    hallname = TextEditingController(text: myServices.sharedPreferences!.getString("hallname"));
+
+    username = TextEditingController(
+      text: myServices.sharedPreferences!.getString("username"),
+    );
+    phone = TextEditingController(
+      text: myServices.sharedPreferences!.getString("numperPhone"),
+    );
+    fieldPhone = TextEditingController(
+      text: myServices.sharedPreferences!.getString("fieldPhone") ?? "",
+    );
+    adresse = TextEditingController(
+      text: myServices.sharedPreferences!.getString("adresse") ?? "",
+    );
+    hallname = TextEditingController(
+      text: myServices.sharedPreferences!.getString("hallname"),
+    );
     super.onInit();
   }
 
@@ -58,14 +69,18 @@ class EditProfileController extends GetxController {
 
       if (profileImage != null) {
         try {
-          String? oldImagePath = myServices.sharedPreferences!.getString("image");
+          String? oldImagePath = myServices.sharedPreferences!.getString(
+            "image",
+          );
           final directory = await getApplicationDocumentsDirectory();
           final timestamp = DateTime.now().millisecondsSinceEpoch;
-          final fileName = "${timestamp}_${profileImage!.path.split('/').last}";
+          final baseName = profileImage!.path.replaceAll(r'\', '/').split('/').last;
+          final fileName = "${timestamp}_$baseName";
           final filePath = "${directory.path}/$fileName";
           File newFile = await profileImage!.copy(filePath);
           myServices.sharedPreferences!.setString("image", newFile.path);
-          
+          print("Sucssed saving local image");
+
           if (oldImagePath != null && oldImagePath != newFile.path) {
             File oldFile = File(oldImagePath);
             if (await oldFile.exists()) {
@@ -77,7 +92,6 @@ class EditProfileController extends GetxController {
         }
       }
 
-      // Update the sidebar UI immediately so changes are shown without waiting
       if (Get.isRegistered<Siedbarcontroller>()) {
         Get.find<Siedbarcontroller>().loadProfileData();
       }
@@ -85,7 +99,6 @@ class EditProfileController extends GetxController {
       statusrequest = Statusrequest.loadeng;
       update();
 
-      // 2. Sync changes to the remote server
       var response = await userdata.updateuser(
         username.text,
         phone.text,
@@ -98,13 +111,20 @@ class EditProfileController extends GetxController {
       statusrequest = handlingData(response);
       if (Statusrequest.success == statusrequest) {
         if (response['status'] == 1 || response['status'] == "success") {
-          showSnackbar('نجاح'.tr, 'تم تحديث البيانات بنجاح'.tr, Colors.green);
-          Get.back(); // Go back to settings or close screen
+          Get.back();
         } else {
-          showSnackbar('خطأ'.tr, 'حدث خطأ أثناء التحديث على الخادم'.tr, Colors.red);
+          showSnackbar(
+            'خطأ'.tr,
+            'حدث خطأ أثناء التحديث على الخادم'.tr,
+            Colors.red,
+          );
         }
       } else {
-        showSnackbar('تنبيه'.tr, 'تم الحفظ محلياً، فشل المزامنة مع الخادم'.tr, Colors.orange);
+        showSnackbar(
+          'تنبيه'.tr,
+          'تم الحفظ محلياً، فشل المزامنة مع الخادم'.tr,
+          Colors.orange,
+        );
       }
       update();
     }

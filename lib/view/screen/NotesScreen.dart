@@ -15,7 +15,7 @@ class NotesScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.extension<AppColors>()!;
     final isArabic = Get.locale?.languageCode == 'ar';
-
+    Get.delete<NotesController>();
     final ctrl = Get.put(NotesController());
 
     return Scaffold(
@@ -33,10 +33,7 @@ class NotesScreen extends StatelessWidget {
                 onSearchChanged: (val) => ctrl.searchQuery.value = val,
                 onAddPressed: () {
                   ctrl.clearFields();
-                  Get.dialog(
-                    const NoteFormDialog(),
-                    barrierDismissible: true,
-                  );
+                  Get.dialog(const NoteFormDialog(), barrierDismissible: true);
                 },
               ),
               const SizedBox(height: 36),
@@ -75,12 +72,13 @@ class NotesScreen extends StatelessWidget {
                             child: GridView.builder(
                               itemCount: notes.length,
                               physics: const BouncingScrollPhysics(),
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: crossAxisCount,
-                                crossAxisSpacing: 24,
-                                mainAxisSpacing: 24,
-                                mainAxisExtent: 220, // Height of the card
-                              ),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: crossAxisCount,
+                                    crossAxisSpacing: 24,
+                                    mainAxisSpacing: 24,
+                                    mainAxisExtent: 220, // Height of the card
+                                  ),
                               itemBuilder: (context, index) {
                                 final note = notes[index];
                                 final title = note.title ?? '';
@@ -97,8 +95,7 @@ class NotesScreen extends StatelessWidget {
                                   onDelete: () {
                                     dialogDelete(
                                       title: 'delete_confirm_btn'.tr,
-                                      content:
-                                          'delete_note_confirm_title'.tr,
+                                      content: 'delete_note_confirm_title'.tr,
                                       onConfirm: () {
                                         ctrl.deleteNote(note.uuid!);
                                       },
@@ -108,7 +105,7 @@ class NotesScreen extends StatelessWidget {
                               },
                             ),
                           ),
-                          
+
                           // Pagination Controls
                           if (ctrl.totalPages > 1)
                             Container(
@@ -143,7 +140,9 @@ class NotesScreen extends StatelessWidget {
                                       isArabic
                                           ? Icons.chevron_left_rounded
                                           : Icons.chevron_right_rounded,
-                                      color: ctrl.currentPage.value < ctrl.totalPages
+                                      color:
+                                          ctrl.currentPage.value <
+                                              ctrl.totalPages
                                           ? theme.colorScheme.onSurface
                                           : colors.subtitleColor,
                                     ),

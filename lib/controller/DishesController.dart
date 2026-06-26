@@ -176,9 +176,16 @@ class DishesController extends GetxController {
       if (result == true) {
         Get.back(result: true);
         viewdishes();
+      } else {
+        showSnackbar("error".tr, "operation_failed".tr, Colors.red);
       }
     } catch (e) {
-      print("error in edit category : $e");
+      if (e == 'linked_to_reservation') {
+        showSnackbar("warning".tr, "cannot_delete_linked_item".tr, Colors.orange);
+      } else {
+        print("error in edit category : $e");
+        showSnackbar("error".tr, "operation_failed".tr, Colors.red);
+      }
     }
   }
 }

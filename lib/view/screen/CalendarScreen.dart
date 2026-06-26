@@ -19,6 +19,8 @@ class CalendarScreen extends StatelessWidget {
     final isArabic = Get.locale?.languageCode == 'ar';
 
     // Inject CalendarController
+    Get.delete<CalendarController>();
+
     final ctrl = Get.put(CalendarController());
 
     return Scaffold(
@@ -67,15 +69,6 @@ class CalendarScreen extends StatelessWidget {
                           Get.dialog(
                             const CalendarFormDialog(),
                             barrierDismissible: true,
-                          );
-                        },
-                        onExportPressed: () {
-                          Get.snackbar(
-                            'export_calendar'.tr,
-                            'success'.tr,
-                            backgroundColor: Colors.green.withOpacity(0.12),
-                            colorText: Colors.green.shade900,
-                            snackPosition: SnackPosition.BOTTOM,
                           );
                         },
                       ),

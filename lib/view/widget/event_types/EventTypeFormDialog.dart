@@ -233,6 +233,74 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                             return validInput(val!, 100, 1, "decimal");
                           },
                         ),
+                        // Guest Pricing Tiers Section
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'guest_pricing_tiers'.tr,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            CustemTextField(
+                              controller: ctrl.maxNormalGuests,
+                              hint: 'max_normal_guests'.tr,
+                              icon: Icons.people_alt_rounded,
+                              keyboardType: TextInputType.number,
+                              validator: (val) {
+                                if (val != null && val.isNotEmpty) {
+                                  return validInput(val, 100, 1, "number");
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: CustemTextField(
+                                    controller: ctrl.extraGuestsBlock,
+                                    hint: 'extra_guests_block'.tr,
+                                    icon: Icons.group_add_rounded,
+                                    keyboardType: TextInputType.number,
+                                    validator: (val) {
+                                      if (ctrl.maxNormalGuests.text.isNotEmpty && (val == null || val.isEmpty)) {
+                                        return 'required'.tr;
+                                      }
+                                      if (val != null && val.isNotEmpty) {
+                                        return validInput(val, 100, 1, "number");
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: CustemTextField(
+                                    controller: ctrl.extraGuestsPrice,
+                                    hint: 'extra_guests_price'.tr,
+                                    icon: Icons.attach_money_rounded,
+                                    keyboardType: TextInputType.number,
+                                    validator: (val) {
+                                      if (ctrl.maxNormalGuests.text.isNotEmpty && (val == null || val.isEmpty)) {
+                                        return 'required'.tr;
+                                      }
+                                      if (val != null && val.isNotEmpty) {
+                                        return validInput(val, 100, 1, "decimal");
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 20),
 
                         // Description Field

@@ -155,7 +155,14 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
                               DropdownMenuItem<int>(
                                 value: 1,
                                 child: Text(
-                                  'maintenance_workers'.tr,
+                                  'workers'.tr,
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ),
+                              DropdownMenuItem<int>(
+                                value: 4,
+                                child: Text(
+                                  'maintenance'.tr,
                                   style: TextStyle(color: textColor),
                                 ),
                               ),

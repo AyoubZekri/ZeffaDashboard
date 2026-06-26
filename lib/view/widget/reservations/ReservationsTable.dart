@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
 import '../../../data/model/ReservationModel.dart';
+import '../../../core/services/Services.dart';
 
 class ReservationsTable extends StatelessWidget {
   final List<ReservationModel> reservations;
@@ -67,7 +68,7 @@ class ReservationsTable extends StatelessWidget {
                   controller: horizontalScroll,
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
-                    width: 1230,
+                    width: 1380,
                     child: Scrollbar(
                       controller: verticalScroll,
                       notificationPredicate: (notif) => notif.depth == 1,
@@ -164,6 +165,14 @@ class ReservationsTable extends StatelessWidget {
             ),
           ),
           SizedBox(
+            width: 150,
+            child: Text(
+              'added_by'.tr,
+              textAlign: TextAlign.right,
+              style: style,
+            ),
+          ),
+          SizedBox(
             width: 120,
             child: Center(child: Text('status'.tr, style: style)),
           ),
@@ -181,6 +190,12 @@ class ReservationsTable extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.extension<AppColors>()!;
     final textColor = theme.colorScheme.onSurface;
+
+    final myServices = Get.find<Myservices>();
+    final supervisorName = myServices.sharedPreferences?.getString("username") ?? '';
+    final addedBy = (item.addedByName != null && item.addedByName!.isNotEmpty) 
+        ? item.addedByName! 
+        : supervisorName;
 
     final Color statusColor;
     switch (item.statusKey) {
@@ -280,6 +295,19 @@ class ReservationsTable extends StatelessWidget {
             ),
           ),
 
+          SizedBox(
+            width: 150,
+            child: Text(
+              addedBy,
+              style: TextStyle(
+                color: colors.subtitleColor,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           SizedBox(
             width: 120,
             child: Center(

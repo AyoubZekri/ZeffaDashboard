@@ -44,7 +44,9 @@ class SpaceParticlesPainter extends CustomPainter {
       center: Alignment.center,
       radius: 1.0,
       colors: [
-        const Color(0xFFF5E6FF).withOpacity(0.45 * (1.0 - animateProgress)), // soft violet aura
+        const Color(
+          0xFFF5E6FF,
+        ).withOpacity(0.45 * (1.0 - animateProgress)), // soft violet aura
         Colors.white.withOpacity(1.0 - animateProgress), // pure white
       ],
     );
@@ -56,15 +58,19 @@ class SpaceParticlesPainter extends CustomPainter {
 
     for (var s in sparkles) {
       final progress = s.life / s.maxLife;
-      paint.color = s.color.withOpacity(progress * 0.6 * (1.0 - animateProgress));
-      
+      paint.color = s.color.withOpacity(
+        progress * 0.6 * (1.0 - animateProgress),
+      );
+
       // Draw particle glow (shadow)
       paint.maskFilter = MaskFilter.blur(BlurStyle.normal, s.size * 0.9);
       canvas.drawCircle(Offset(s.x, s.y), s.size * 1.8, paint);
 
       // Draw particle core
       paint.maskFilter = null;
-      paint.color = s.color.withOpacity(progress * 0.9 * (1.0 - animateProgress));
+      paint.color = s.color.withOpacity(
+        progress * 0.9 * (1.0 - animateProgress),
+      );
       canvas.drawCircle(Offset(s.x, s.y), s.size, paint);
     }
   }
@@ -86,11 +92,11 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   late AnimationController _rotationController;
   late AnimationController _loadingProgressController;
   late Animation<double> _loadingProgressAnimation;
-  
+
   late Ticker _particleTicker;
   final List<Sparkle> _sparkles = [];
   final Random _random = Random();
@@ -107,16 +113,15 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(seconds: 3),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOutBack,
-      ),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
-    _slideAnimation = Tween<Offset>(begin: Offset.zero, end: const Offset(0, -0.1)).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _slideAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, -0.1),
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _rotationController = AnimationController(
       vsync: this,
@@ -129,7 +134,10 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _loadingProgressAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _loadingProgressController, curve: Curves.easeInOut),
+      CurvedAnimation(
+        parent: _loadingProgressController,
+        curve: Curves.easeInOut,
+      ),
     );
 
     _particleTicker = createTicker((elapsed) {
@@ -141,7 +149,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _updateParticles() {
     if (!mounted) return;
-    
+
     final size = MediaQuery.of(context).size;
     final screenWidth = size.width > 0 ? size.width : 1200.0;
     final screenHeight = size.height > 0 ? size.height : 800.0;
@@ -149,17 +157,19 @@ class _SplashScreenState extends State<SplashScreen>
     setState(() {
       // Spawn slow ambient background particles
       if (_random.nextDouble() < 0.25 && _sparkles.length < 180) {
-        _sparkles.add(Sparkle(
-          x: _random.nextDouble() * screenWidth,
-          y: screenHeight + 20,
-          vx: (_random.nextDouble() - 0.5) * 0.4,
-          vy: -_random.nextDouble() * 1.2 - 0.4,
-          size: _random.nextDouble() * 2.5 + 1.0,
-          maxLife: 250 + _random.nextDouble() * 150,
-          color: _random.nextBool() 
-              ? const Color(0xFF9333EA) // purple
-              : const Color(0xFF0284C7), // cyan
-        ));
+        _sparkles.add(
+          Sparkle(
+            x: _random.nextDouble() * screenWidth,
+            y: screenHeight + 20,
+            vx: (_random.nextDouble() - 0.5) * 0.4,
+            vy: -_random.nextDouble() * 1.2 - 0.4,
+            size: _random.nextDouble() * 2.5 + 1.0,
+            maxLife: 250 + _random.nextDouble() * 150,
+            color: _random.nextBool()
+                ? const Color(0xFF9333EA) // purple
+                : const Color(0xFF0284C7), // cyan
+          ),
+        );
       }
 
       // Update particle positions and lifespans
@@ -178,17 +188,19 @@ class _SplashScreenState extends State<SplashScreen>
   void _spawnMouseSparkles(Offset pos) {
     if (!mounted) return;
     for (int i = 0; i < 4; i++) {
-      _sparkles.add(Sparkle(
-        x: pos.dx,
-        y: pos.dy,
-        vx: (_random.nextDouble() - 0.5) * 2.5,
-        vy: (_random.nextDouble() - 0.5) * 2.5,
-        size: _random.nextDouble() * 3.5 + 1.5,
-        maxLife: 45 + _random.nextDouble() * 25,
-        color: _random.nextBool() 
-            ? const Color(0xFFDB2777) // pink
-            : const Color(0xFF0891B2), // neon cyan
-      ));
+      _sparkles.add(
+        Sparkle(
+          x: pos.dx,
+          y: pos.dy,
+          vx: (_random.nextDouble() - 0.5) * 2.5,
+          vy: (_random.nextDouble() - 0.5) * 2.5,
+          size: _random.nextDouble() * 3.5 + 1.5,
+          maxLife: 45 + _random.nextDouble() * 25,
+          color: _random.nextBool()
+              ? const Color(0xFFDB2777) // pink
+              : const Color(0xFF0891B2), // neon cyan
+        ),
+      );
     }
   }
 
@@ -218,17 +230,27 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 300));
 
     if (token != null && token.isNotEmpty) {
-      String? experimentDateString =
-          myServices.sharedPreferences?.getString("date_experiment");
+      String? experimentDateString = myServices.sharedPreferences?.getString(
+        "date_experiment",
+      );
 
       int status = myServices.sharedPreferences?.getInt("status") ?? 0;
 
+      print("=================status=================$status");
+      if (status == 0) {
+        Get.offAllNamed(Approutes.accountActivation);
+        return;
+      }
       if (status == 1) {
+        Get.offAllNamed(Approutes.accountActivation);
+        return;
+      }
+      if (status == 4) {
         Get.offAllNamed(Approutes.HomeScreen);
         return;
       }
 
-      if (status == 2 || status == 3) {
+      if (status == 3|| status == 2) {
         if (experimentDateString != null && experimentDateString.isNotEmpty) {
           DateTime experimentDate = DateTime.parse(experimentDateString);
           DateTime now = DateTime.now();
@@ -244,10 +266,10 @@ class _SplashScreenState extends State<SplashScreen>
           if (isValid) {
             Get.offAllNamed(Approutes.HomeScreen);
           } else {
-            Get.offAllNamed(Approutes.Login);
+            Get.offAllNamed(Approutes.accountActivation);
           }
         } else {
-          Get.offAllNamed(Approutes.Login);
+          Get.offAllNamed(Approutes.accountActivation);
         }
         return;
       }
@@ -284,7 +306,7 @@ class _SplashScreenState extends State<SplashScreen>
                 painter: SpaceParticlesPainter(_sparkles, fadeOutProgress),
               ),
             ),
-            
+
             // Content
             Center(
               child: AnimatedOpacity(
@@ -328,12 +350,16 @@ class _SplashScreenState extends State<SplashScreen>
                                 color: Colors.white,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFC084FC).withOpacity(0.35),
+                                    color: const Color(
+                                      0xFFC084FC,
+                                    ).withOpacity(0.35),
                                     blurRadius: 30,
                                     spreadRadius: 5,
                                   ),
                                   BoxShadow(
-                                    color: const Color(0xFF38BDF8).withOpacity(0.15),
+                                    color: const Color(
+                                      0xFF38BDF8,
+                                    ).withOpacity(0.15),
                                     blurRadius: 15,
                                     spreadRadius: -2,
                                   ),
@@ -369,7 +395,7 @@ class _SplashScreenState extends State<SplashScreen>
                       const SizedBox(height: 12),
                       // Subtitle Arabic Text
                       Text(
-                        isArabic 
+                        isArabic
                             ? "المنصة الذكية لإدارة قاعات الحفلات والفعاليات"
                             : "Intelligent Platform for Event Halls Management",
                         style: const TextStyle(
@@ -384,20 +410,24 @@ class _SplashScreenState extends State<SplashScreen>
                       AnimatedBuilder(
                         animation: _loadingProgressAnimation,
                         builder: (context, child) {
-                          final percentage = (_loadingProgressAnimation.value * 100).toInt();
+                          final percentage =
+                              (_loadingProgressAnimation.value * 100).toInt();
                           return Column(
                             children: [
                               Container(
                                 width: 280,
                                 height: 5,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF3B1578).withOpacity(0.06),
+                                  color: const Color(
+                                    0xFF3B1578,
+                                  ).withOpacity(0.06),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: FractionallySizedBox(
-                                    widthFactor: _loadingProgressAnimation.value,
+                                    widthFactor:
+                                        _loadingProgressAnimation.value,
                                     child: Container(
                                       decoration: BoxDecoration(
                                         gradient: const LinearGradient(
@@ -409,7 +439,9 @@ class _SplashScreenState extends State<SplashScreen>
                                         borderRadius: BorderRadius.circular(10),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: const Color(0xFF38BDF8).withOpacity(0.5),
+                                            color: const Color(
+                                              0xFF38BDF8,
+                                            ).withOpacity(0.5),
                                             blurRadius: 10,
                                             spreadRadius: 1,
                                           ),

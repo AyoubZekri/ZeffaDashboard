@@ -129,9 +129,16 @@ class DishCategoriesController extends GetxController {
       if (result == true) {
         Get.back(result: true);
         viewCategory();
+      } else {
+        showSnackbar("error".tr, "operation_failed".tr, Colors.red);
       }
     } catch (e) {
-      print("error in edit category : $e");
+      if (e == 'linked_to_dishes') {
+        showSnackbar("warning".tr, "cannot_delete_linked_category".tr, Colors.orange);
+      } else {
+        print("error in delete category : $e");
+        showSnackbar("error".tr, "operation_failed".tr, Colors.red);
+      }
     }
   }
 }

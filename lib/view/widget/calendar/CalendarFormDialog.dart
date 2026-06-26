@@ -320,19 +320,6 @@ class _CalendarFormDialogState extends State<CalendarFormDialog> {
 
                           if (success) {
                             Get.back();
-                            Get.snackbar(
-                              'success'.tr,
-                              isPeriod
-                                  ? 'season_added'.tr
-                                  : 'special_day_added'.tr,
-                              backgroundColor: isDark
-                                  ? const Color(0xFF1B5E20)
-                                  : const Color(0xFFE8F5E9),
-                              colorText: isDark
-                                  ? Colors.white
-                                  : Colors.green.shade900,
-                              snackPosition: SnackPosition.BOTTOM,
-                            );
                           }
                         },
                         style: ElevatedButton.styleFrom(

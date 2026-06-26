@@ -11,7 +11,8 @@ class NotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.create(()=> NotificationsController());
+    Get.delete<NotificationsController>();
+    Get.put(NotificationsController());
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32),

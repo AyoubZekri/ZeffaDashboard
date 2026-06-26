@@ -2,12 +2,9 @@ class Approutes {
   static const String Login = "/login";
   static const String HomeScreen = "/HomeScreen";
   static const String splashScreen = "/SplashScreen";
-  // static const String subscriptionExpiredPage = "/SubscriptionExpiredPage";
-
-
-
-
-
+  static const String subscriptionExpiredPage = "/SubscriptionExpiredPage";
+  static const String accountActivation = "/accountActivation";
+  static const String mobileOnly = "/mobileOnly";
 
   static const String resePassword = "/resePassword";
   static const String checkemail = "/checkemail";

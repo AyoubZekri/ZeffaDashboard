@@ -14,13 +14,15 @@ class SQLDB {
     }
   }
 
+  int get version => 1;
+
   Future<Database> intialDb() async {
     String dataBais = await getDatabasesPath();
     String path = join(dataBais, 'zeffa.db');
     Database mydb = await openDatabase(
       path,
       onCreate: _onCreate,
-      version: 1,
+      version: version,
       onUpgrade: _onUpgrade,
     );
     return mydb;
@@ -45,6 +47,7 @@ class SQLDB {
         content TEXT,
         basic_price REAL,
         seasonal_price REAL,
+        guest_pricing_tiers TEXT,
         icon TEXT,
         created_at TEXT,
         updated_at TEXT
@@ -71,6 +74,7 @@ class SQLDB {
         remaining_amount REAL,
         number_of_men INTEGER,
         number_of_women INTEGER,
+        added_by_name TEXT,
         created_at TEXT,
         updated_at TEXT
       )
@@ -116,6 +120,36 @@ class SQLDB {
         uuid TEXT UNIQUE,
         reservation_uuid TEXT,
         dishes_uuid TEXT,
+        created_at TEXT,
+        updated_at TEXT
+      )
+''');
+
+    // ==============================
+    // additional_services
+    // ==============================
+    batch.execute('''
+      CREATE TABLE additional_services(
+        id INTEGER PRIMARY KEY,
+        uuid TEXT UNIQUE,
+        user_id INTEGER,
+        name TEXT,
+        price REAL,
+        created_at TEXT,
+        updated_at TEXT
+      )
+''');
+
+    // ==============================
+    // reservation_services
+    // ==============================
+    batch.execute('''
+      CREATE TABLE reservation_services(
+        id INTEGER PRIMARY KEY,
+        uuid TEXT UNIQUE,
+        reservation_uuid TEXT,
+        service_uuid TEXT,
+        user_id INTEGER,
         created_at TEXT,
         updated_at TEXT
       )
@@ -218,6 +252,8 @@ class SQLDB {
         updated_at TEXT
       )
       ''');
+
+
 
     // ==============================
     // جداول خاصة بالمزامنة

@@ -5,15 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zeffa/core/functions/Snacpar.dart';
 import 'package:zeffa/data/model/ReservationModel.dart';
+import '../../core/services/Services.dart';
 
 import '../core/class/Statusrequest.dart';
-import '../core/services/Services.dart';
 import '../data/datasource/Remote/ReservationsData.dart';
 import '../data/datasource/Remote/PartyTypes.dart';
 import '../data/datasource/Remote/Dishes.dart';
 import '../data/datasource/Remote/SpecialDates.dart';
+import '../data/datasource/Remote/AdditionalServices.dart';
+import '../data/datasource/Remote/DishCategories.dart';
+import '../data/model/DishModel.dart';
+import '../data/model/DishCategoryModel.dart';
 import '../data/model/PartyTypeModel.dart';
 import '../data/model/SpecialDateModel.dart';
+import '../data/model/ServiceModel.dart';
 
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
@@ -82,33 +87,41 @@ class Reservationscontroller extends GetxController {
       Sheet sheetObject = excel['Sheet1'];
 
       List<String> headers = [
+        'reservation_date'.tr,
+        'duration'.tr,
         'reservation_number'.tr,
         'customer_name'.tr,
         'phone_number'.tr,
         'payment_status'.tr,
-        'reservation_date'.tr,
         'event_type_label'.tr,
         'gentlemen'.tr,
         'ladies'.tr,
         'paid_amount'.tr,
         'remaining_amount'.tr,
+        'added_by'.tr,
         'notes'.tr,
       ];
 
       sheetObject.appendRow(headers.map((h) => TextCellValue(h)).toList());
 
       for (var res in filteredReservations) {
+        String periodStr = res.bookingPeriod == 3 
+            ? 'period_evening'.tr 
+            : (res.bookingPeriod == 4 ? 'period_morning'.tr : 'period_full_day'.tr);
+
         sheetObject.appendRow([
+          TextCellValue(res.bookingDate),
+          TextCellValue(periodStr),
           TextCellValue(res.id?.toString() ?? res.uuid),
           TextCellValue(res.customerName),
           TextCellValue(res.phoneNumber),
           TextCellValue(res.statusKey.tr),
-          TextCellValue(res.bookingDate),
-          TextCellValue(res.typeOfPartyUuid),
+          TextCellValue(res.partyTypeName ?? res.typeOfPartyUuid),
           TextCellValue(res.numberOfMen.toString()),
           TextCellValue(res.numberOfWomen.toString()),
           TextCellValue(res.deposit.toString()),
           TextCellValue(res.remainingAmount.toString()),
+          TextCellValue(res.addedByName ?? ''),
           TextCellValue(res.notes ?? ''),
         ]);
       }
@@ -138,10 +151,12 @@ class Reservationscontroller extends GetxController {
     }
   }
 
-  // Dynamic lists from DB
-  final RxList<PartyTypeModel> dbPartyTypes = <PartyTypeModel>[].obs;
-  final RxList<Map<String, dynamic>> dbDishes = <Map<String, dynamic>>[].obs;
-  final RxList<SpecialDateModel> specialDates = <SpecialDateModel>[].obs;
+  // DB Data
+  List<PartyTypeModel> dbPartyTypes = [];
+  List<DishModel> dbDishes = [];
+  List<DishCategoryModel> dbCategories = [];
+  List<SpecialDateModel> specialDates = [];
+  List<ServiceModel> dbServices = [];
 
   late TextEditingController username;
   late TextEditingController phone;
@@ -152,11 +167,12 @@ class Reservationscontroller extends GetxController {
   late TextEditingController deposit;
   late TextEditingController remainingamount;
   late TextEditingController note;
-  int? BookingBeriod;
+  String? BookingBeriod;
   String? typeOfPartyUuid;
 
-  // Selected dishes list state
+  // Selected dishes/services list state
   final RxList<String> selectedDishes = <String>[].obs;
+  final RxList<String> selectedServices = <String>[].obs;
 
   final List<Map<String, dynamic>> bookingPeriods = [
     {'key': 1, 'label': 'period_full_day'},
@@ -165,9 +181,11 @@ class Reservationscontroller extends GetxController {
   ];
 
   late ReservationsData resData;
-  late PartyTypes partyTypesData;
+  late PartyTypes partyData;
   late Dishes dishesData;
+  late Dishcategories categoriesData;
   late SpecialDates specialDatesData;
+  late AdditionalServices servicesData;
 
   Myservices myServices = Get.find();
   GlobalKey<FormState> formState = GlobalKey<FormState>();
@@ -187,9 +205,11 @@ class Reservationscontroller extends GetxController {
     note = TextEditingController();
 
     resData = ReservationsData(Get.find());
-    partyTypesData = PartyTypes(myServices);
+    partyData = PartyTypes(myServices);
     dishesData = Dishes(myServices);
+    categoriesData = Dishcategories(myServices);
     specialDatesData = SpecialDates(myServices);
+    servicesData = AdditionalServices(myServices);
 
     fetchInitialData();
 
@@ -201,38 +221,21 @@ class Reservationscontroller extends GetxController {
     update();
 
     try {
-      // Fetch party types
-      var pTypes = await partyTypesData.viewdata();
-      print("🔍 PartyTypes fetched: ${pTypes.length} items");
-      dbPartyTypes.assignAll(
-        pTypes.map((e) => PartyTypeModel.fromJson(e)).toList(),
-      );
+      var results = await Future.wait<dynamic>([
+        resData.viewdata(),
+        partyData.viewdata(),
+        dishesData.viewdata(),
+        categoriesData.viewdata(),
+        specialDatesData.viewdata(),
+        servicesData.viewdata(),
+      ]);
 
-      var dshs = await dishesData.viewdata();
-      print("🔍 Dishes fetched: ${dshs.length} items");
-      dbDishes.assignAll(List<Map<String, dynamic>>.from(dshs));
-
-      // Fetch special dates
-      var sDates = await specialDatesData.viewdata();
-      print("🔍 SpecialDates fetched: ${sDates.length} items");
-      specialDates.assignAll(
-        sDates.map((e) => SpecialDateModel.fromJson(e)).toList(),
-      );
-
-      // Fetch reservations (now includes joined party_types + dishes data)
-      var res = await resData.viewdata();
-      print("🔍 Reservations fetched: ${res.length} items");
-      if (res.isNotEmpty) print("🔍 First reservation: ${res.first}");
-      allReservations.assignAll(
-        List<ReservationModel>.from(
-          res.map(
-            (e) => ReservationModel.fromJson(Map<String, dynamic>.from(e)),
-          ),
-        ),
-      );
-      print(
-        "🔍 allReservations.length after assign: ${allReservations.length}",
-      );
+      allReservations.assignAll(ReservationModel.fromList(results[0]));
+      dbPartyTypes = PartyTypeModel.fromList(results[1]);
+      dbDishes = DishModel.fromList(results[2]);
+      dbCategories = DishCategoryModel.fromList(results[3]);
+      specialDates = SpecialDateModel.fromList(results[4]);
+      dbServices = ServiceModel.fromList(results[5]);
 
       statusrequest = Statusrequest.success;
     } catch (e, st) {
@@ -248,14 +251,13 @@ class Reservationscontroller extends GetxController {
     if (typeOfPartyUuid == null) return;
 
     final selectedParty = dbPartyTypes.firstWhereOrNull(
-      (p) => p.name == typeOfPartyUuid,
+      (p) => p.uuid == typeOfPartyUuid,
     );
     if (selectedParty == null) return;
 
-    double calculatedPrice = selectedParty.basicPrice!;
+    double calculatedPrice = selectedParty.basicPrice ?? 0.0;
 
     if (date.text.isNotEmpty) {
-      // Check if selected date is in a special period or special day
       DateTime selectedDate = DateTime.parse(date.text.replaceAll('/', '-'));
       DateTime normalizedSelected = DateTime(
         selectedDate.year,
@@ -288,17 +290,48 @@ class Reservationscontroller extends GetxController {
         }
       }
 
-      // Also consider Fridays as special if needed (optional logic, applying it based on user request)
       if (normalizedSelected.weekday == DateTime.friday) {
         isSpecial = true;
       }
 
       if (isSpecial) {
-        calculatedPrice += selectedParty.seasonalPrice!;
+        if (selectedParty.seasonalPrice != null && selectedParty.seasonalPrice! > 0) {
+          calculatedPrice = selectedParty.seasonalPrice!;
+        }
       }
     }
 
-    price.text = calculatedPrice.toString();
+    if (selectedParty.guestPricingTiers != null && selectedParty.guestPricingTiers!.isNotEmpty) {
+      try {
+        Map<String, dynamic> pricingData = selectedParty.guestPricingTiers![0];
+        
+        final maxNormal = (pricingData['max_normal_guests'] as num?)?.toInt() ?? 0;
+        final block = (pricingData['extra_guests_block'] as num?)?.toInt() ?? 0;
+        final blockPrice = (pricingData['extra_guests_price'] as num?)?.toDouble() ?? 0.0;
+
+        final men = int.tryParse(numberofmen.text) ?? 0;
+        final women = int.tryParse(numberOfwomen.text) ?? 0;
+        final totalGuests = men + women;
+
+        if (maxNormal > 0 && block > 0 && totalGuests > maxNormal) {
+          final extraGuests = totalGuests - maxNormal;
+          final int extraBlocks = (extraGuests / block).ceil();
+          final double extraPrice = extraBlocks * blockPrice;
+          calculatedPrice += extraPrice;
+        }
+      } catch (e) {
+        print("Error calculating extra guests price: $e");
+      }
+    }
+
+    for (String serviceUuid in selectedServices) {
+      final s = dbServices.firstWhereOrNull((sv) => sv.uuid == serviceUuid);
+      if (s != null) {
+        calculatedPrice += s.price ?? 0.0;
+      }
+    }
+
+    price.text = calculatedPrice.toInt().toString();
     calculateRemaining();
   }
 
@@ -306,7 +339,7 @@ class Reservationscontroller extends GetxController {
     double p = double.tryParse(price.text) ?? 0.0;
     double d = double.tryParse(deposit.text) ?? 0.0;
     double rem = p - d;
-    remainingamount.text = rem > 0 ? rem.toString() : '0.0';
+    remainingamount.text = rem > 0 ? rem.toInt().toString() : '0';
   }
 
   String _generate13DigitNumber() {
@@ -469,7 +502,7 @@ class Reservationscontroller extends GetxController {
     }
 
     final String selectedDateStr = date.text.trim();
-    final conflictError = checkBookingConflict(selectedDateStr, BookingBeriod!);
+    final conflictError = checkBookingConflict(selectedDateStr, int.parse(BookingBeriod!));
     if (conflictError != null) {
       showSnackbar('warning'.tr, conflictError, Colors.orange);
       return;
@@ -490,12 +523,14 @@ class Reservationscontroller extends GetxController {
       "remaining_amount": double.tryParse(remainingamount.text) ?? 0.0,
       "number_of_men": int.tryParse(numberofmen.text) ?? 0,
       "number_of_women": int.tryParse(numberOfwomen.text) ?? 0,
+      "added_by_name": Get.find<Myservices>().sharedPreferences!.getString("username") ?? '',
       "notes": note.text,
     };
 
-    bool success = await resData.Adddata(rawData, selectedDishes);
+    bool success = await resData.Adddata(rawData, selectedDishes, selectedServices);
     if (success) {
       Get.back();
+      showSnackbar('success'.tr, 'added_successfully'.tr, Colors.green);
 
       fetchInitialData();
 
@@ -511,6 +546,7 @@ class Reservationscontroller extends GetxController {
       BookingBeriod = null;
       typeOfPartyUuid = null;
       selectedDishes.clear();
+      selectedServices.clear();
     } else {
       showSnackbar('error'.tr, 'failed_to_save_reservation'.tr, Colors.red);
     }
@@ -523,11 +559,11 @@ class Reservationscontroller extends GetxController {
     username.text = res.customerName;
     phone.text = res.phoneNumber;
     date.text = res.bookingDate.replaceAll('/', '-');
-    BookingBeriod = res.bookingPeriod;
+    BookingBeriod = res.bookingPeriod?.toString();
     typeOfPartyUuid = res.typeOfPartyUuid;
-    price.text = res.price.toString();
-    deposit.text = res.deposit.toString();
-    remainingamount.text = res.remainingAmount.toString();
+    price.text = res.price.toInt().toString();
+    deposit.text = res.deposit.toInt().toString();
+    remainingamount.text = res.remainingAmount.toInt().toString();
     numberofmen.text = res.numberOfMen.toString();
     numberOfwomen.text = res.numberOfWomen.toString();
     note.text = res.notes ?? '';
@@ -537,6 +573,13 @@ class Reservationscontroller extends GetxController {
     final dshs = await resData.viewReservationDishes(res.uuid);
     selectedDishes.assignAll(
       dshs.map((e) => e['dishes_uuid'].toString()).toList(),
+    );
+
+    // fetch services for this reservation
+    selectedServices.clear();
+    final svcs = await resData.viewReservationServices(res.uuid);
+    selectedServices.assignAll(
+      svcs.map((e) => e['service_uuid'].toString()).toList(),
     );
   }
 
@@ -556,7 +599,7 @@ class Reservationscontroller extends GetxController {
     final String selectedDateStr = date.text.trim();
     final conflictError = checkBookingConflict(
       selectedDateStr,
-      BookingBeriod!,
+      int.parse(BookingBeriod!),
       excludeUuid: uuid,
     );
     if (conflictError != null) {
@@ -581,7 +624,7 @@ class Reservationscontroller extends GetxController {
       "notes": note.text,
     };
 
-    bool success = await resData.Updatedata(uuid, rawData, selectedDishes);
+    bool success = await resData.Updatedata(uuid, rawData, selectedDishes, selectedServices);
     if (success) {
       Get.back();
       showSnackbar(
@@ -602,6 +645,7 @@ class Reservationscontroller extends GetxController {
       BookingBeriod = null;
       typeOfPartyUuid = null;
       selectedDishes.clear();
+      selectedServices.clear();
     } else {
       showSnackbar('error'.tr, 'failed_to_update_reservation'.tr, Colors.red);
     }
@@ -648,11 +692,65 @@ class Reservationscontroller extends GetxController {
     }
   }
 
+  double calculateNewPriceForGuests(String uuid, int men, int women) {
+    final res = allReservations.firstWhereOrNull((r) => r.uuid == uuid);
+    if (res == null) return 0.0;
+
+    final selectedParty = dbPartyTypes.firstWhereOrNull((p) => p.uuid == res.typeOfPartyUuid);
+    double baseCustomPrice = res.price; 
+    double newExtraPrice = 0.0;
+    
+    if (selectedParty != null && selectedParty.guestPricingTiers != null && selectedParty.guestPricingTiers!.isNotEmpty) {
+      try {
+        Map<String, dynamic> pricingData = {};
+        if (selectedParty.guestPricingTiers!.length == 1) {
+           pricingData = selectedParty.guestPricingTiers![0];
+        } else if (selectedParty.guestPricingTiers!.isNotEmpty) {
+           pricingData = selectedParty.guestPricingTiers![0];
+        }
+        final maxNormal = (pricingData['max_normal_guests'] as num?)?.toInt() ?? 0;
+        final block = (pricingData['extra_guests_block'] as num?)?.toInt() ?? 0;
+        final blockPrice = (pricingData['extra_guests_price'] as num?)?.toDouble() ?? 0.0;
+
+        if (maxNormal > 0 && block > 0) {
+          // 1. Remove old extra guests cost from saved price
+          int oldTotalGuests = res.numberOfMen + res.numberOfWomen;
+          if (oldTotalGuests > maxNormal) {
+            int oldExtraGuests = oldTotalGuests - maxNormal;
+            int oldExtraBlocks = (oldExtraGuests / block).ceil();
+            double oldExtraPrice = oldExtraBlocks * blockPrice;
+            baseCustomPrice -= oldExtraPrice;
+          }
+
+          // 2. Add new extra guests cost
+          int newTotalGuests = men + women;
+          if (newTotalGuests > maxNormal) {
+            int newExtraGuests = newTotalGuests - maxNormal;
+            int newExtraBlocks = (newExtraGuests / block).ceil();
+            newExtraPrice = newExtraBlocks * blockPrice;
+          }
+        }
+      } catch (e) {
+          print("Error calculating extra guests price: $e");
+      }
+    }
+
+    return baseCustomPrice + newExtraPrice;
+  }
+
   /// Update guest count
-  Future<void> updateGuestCount(String uuid, int men, int women) async {
+  Future<void> updateGuestCount(String uuid, int men, int women, double newPrice) async {
+    final res = allReservations.firstWhereOrNull((r) => r.uuid == uuid);
+    if (res == null) return;
+
+    double newRemaining = newPrice - res.deposit;
+    if (newRemaining < 0) newRemaining = 0.0;
+
     bool success = await resData.updatePartialFields(uuid, {
       "number_of_men": men,
       "number_of_women": women,
+      "price": newPrice,
+      "remaining_amount": newRemaining,
     });
 
     if (success) {

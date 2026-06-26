@@ -18,6 +18,7 @@ class ReservationModel {
   final int numberOfWomen;
   final String? createdAt;
   final String? updatedAt;
+  final String? addedByName;
 
   // Joined fields from party_types
   final String? partyTypeName;
@@ -28,6 +29,10 @@ class ReservationModel {
   // Joined fields from dishes (comma-separated)
   final String? dishesNames;
   final String? dishesUuids;
+
+  // Joined fields from services (comma-separated)
+  final String? servicesNames;
+  final String? servicesUuids;
 
   // Computed properties for UI
   final String? customerType;
@@ -52,12 +57,15 @@ class ReservationModel {
     required this.numberOfWomen,
     this.createdAt,
     this.updatedAt,
+    this.addedByName,
     this.partyTypeName,
     this.partyBasicPrice,
     this.partySeasonalPrice,
     this.partyIcon,
     this.dishesNames,
     this.dishesUuids,
+    this.servicesNames,
+    this.servicesUuids,
     this.customerType,
     this.time = '',
     this.avatarInitials = '',
@@ -88,7 +96,19 @@ class ReservationModel {
 
   List<String> dishesNameList_helper() {
     if (dishesNames == null || dishesNames!.isEmpty) return [];
-    return dishesNames!.split(', ').where((s) => s.isNotEmpty).toList();
+    return dishesNames!.split(',').where((s) => s.isNotEmpty).toList();
+  }
+
+  // Get services as a list of UUIDs
+  List<String> get servicesUuidList {
+    if (servicesUuids == null || servicesUuids!.isEmpty) return [];
+    return servicesUuids!.split(',').where((s) => s.isNotEmpty).toList();
+  }
+
+  // Get services as a list of names
+  List<String> get servicesNameList {
+    if (servicesNames == null || servicesNames!.isEmpty) return [];
+    return servicesNames!.split(',').where((s) => s.isNotEmpty).toList();
   }
 
   factory ReservationModel.fromJson(Map<String, dynamic> json) {
@@ -116,22 +136,32 @@ class ReservationModel {
       numberOfWomen: json['number_of_women'] ?? 0,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+      addedByName: json['added_by_name'],
       // Joined fields
       partyTypeName: json['party_type_name'],
-      partyBasicPrice: json['party_basic_price'] != null
-          ? double.tryParse(json['party_basic_price'].toString())
+      partyBasicPrice: json['basic_price'] != null
+          ? (json['basic_price'] as num).toDouble()
           : null,
-      partySeasonalPrice: json['party_seasonal_price'] != null
-          ? double.tryParse(json['party_seasonal_price'].toString())
+      partySeasonalPrice: json['seasonal_price'] != null
+          ? (json['seasonal_price'] as num).toDouble()
           : null,
       partyIcon: json['party_icon'],
       dishesNames: json['dishes_names'],
       dishesUuids: json['dishes_uuids'],
+      servicesNames: json['services_names'],
+      servicesUuids: json['services_uuids'],
+      time: '10:00 AM - 02:00 PM', // Placeholder
       // Generated
       avatarInitials:
           json['username'] != null && json['username'].toString().isNotEmpty
           ? json['username'].toString()[0]
           : '?',
     );
+  }
+
+  static List<ReservationModel> fromList(List data) {
+    return data
+        .map((e) => ReservationModel.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
   }
 }

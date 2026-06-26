@@ -17,7 +17,7 @@ class TermsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.extension<AppColors>()!;
     final isArabic = Get.locale?.languageCode == 'ar';
-
+    Get.delete<TermsController>();
     final ctrl = Get.put(TermsController());
 
     return Scaffold(

@@ -115,6 +115,14 @@ class Dishes {
   Future<bool> deletecat(String uuid) async {
     try {
       try {
+        final check = await _db.readData(
+          "SELECT COUNT(*) as count FROM reservation_dishes WHERE dishes_uuid = ?",
+          [uuid],
+        );
+        if (check.isNotEmpty && (check[0]['count'] as int? ?? 0) > 0) {
+          throw 'linked_to_reservation';
+        }
+
         final result = await _db.delete("dishes", "uuid = ?", [uuid]);
 
         if (result > 0) {
@@ -126,10 +134,12 @@ class Dishes {
         }
         return false;
       } catch (e) {
+        if (e == 'linked_to_reservation') rethrow;
         print("Errer delete_data $e");
         return false;
       }
     } catch (e, st) {
+      if (e == 'linked_to_reservation') rethrow;
       print("❌ deletecat error: $e");
       print(st);
       return false;

@@ -23,7 +23,9 @@ class _DishCategoryFormDialogState extends State<DishCategoryFormDialog> {
   void initState() {
     super.initState();
     ctrl = Get.put(DishCategoriesController());
-    ctrl.clearFields();
+    if (!isEdit) {
+      ctrl.clearFields();
+    }
   }
 
   @override

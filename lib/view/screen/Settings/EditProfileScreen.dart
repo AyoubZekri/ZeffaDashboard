@@ -14,7 +14,8 @@ class EditProfileDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.create(() => EditProfileController());
+    Get.delete<EditProfileController>();
+    Get.put(EditProfileController());
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     Color textColor = isDark ? AppColor.white : AppColor.deepPurple;

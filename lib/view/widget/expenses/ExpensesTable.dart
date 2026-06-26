@@ -177,9 +177,14 @@ class ExpensesTable extends StatelessWidget {
 
     switch (item.type) {
       case 1:
-        categoryIcon = Icons.construction_rounded;
+        categoryIcon = Icons.people_outline_rounded;
+        categoryColor = Colors.indigo;
+        categoryName = 'workers'.tr;
+        break;
+      case 4:
+        categoryIcon = Icons.build_circle_outlined;
         categoryColor = Colors.orange;
-        categoryName = 'maintenance_workers'.tr;
+        categoryName = 'maintenance'.tr;
         break;
       case 2:
         categoryIcon = Icons.cleaning_services_rounded;
@@ -269,7 +274,7 @@ class ExpensesTable extends StatelessWidget {
           SizedBox(
             width: 150,
             child: Text(
-              "${item.value?.toStringAsFixed(2) ?? '0.00'} $currencyStr",
+              "${item.value?.toInt() ?? '0'} $currencyStr",
               style: TextStyle(
                 color: textColor,
                 fontWeight: FontWeight.bold,

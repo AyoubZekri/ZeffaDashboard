@@ -12,7 +12,17 @@ class Applink {
   static const String resePassword = "$server/User/newpassword";
   static const String resetPasswordSetting = "$server/User/resetpassword";
 
-  static const String logout = "$server/User/logout";
   static const String getUser = "$server/User/get";
 
+  // =============================Roles============================== //
+  static const String rolesGet = "$server/roles/get";
+  static const String rolesAdd = "$server/roles/add";
+  static const String rolesUpdate = "$server/roles/update";
+  static const String rolesDelete = "$server/roles/delete";
+
+  // =============================Sub Users============================== //
+  static const String subUsersGet = "$server/sub-users/get";
+  static const String subUsersAdd = "$server/sub-users/add";
+  static const String subUsersUpdate = "$server/sub-users/update";
+  static const String subUsersDelete = "$server/sub-users/delete";
 }
