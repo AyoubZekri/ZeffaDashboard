@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class SQLDB {
   static Database? _db;
@@ -17,7 +19,13 @@ class SQLDB {
   int get version => 1;
 
   Future<Database> intialDb() async {
-    String dataBais = await getDatabasesPath();
+    String dataBais;
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      final dir = await getApplicationSupportDirectory();
+      dataBais = dir.path;
+    } else {
+      dataBais = await getDatabasesPath();
+    }
     String path = join(dataBais, 'zeffa.db');
     Database mydb = await openDatabase(
       path,
@@ -314,7 +322,13 @@ class SQLDB {
   }
 
   Future<void> mydeleteDatebase() async {
-    String dataBais = await getDatabasesPath();
+    String dataBais;
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      final dir = await getApplicationSupportDirectory();
+      dataBais = dir.path;
+    } else {
+      dataBais = await getDatabasesPath();
+    }
     String path = join(dataBais, 'zeffa.db');
     await deleteDatabase(path);
   }

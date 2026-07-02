@@ -32,6 +32,7 @@ class EventTypesScreen extends StatelessWidget {
               // ── Header Section Widget ──
               EventTypesHeader(
                 onAddPressed: () {
+                  ctrl.clearFields();
                   Get.dialog(
                     const EventTypeFormDialog(),
                     barrierDismissible: true,

@@ -1,6 +1,6 @@
 class Applink {
   static const String server = "https://zeffa.codedev.id/api";
-  static const String image = "http://zeffa.codedev.id/";
+  static const String image = "https://zeffa.codedev.id";
 
   //  =============================Auth============================== //
 

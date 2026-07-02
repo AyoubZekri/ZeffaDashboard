@@ -66,6 +66,7 @@ class CalendarScreen extends StatelessWidget {
                       // Header Widget
                       CalendarHeader(
                         onAddPressed: () {
+                          ctrl.clearFields();
                           Get.dialog(
                             const CalendarFormDialog(),
                             barrierDismissible: true,

@@ -54,6 +54,7 @@ class SignupControllerImp extends SignupController {
       );
       if (response == Statusrequest.serverfailure) {
         showSnackbar("error".tr, "noInternet".tr, Colors.red);
+        return;
       }
       statusrequest = handlingData(response);
       print("=============================== Controller $response ");

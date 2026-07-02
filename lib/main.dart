@@ -15,6 +15,14 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'core/functions/callback.dart';
 import 'core/functions/SystemTrayHandler.dart';
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
 
@@ -76,6 +84,7 @@ void saveWindowState() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
 
   await initialServices();
 

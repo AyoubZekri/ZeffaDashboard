@@ -41,6 +41,7 @@ class ExpensesScreen extends StatelessWidget {
                     ctrl.searchQuery.value = value;
                   },
                   onAddPressed: () {
+                    ctrl.clearFields();
                     Get.dialog(
                       const ExpenseFormDialog(),
                       barrierDismissible: true,

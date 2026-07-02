@@ -32,6 +32,7 @@ class VerifiycodesignupControllerImp extends VerifiycodesignupController {
     );
     if (response == Statusrequest.serverfailure) {
       showSnackbar("error".tr, "noInternet".tr, Colors.red);
+      return;
     }
     print("===================================$response");
     statusrequest = handlingData(response);

@@ -486,8 +486,25 @@ class Reservationscontroller extends GetxController {
     }
   }
 
+  cleardata(){
+    username.clear();
+    phone.clear();
+    date.clear();
+    price.clear();
+    deposit.clear();
+    remainingamount.clear();
+    numberofmen.clear();
+    numberOfwomen.clear();
+    note.clear();
+    BookingBeriod = null;
+    typeOfPartyUuid = null;
+    selectedDishes.clear();
+    selectedServices.clear();
+  }
+
   // عرض البيانات
   Future<void> addReservation() async {
+    
     if (!formState.currentState!.validate()) {
       return;
     }

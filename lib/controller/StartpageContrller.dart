@@ -15,6 +15,7 @@ class Startpagecontrller extends GetxController {
   late int Status;
   Myservices myServices = Get.find();
 
+
   String date_experiment = "";
 
   Statusrequest statusrequest = Statusrequest.none;

@@ -29,6 +29,7 @@ class DishCategoriesScreen extends StatelessWidget {
               // Header Widget
               DishCategoriesHeader(
                 onAddPressed: () {
+                  ctrl.clearFields();
                   Get.dialog(
                     const DishCategoryFormDialog(),
                     barrierDismissible: true,

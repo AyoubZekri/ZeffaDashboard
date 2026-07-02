@@ -214,7 +214,7 @@ class UserProfileDialog extends StatelessWidget {
                                 textDirection: TextDirection.rtl,
                                 children: [
                                   Text(
-                                    'account_status'.tr,
+                                    statusText,
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -223,7 +223,7 @@ class UserProfileDialog extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'activation_end_date'.tr,
+                                    '${'activation_end_date'.tr}: $formattedDate',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: subtitleColor,
@@ -232,22 +232,6 @@ class UserProfileDialog extends StatelessWidget {
                                 ],
                               ),
                             ],
-                          ),
-
-                          // Left Side: Renew Text/Button
-                          InkWell(
-                            onTap: () {
-                              // Implement renewal logic or navigation here
-                            },
-                            child: Text(
-                              'renew'.tr,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: AppColor.deepPurple,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
                           ),
                      
                         ],

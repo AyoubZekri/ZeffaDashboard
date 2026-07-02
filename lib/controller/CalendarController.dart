@@ -296,6 +296,7 @@ class CalendarController extends GetxController {
 
   // Add Seasonal Period
   Future<bool> addSeason() async {
+    
     if (!formState.currentState!.validate()) {
       return false;
     }
