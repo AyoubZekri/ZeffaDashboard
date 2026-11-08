@@ -61,7 +61,8 @@ class TermsScreen extends StatelessWidget {
                     }
 
                     return Obx(() {
-                      final terms = ctrl.paginatedTerms;
+                      // All terms shown at once (no pagination); the grid scrolls
+                      final terms = ctrl.filteredTerms;
 
                       if (ctrl.allTerms.isEmpty &&
                           ctrl.statusrequest == Statusrequest.none) {
@@ -135,50 +136,6 @@ class TermsScreen extends StatelessWidget {
                             ),
                           ),
 
-                          // Pagination Controls
-                          if (ctrl.totalPages > 1)
-                            Container(
-                              padding: const EdgeInsets.only(top: 24),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  IconButton(
-                                    onPressed: ctrl.prevPage,
-                                    icon: Icon(
-                                      isArabic
-                                          ? Icons.chevron_right_rounded
-                                          : Icons.chevron_left_rounded,
-                                      color: ctrl.currentPage.value > 1
-                                          ? theme.colorScheme.onSurface
-                                          : colors.subtitleColor,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Text(
-                                    '${ctrl.currentPage.value} / ${ctrl.totalPages}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: theme.colorScheme.onSurface,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  IconButton(
-                                    onPressed: ctrl.nextPage,
-                                    icon: Icon(
-                                      isArabic
-                                          ? Icons.chevron_left_rounded
-                                          : Icons.chevron_right_rounded,
-                                      color:
-                                          ctrl.currentPage.value <
-                                              ctrl.totalPages
-                                          ? theme.colorScheme.onSurface
-                                          : colors.subtitleColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                         ],
                       );
                     });

@@ -359,8 +359,9 @@ Future<void> generateAndPrintPDF(
   }
 
   // Load fonts (using Amiri instead of Cairo because Cairo lacks some isolated presentation form glyphs)
+  // Papers are printed all in bold (Amiri Bold)
   final fontData = await rootBundle.load(
-    "assets/fonts/static/Amiri-Regular.ttf",
+    "assets/fonts/static/Amiri-Bold.ttf",
   );
   final cairoFont = pw.Font.ttf(fontData);
 
@@ -464,8 +465,8 @@ Future<void> generateAndPrintPDF(
                               "• ${ar(item)}",
                               textDirection: textDir,
                               style: pw.TextStyle(
-                                font: cairoFont,
-                                fontSize: 14,
+                                font: cairoBold,
+                                fontSize: 12,
                               ),
                             ),
                           ),
@@ -488,8 +489,8 @@ Future<void> generateAndPrintPDF(
                               "• ${ar(item)}",
                               textDirection: textDir,
                               style: pw.TextStyle(
-                                font: cairoFont,
-                                fontSize: 14,
+                                font: cairoBold,
+                                fontSize: 12,
                               ),
                             ),
                           ),
@@ -527,7 +528,7 @@ Future<void> generateAndPrintPDF(
                       child: pw.Text(
                         ar(title),
                         textDirection: textDir,
-                        style: pw.TextStyle(font: cairoFont, fontSize: 14),
+                        style: pw.TextStyle(font: cairoBold, fontSize: 11.5),
                       ),
                     ),
                   ),
@@ -545,7 +546,7 @@ Future<void> generateAndPrintPDF(
                               ar(isArabic ? "$idx- $text" : "$idx. $text"),
                               textDirection: textDir,
                               style: pw.TextStyle(
-                                font: cairoFont,
+                                font: cairoBold,
                                 fontSize: 11,
                                 height: 1.3,
                               ),
@@ -558,8 +559,8 @@ Future<void> generateAndPrintPDF(
               );
             }).toList(),
           ),
-          pw.SizedBox(height: 30),
-
+          // Signatures: kept apart from the text above
+          pw.SizedBox(height: 45),
           pw.Align(
             alignment: alignLeft,
             child: pw.Column(
@@ -582,7 +583,7 @@ Future<void> generateAndPrintPDF(
               ),
               textDirection: textDir,
               style: pw.TextStyle(
-                font: cairoFont,
+                font: cairoBold,
                 fontSize: 14,
                 color: PdfColors.grey700,
               ),
@@ -675,8 +676,8 @@ Future<void> generateAndPrintPDF(
                         ar(title),
                         textDirection: textDir,
                         style: pw.TextStyle(
-                          font: cairoFont,
-                          fontSize: 14,
+                          font: cairoBold,
+                          fontSize: 11.5,
                           height: 1.35,
                         ),
                       ),
@@ -696,8 +697,8 @@ Future<void> generateAndPrintPDF(
                               ar(isArabic ? "$idx- $text" : "$idx. $text"),
                               textDirection: textDir,
                               style: pw.TextStyle(
-                                font: cairoFont,
-                                fontSize: 14,
+                                font: cairoBold,
+                                fontSize: 11,
                                 height: 1.3,
                               ),
                             ),
@@ -709,6 +710,8 @@ Future<void> generateAndPrintPDF(
               );
             }).toList(),
           ),
+          // Signatures: kept apart from the text above
+          pw.SizedBox(height: 45),
           pw.Align(
             alignment: alignLeft,
             child: pw.Column(
@@ -1008,8 +1011,8 @@ Future<void> generateAndPrintPDF(
                         ar(title),
                         textDirection: textDir,
                         style: pw.TextStyle(
-                          font: cairoFont,
-                          fontSize: 14,
+                          font: cairoBold,
+                          fontSize: 11.2,
                           height: 1.3,
                         ),
                       ),
@@ -1029,8 +1032,8 @@ Future<void> generateAndPrintPDF(
                               ar(isArabic ? "$idx- $text" : "$idx. $text"),
                               textDirection: textDir,
                               style: pw.TextStyle(
-                                font: cairoFont,
-                                fontSize: 14,
+                                font: cairoBold,
+                                fontSize: 10.8,
                                 height: 1.25,
                               ),
                             ),
@@ -1042,6 +1045,8 @@ Future<void> generateAndPrintPDF(
               );
             }).toList(),
           ),
+          // Signatures: kept apart from the text above
+          pw.SizedBox(height: 45),
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [

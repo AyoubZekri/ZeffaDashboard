@@ -24,7 +24,7 @@ class ExpensesController extends GetxController {
 
   // Pagination
   final RxInt currentPage = 1.obs;
-  final int itemsPerPage = 5;
+  final int itemsPerPage = 10;
 
   // Form Fields
   final GlobalKey<FormState> formState = GlobalKey<FormState>();

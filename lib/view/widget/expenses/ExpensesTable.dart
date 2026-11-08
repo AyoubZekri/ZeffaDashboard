@@ -33,13 +33,16 @@ class ExpensesTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final verticalScroll = ScrollController();
     final horizontalScroll = ScrollController();
     final theme = Theme.of(context);
     final colors = theme.extension<AppColors>()!;
 
+    // The table grows with its rows (no inner vertical scroll: the page
+    // scrolls), and fills the available width; it scrolls sideways only on a
+    // window narrower than its columns.
+    const double minTableWidth = 912;
+
     return Container(
-      height: 500,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: colors.cardColor,
@@ -54,66 +57,65 @@ class ExpensesTable extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Expanded(
-            child: Scrollbar(
-              controller: horizontalScroll,
-              thumbVisibility: true,
-              thickness: 8,
-              radius: const Radius.circular(8),
-              child: ScrollConfiguration(
-                behavior: ScrollConfiguration.of(context).copyWith(
-                  dragDevices: {
-                    PointerDeviceKind.mouse,
-                    PointerDeviceKind.touch,
-                    PointerDeviceKind.stylus,
-                    PointerDeviceKind.trackpad,
-                  },
-                ),
-                child: SingleChildScrollView(
-                  controller: horizontalScroll,
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width: 1000,
-                    child: Scrollbar(
-                      controller: verticalScroll,
-                      notificationPredicate: (notif) => notif.depth == 1,
-                      child: SingleChildScrollView(
-                        controller: verticalScroll,
-                        scrollDirection: Axis.vertical,
-                        child: Column(
-                          children: [
-                            _buildTableHeader(context),
-                            const SizedBox(height: 8),
-                            Divider(color: colors.borderColor, height: 1),
-                            if (expenses.isEmpty)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 64,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'no_expenses_found'.tr,
-                                    style: TextStyle(
-                                      color: colors.subtitleColor,
-                                      fontSize: 16,
-                                    ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final needsScroll = constraints.maxWidth < minTableWidth;
+              final tableWidth = needsScroll
+                  ? minTableWidth
+                  : constraints.maxWidth;
+              return Scrollbar(
+                controller: horizontalScroll,
+                thumbVisibility: needsScroll,
+                thickness: 8,
+                radius: const Radius.circular(8),
+                child: ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context).copyWith(
+                    dragDevices: {
+                      PointerDeviceKind.mouse,
+                      PointerDeviceKind.touch,
+                      PointerDeviceKind.stylus,
+                      PointerDeviceKind.trackpad,
+                    },
+                  ),
+                  child: SingleChildScrollView(
+                    controller: horizontalScroll,
+                    scrollDirection: Axis.horizontal,
+                    physics: needsScroll
+                        ? null
+                        : const NeverScrollableScrollPhysics(),
+                    child: SizedBox(
+                      width: tableWidth,
+                      child: Column(
+                        children: [
+                          _buildTableHeader(context),
+                          const SizedBox(height: 8),
+                          Divider(color: colors.borderColor, height: 1),
+                          if (expenses.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 64),
+                              child: Center(
+                                child: Text(
+                                  'no_expenses_found'.tr,
+                                  style: TextStyle(
+                                    color: colors.subtitleColor,
+                                    fontSize: 16,
                                   ),
                                 ),
-                              )
-                            else
-                              ...List.generate(
-                                expenses.length,
-                                (index) =>
-                                    _buildTableRow(context, expenses[index]),
                               ),
-                          ],
-                        ),
+                            )
+                          else
+                            ...List.generate(
+                              expenses.length,
+                              (index) =>
+                                  _buildTableRow(context, expenses[index]),
+                            ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
           const SizedBox(height: 32),
           _buildPagination(context),
@@ -390,16 +392,14 @@ class ExpensesTable extends StatelessWidget {
               enabled: currentPage > 1,
               onTap: () => onPageChanged(currentPage - 1),
             ),
-            ...List.generate(totalPages, (index) {
-              final pageNum = index + 1;
-              return _buildPageItem(
-                context,
-                pageNum.toString(),
-                pageNum == currentPage,
-                enabled: true,
-                onTap: () => onPageChanged(pageNum),
-              );
-            }),
+            // One box with the current page number (not one box per page)
+            _buildPageItem(
+              context,
+              currentPage.toString(),
+              true,
+              enabled: true,
+              onTap: () {},
+            ),
             _buildPageItem(
               context,
               isArabic ? '<' : '>',
