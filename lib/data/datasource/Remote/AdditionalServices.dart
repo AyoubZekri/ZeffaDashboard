@@ -25,13 +25,14 @@ class AdditionalServices {
     }
   }
 
-  Future<bool> Adddata(String name, double price) async {
+  Future<bool> Adddata(String name, double price, {int priceType = 0}) async {
     final String uuid = const Uuid().v4();
     try {
       final data = {
         "uuid": uuid,
         "name": name,
         "price": price,
+        "price_type": priceType,
         "user_id": id,
         "created_at": DateTime.now().toIso8601String(),
         "updated_at": DateTime.now().toIso8601String(),
@@ -54,11 +55,17 @@ class AdditionalServices {
     }
   }
 
-  Future<bool> UpdateData(String uuid, String name, double price) async {
+  Future<bool> UpdateData(
+    String uuid,
+    String name,
+    double price, {
+    int priceType = 0,
+  }) async {
     try {
       final data = {
         "name": name,
         "price": price,
+        "price_type": priceType,
         "updated_at": DateTime.now().toIso8601String(),
       };
 

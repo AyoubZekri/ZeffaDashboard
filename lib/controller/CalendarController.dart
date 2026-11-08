@@ -1,3 +1,4 @@
+import 'package:zeffa/core/functions/role_permissions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/class/Statusrequest.dart';
@@ -5,7 +6,11 @@ import '../../core/class/Sqldb.dart';
 import '../../core/functions/Snacpar.dart';
 import '../../data/datasource/Remote/SpecialDates.dart';
 import '../../data/model/SpecialDateModel.dart';
+import '../../data/datasource/Remote/Halls.dart';
+import '../../data/model/HallModel.dart';
 import '../view/widget/calendar/BookingDetailsDialog.dart';
+import '../view/widget/reservations/ReservationFormDialog.dart';
+import 'Reservationscontroller.dart';
 
 class CalendarController extends GetxController {
   // Navigation
@@ -43,6 +48,21 @@ class CalendarController extends GetxController {
 
   // Editing state
   RxnString editingUuid = RxnString();
+
+  // Halls: account hall first, then the extra halls
+  final RxList<HallModel> halls = <HallModel>[].obs;
+  // Hall shown in the calendar (null = account hall)
+  final RxnString selectedHallUuid = RxnString();
+
+  bool get hasMultipleHalls => halls.length > 1;
+
+  void selectHall(String? uuid) {
+    selectedHallUuid.value = (uuid == null || uuid.isEmpty) ? null : uuid;
+  }
+
+  /// Reserved entry belongs to the hall shown in the calendar
+  bool _inSelectedHall(Map<String, dynamic> e) =>
+      (e['hall_uuid'] ?? '') == (selectedHallUuid.value ?? '');
 
   @override
   void onInit() {
@@ -105,6 +125,7 @@ class CalendarController extends GetxController {
     update();
     try {
       final result = await specialDatesRepo.viewdata();
+      halls.assignAll(await Halls(Get.find()).allHalls());
       
       // Fetch actual reservations directly from SQLite
       final int userId = specialDatesRepo.id;
@@ -118,6 +139,7 @@ class CalendarController extends GetxController {
           r.booking_date,
           r.booking_period,
           r.type_of_party_uuid,
+          r.hall_uuid,
           pt.name AS event_type
         FROM reservations r
         LEFT JOIN party_types pt ON r.type_of_party_uuid = pt.uuid
@@ -179,6 +201,7 @@ class CalendarController extends GetxController {
           'uuid': res['uuid'],
           'title': res['event_type'] ?? 'حجز',
           'type': 'reserved',
+          'hall_uuid': res['hall_uuid'],
           "type_of_party_uuid": res['type_of_party_uuid'] ?? '',
           'booking_period': res['booking_period'],
           'date': normalizedDate,
@@ -263,6 +286,38 @@ class CalendarController extends GetxController {
     currentMonth.value = date.month;
     currentYear.value = date.year;
     updateMonthlyStats();
+  }
+
+  // Zoomed-out view: the 12 months of [currentYear] instead of the days
+  RxBool showMonthsView = false.obs;
+
+  void toggleMonthsView() => showMonthsView.toggle();
+
+  void previousYear() {
+    currentYear.value--;
+    updateMonthlyStats();
+  }
+
+  void nextYear() {
+    currentYear.value++;
+    updateMonthlyStats();
+  }
+
+  /// Pick a month in the months view → back to its days
+  void selectMonth(int month) {
+    currentMonth.value = month;
+    showMonthsView.value = false;
+    updateMonthlyStats();
+  }
+
+  /// Number of reservations in a given month (shown in the months view)
+  int reservationsInMonth(int year, int month) {
+    return specialDays.where((e) {
+      if (e['type'] != 'reserved' || e['date'] == null) return false;
+      if (!_inSelectedHall(e)) return false;
+      final d = DateTime.tryParse(e['date'].toString());
+      return d != null && d.year == year && d.month == month;
+    }).length;
   }
 
   // Add Special Day
@@ -392,6 +447,7 @@ class CalendarController extends GetxController {
     
     // Find all matching items in specialDays
     for (final event in specialDays) {
+      if (event['type'] == 'reserved' && !_inSelectedHall(event)) continue;
       if (event['date'] != null) {
         final eventDate = DateTime.parse(event['date']);
         if (eventDate.year == date.year &&
@@ -481,6 +537,33 @@ class CalendarController extends GetxController {
     if (count == 15) return 'average'.tr;
     if (count >= 5 && count < 15) return 'below_average'.tr;
     return 'bad'.tr; // < 5
+  }
+
+  /// Opens the new reservation form with [date] (and optionally [period]) filled in
+  Future<void> addReservationForDate(DateTime date, {int? period}) async {
+    if (!hasRolePermission('add_reservation')) return;
+    final resCtrl = Get.isRegistered<Reservationscontroller>()
+        ? Get.find<Reservationscontroller>()
+        : Get.put(Reservationscontroller());
+
+    resCtrl.cleardata();
+    // Party types and existing bookings are needed by the form
+    await resCtrl.fetchInitialData();
+    resCtrl.date.text =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+    resCtrl.BookingBeriod = period?.toString();
+    if (resCtrl.hasMultipleHalls) {
+      resCtrl.hallUuid = selectedHallUuid.value;
+      resCtrl.hallSelected = true;
+    }
+
+    await Get.dialog(
+      ReservationFormDialog(controller: resCtrl),
+      barrierDismissible: true,
+    );
+
+    loadCalendarData();
+    updateMonthlyStats();
   }
 
   void showBookingDetails(Map<String, dynamic> event) {

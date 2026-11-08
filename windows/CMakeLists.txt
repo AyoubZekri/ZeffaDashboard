@@ -93,6 +93,13 @@ install(DIRECTORY "${NATIVE_ASSETS_DIR}"
    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
    COMPONENT Runtime)
 
+# sqlite3.dll shipped with the app: pubspec sets sqlite3 `source: system`
+# (no download from GitHub), so the library is loaded from next to the exe.
+# windows/libs/sqlite3.dll = official sqlite3 3.3.2 build (sha256 35a668f1…)
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/libs/sqlite3.dll"
+  DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+  COMPONENT Runtime)
+
 # Fully re-copy the assets directory on each build to avoid having stale files
 # from a previous install.
 set(FLUTTER_ASSET_DIR_NAME "flutter_assets")

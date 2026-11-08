@@ -21,23 +21,8 @@ class CustomHandlingView extends StatelessWidget {
     final colors = theme.extension<AppColors>() ?? AppColors.light;
 
     if (statusRequest == Statusrequest.loadeng) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            Text(
-              Get.locale?.languageCode == 'ar' ? 'جاري التحميل...' : 'Loading...',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: colors.subtitleColor,
-              ),
-            ),
-          ],
-        ),
-      );
+      // Loading: only the spinner
+      return const Center(child: CircularProgressIndicator());
     } else if (statusRequest == Statusrequest.offlinefailure || statusRequest == Statusrequest.serverfailure) {
       return Center(
         child: Column(

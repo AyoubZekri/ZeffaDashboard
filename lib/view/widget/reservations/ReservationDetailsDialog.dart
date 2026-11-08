@@ -1,3 +1,4 @@
+import 'package:zeffa/core/functions/format_money.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constant/Colorapp.dart';
@@ -24,8 +25,10 @@ class ReservationDetailsDialog extends StatelessWidget {
     final borderColor = colors.borderColor;
 
     final myServices = Get.find<Myservices>();
-    final supervisorName = myServices.sharedPreferences?.getString("username") ?? '';
-    final addedBy = (reservation.addedByName != null && reservation.addedByName!.isNotEmpty)
+    final supervisorName =
+        myServices.sharedPreferences?.getString("username") ?? '';
+    final addedBy =
+        (reservation.addedByName != null && reservation.addedByName!.isNotEmpty)
         ? reservation.addedByName!
         : supervisorName;
 
@@ -89,22 +92,32 @@ class ReservationDetailsDialog extends StatelessWidget {
                           children: [
                             Text(
                               reservation.statusKey.tr,
-                              style: TextStyle(fontSize: 14, color: subtitleColor),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: subtitleColor,
+                              ),
                             ),
                             if (addedBy.isNotEmpty) ...[
                               const SizedBox(width: 12),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.blue.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
                                   '${Get.locale?.languageCode == 'ar' ? 'بواسطة' : 'By'}: $addedBy',
-                                  style: const TextStyle(fontSize: 12, color: Colors.blue, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ]
+                            ],
                           ],
                         ),
                       ],
@@ -180,6 +193,8 @@ class ReservationDetailsDialog extends StatelessWidget {
                                           const SizedBox(height: 2),
                                           Text(
                                             reservation.customerName,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold,
@@ -204,12 +219,18 @@ class ReservationDetailsDialog extends StatelessWidget {
                                             ),
                                           ),
                                           const SizedBox(height: 2),
-                                          Text(
-                                            reservation.phoneNumber,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              color: textColor,
+                                          FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            alignment: AlignmentDirectional
+                                                .centerStart,
+                                            child: Text(
+                                              reservation.phoneNumber,
+                                              textDirection: TextDirection.ltr,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                color: textColor,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -238,7 +259,8 @@ class ReservationDetailsDialog extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  reservation.partyTypeName ?? reservation.typeOfPartyUuid,
+                                  reservation.partyTypeName ??
+                                      reservation.typeOfPartyUuid,
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -427,13 +449,13 @@ class ReservationDetailsDialog extends StatelessWidget {
                                 const SizedBox(height: 16),
                                 _buildFinancialRow(
                                   'paid_amount'.tr,
-                                  "\$${reservation.deposit?.toInt() ?? 0}",
+                                  "${formatMoney(reservation.deposit)} DA",
                                   AppColor.primaryPurple,
                                 ),
                                 const SizedBox(height: 8),
                                 _buildFinancialRow(
                                   'remaining_amount'.tr,
-                                  "\$${reservation.remainingAmount?.toInt() ?? 0}",
+                                  "${formatMoney(reservation.remainingAmount)} DA",
                                   Colors.white,
                                 ),
                                 const SizedBox(height: 16),
@@ -441,7 +463,7 @@ class ReservationDetailsDialog extends StatelessWidget {
                                 const SizedBox(height: 16),
                                 _buildFinancialRow(
                                   'total_label'.tr,
-                                  "\$${reservation.price?.toInt() ?? 0}",
+                                  "${formatMoney(reservation.price)} DA",
                                   Colors.white,
                                   isBold: true,
                                 ),
@@ -505,7 +527,9 @@ class ReservationDetailsDialog extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 _buildCardHeader(
-                                  Get.locale?.languageCode == 'ar' ? 'خدمات إضافية' : 'Additional Services',
+                                  Get.locale?.languageCode == 'ar'
+                                      ? 'خدمات إضافية'
+                                      : 'Additional Services',
                                   Icons.room_service_outlined,
                                   AppColor.primaryPurple,
                                 ),
@@ -520,7 +544,9 @@ class ReservationDetailsDialog extends StatelessWidget {
                                             .toList()
                                       : [
                                           Text(
-                                            Get.locale?.languageCode == 'ar' ? 'لا توجد خدمات إضافية' : 'No additional services',
+                                            Get.locale?.languageCode == 'ar'
+                                                ? 'لا توجد خدمات إضافية'
+                                                : 'No additional services',
                                             style: TextStyle(
                                               fontSize: 13,
                                               color: subtitleColor,
@@ -581,7 +607,7 @@ class ReservationDetailsDialog extends StatelessWidget {
 
   Widget _buildCard(Color color, Color borderColor, Widget child) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(16),
@@ -604,14 +630,18 @@ class ReservationDetailsDialog extends StatelessWidget {
       children: [
         Icon(icon, color: color, size: 20),
         const SizedBox(width: 8),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: color,
+        Flexible(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: color,
 
-            letterSpacing: 1.1,
+              letterSpacing: 1.1,
+            ),
           ),
         ),
       ],
@@ -624,22 +654,34 @@ class ReservationDetailsDialog extends StatelessWidget {
     Color valueColor, {
     bool isBold = false,
   }) {
+    // Label takes the free space, the amount shrinks instead of overlapping
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: isBold ? 14 : 13,
-            color: isBold ? Colors.white : Colors.white70,
+        Expanded(
+          child: Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: isBold ? 14 : 13,
+              color: isBold ? Colors.white : Colors.white70,
+            ),
           ),
         ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: isBold ? 18 : 16,
-            fontWeight: FontWeight.bold,
-            color: valueColor,
+        const SizedBox(width: 8),
+        Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerEnd,
+            child: Text(
+              value,
+              textDirection: TextDirection.ltr,
+              style: TextStyle(
+                fontSize: isBold ? 18 : 16,
+                fontWeight: FontWeight.bold,
+                color: valueColor,
+              ),
+            ),
           ),
         ),
       ],

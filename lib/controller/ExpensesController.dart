@@ -10,7 +10,7 @@ import '../../data/model/ExpenseModel.dart';
 class ExpensesController extends GetxController {
   late final TextEditingController searchController;
   final RxString searchQuery = "".obs;
-  
+
   // 0: All, 1: Maintenance workers, 2: Cleaning materials, 3: Other expenses
   final RxInt selectedCategory = 0.obs;
 
@@ -19,8 +19,9 @@ class ExpensesController extends GetxController {
   final Rxn<DateTime> endDateFilter = Rxn<DateTime>();
 
   final RxList<ExpenseModel> allExpenses = <ExpenseModel>[].obs;
-  final RxList<Map<String, dynamic>> allReservations = <Map<String, dynamic>>[].obs;
-  
+  final RxList<Map<String, dynamic>> allReservations =
+      <Map<String, dynamic>>[].obs;
+
   // Pagination
   final RxInt currentPage = 1.obs;
   final int itemsPerPage = 5;
@@ -30,9 +31,109 @@ class ExpensesController extends GetxController {
   late TextEditingController nameController;
   late TextEditingController amountController;
   late TextEditingController dateController;
+
+  // ── Workers expense (category 1) by count: amount = count × price ──
+  late TextEditingController workersCountController;
+  late TextEditingController femaleWorkersCountController;
+  late TextEditingController workerPriceController;
+  late TextEditingController femaleWorkerPriceController;
+  // Not linked to a reservation: enter the total, or switch to counting
+  final RxBool workersByCount = false.obs;
+  final RxDouble workersTotal = 0.0.obs;
+  // Per-person prices of each event type: uuid → {worker, female}
+  final Map<String, Map<String, double>> partyWorkerPrices = {};
+
+  bool get isWorkersCategory => formCategory.value == 1;
+
+  /// Amount comes from the counts (linked reservation, or counting chosen)
+  bool get isWorkersComputed =>
+      isWorkersCategory && (linkToReservation.value || workersByCount.value);
+
+  double _num(TextEditingController c) =>
+      double.tryParse(c.text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+
+  void recalcWorkers() {
+    workersTotal.value =
+        _num(workersCountController) * _num(workerPriceController) +
+        _num(femaleWorkersCountController) * _num(femaleWorkerPriceController);
+  }
+
+  String _plain(double v) =>
+      v == v.roundToDouble() ? v.toInt().toString() : v.toString();
+
+  /// Fill the per-person prices from the linked reservation's event type
+  void applyPartyWorkerPrices() {
+    if (!isWorkersCategory || !linkToReservation.value) return;
+    final res = allReservations.firstWhereOrNull(
+      (r) => r['uuid'] == formReservationUuid.value,
+    );
+    final prices = partyWorkerPrices[res?['type_of_party_uuid']?.toString()];
+    if (prices == null) return;
+    if ((prices['worker'] ?? 0) > 0) {
+      workerPriceController.text = _plain(prices['worker']!);
+    }
+    if ((prices['female'] ?? 0) > 0) {
+      femaleWorkerPriceController.text = _plain(prices['female']!);
+    }
+    recalcWorkers();
+  }
+
+  void onCategoryChanged(int? value) {
+    formCategory.value = value;
+    applyPartyWorkerPrices();
+  }
+
+  void onReservationChanged(String? uuid) {
+    formReservationUuid.value = uuid;
+    _applyReservationDate();
+    applyPartyWorkerPrices();
+  }
+
+  /// Linked expense → its date is the reservation's date (still editable)
+  void _applyReservationDate() {
+    final res = allReservations.firstWhereOrNull(
+      (r) => r['uuid'] == formReservationUuid.value,
+    );
+    final raw = res?['booking_date']?.toString();
+    if (raw == null || raw.isEmpty) return;
+    final date = DateTime.tryParse(raw.replaceAll('/', '-'));
+    if (date == null) return;
+    selectedDate = date;
+    dateController.text = DateFormat('yyyy-MM-dd').format(date);
+  }
+
+  Future<void> _loadPartyWorkerPrices() async {
+    try {
+      final rows = await _db.readData(
+        "SELECT uuid, worker_price, female_worker_price FROM party_types WHERE user_id = ?",
+        [expensesRepo.id],
+      );
+      partyWorkerPrices.clear();
+      for (final r in rows) {
+        partyWorkerPrices[r['uuid'].toString()] = {
+          'worker': (r['worker_price'] as num?)?.toDouble() ?? 0.0,
+          'female': (r['female_worker_price'] as num?)?.toDouble() ?? 0.0,
+        };
+      }
+    } catch (e) {
+      print("Error loading worker prices: $e");
+    }
+  }
+
   final RxnInt formCategory = RxnInt();
+  // Optional reservation (wedding) this expense belongs to
+  final RxnString formReservationUuid = RxnString();
+  // Switch "linked to a reservation"; off → general expense
+  final RxBool linkToReservation = false.obs;
+
+  void setLinkToReservation(bool value) {
+    linkToReservation.value = value;
+    if (!value) formReservationUuid.value = null;
+    applyPartyWorkerPrices();
+  }
+
   DateTime? selectedDate;
-  
+
   bool isEdit = false;
   String? editUuid;
 
@@ -46,7 +147,11 @@ class ExpensesController extends GetxController {
     nameController = TextEditingController();
     amountController = TextEditingController();
     dateController = TextEditingController();
-    
+    workersCountController = TextEditingController();
+    femaleWorkersCountController = TextEditingController();
+    workerPriceController = TextEditingController();
+    femaleWorkerPriceController = TextEditingController();
+
     loadExpenses();
 
     ever(searchQuery, (_) => currentPage.value = 1);
@@ -63,6 +168,10 @@ class ExpensesController extends GetxController {
     nameController.dispose();
     amountController.dispose();
     dateController.dispose();
+    workersCountController.dispose();
+    femaleWorkersCountController.dispose();
+    workerPriceController.dispose();
+    femaleWorkerPriceController.dispose();
     super.onClose();
   }
 
@@ -70,7 +179,15 @@ class ExpensesController extends GetxController {
     nameController.clear();
     amountController.clear();
     dateController.clear();
+    workersCountController.clear();
+    femaleWorkersCountController.clear();
+    workerPriceController.clear();
+    femaleWorkerPriceController.clear();
+    workersByCount.value = false;
+    workersTotal.value = 0;
     formCategory.value = null;
+    formReservationUuid.value = null;
+    linkToReservation.value = false;
     selectedDate = null;
     isEdit = false;
     editUuid = null;
@@ -80,7 +197,7 @@ class ExpensesController extends GetxController {
     try {
       final int userId = expensesRepo.id;
       final result = await _db.readData(
-        "SELECT deposit, remaining_amount, booking_date FROM reservations WHERE user_id = ?",
+        "SELECT uuid, username, deposit, remaining_amount, booking_date, type_of_party_uuid FROM reservations WHERE user_id = ? ORDER BY booking_date DESC",
         [userId],
       );
       return result;
@@ -90,15 +207,31 @@ class ExpensesController extends GetxController {
     }
   }
 
+  /// "Customer name - date" label of a linked reservation
+  String? reservationLabel(String? uuid) {
+    if (uuid == null || uuid.isEmpty) return null;
+    final res = allReservations.firstWhereOrNull((r) => r['uuid'] == uuid);
+    if (res == null) return null;
+    return "${res['username'] ?? ''} - ${res['booking_date'] ?? ''}";
+  }
+
+  /// Customer name only of a linked reservation (used in table and search)
+  String? reservationName(String? uuid) {
+    if (uuid == null || uuid.isEmpty) return null;
+    final res = allReservations.firstWhereOrNull((r) => r['uuid'] == uuid);
+    return res?['username']?.toString();
+  }
+
   Future<void> loadExpenses() async {
     statusrequest = Statusrequest.loadeng;
     update();
     try {
       final result = await expensesRepo.viewdata();
       final resResult = await fetchReservations();
-      
+      await _loadPartyWorkerPrices();
+
       allReservations.assignAll(resResult);
-      
+
       if (result.isEmpty) {
         statusrequest = Statusrequest.none;
         allExpenses.clear();
@@ -121,9 +254,14 @@ class ExpensesController extends GetxController {
     final end = endDateFilter.value;
 
     return allExpenses.where((expense) {
-      final matchesSearch = query.isEmpty ||
-          (expense.description?.toLowerCase().contains(query) ?? false);
-      
+      final matchesSearch =
+          query.isEmpty ||
+          (expense.description?.toLowerCase().contains(query) ?? false) ||
+          (reservationName(
+                expense.reservationUuid,
+              )?.toLowerCase().contains(query) ??
+              false);
+
       final matchesCategory = cat == 0 || expense.type == cat;
 
       bool matchesDate = true;
@@ -152,7 +290,7 @@ class ExpensesController extends GetxController {
     final list = filteredExpenses;
     final startIndex = (currentPage.value - 1) * itemsPerPage;
     if (startIndex >= list.length) return [];
-    
+
     final endIndex = startIndex + itemsPerPage;
     return list.sublist(
       startIndex,
@@ -203,8 +341,12 @@ class ExpensesController extends GetxController {
       context: context,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
-      initialDateRange: startDateFilter.value != null && endDateFilter.value != null
-          ? DateTimeRange(start: startDateFilter.value!, end: endDateFilter.value!)
+      initialDateRange:
+          startDateFilter.value != null && endDateFilter.value != null
+          ? DateTimeRange(
+              start: startDateFilter.value!,
+              end: endDateFilter.value!,
+            )
           : null,
     );
 
@@ -229,8 +371,20 @@ class ExpensesController extends GetxController {
       showSnackbar("error".tr, "please_select_date".tr, Colors.red);
       return;
     }
+    if (linkToReservation.value && formReservationUuid.value == null) {
+      showSnackbar("error".tr, "select_reservation".tr, Colors.red);
+      return;
+    }
 
-    final double? parsedValue = double.tryParse(amountController.text);
+    final bool computed = isWorkersComputed;
+    if (computed) recalcWorkers();
+    if (computed && workersTotal.value <= 0) {
+      showSnackbar("error".tr, "enter_workers_count".tr, Colors.red);
+      return;
+    }
+    final double? parsedValue = computed
+        ? workersTotal.value
+        : double.tryParse(amountController.text);
     if (parsedValue == null) {
       showSnackbar("error".tr, "invalid_amount".tr, Colors.red);
       return;
@@ -244,6 +398,13 @@ class ExpensesController extends GetxController {
         nameController.text,
         parsedValue,
         dateController.text,
+        reservationUuid: formReservationUuid.value,
+        workersCount: computed ? _num(workersCountController).toInt() : null,
+        femaleWorkersCount: computed
+            ? _num(femaleWorkersCountController).toInt()
+            : null,
+        workerPrice: computed ? _num(workerPriceController) : null,
+        femaleWorkerPrice: computed ? _num(femaleWorkerPriceController) : null,
       );
     } else {
       success = await expensesRepo.Adddata(
@@ -251,6 +412,13 @@ class ExpensesController extends GetxController {
         nameController.text,
         parsedValue,
         dateController.text,
+        reservationUuid: formReservationUuid.value,
+        workersCount: computed ? _num(workersCountController).toInt() : null,
+        femaleWorkersCount: computed
+            ? _num(femaleWorkersCountController).toInt()
+            : null,
+        workerPrice: computed ? _num(workerPriceController) : null,
+        femaleWorkerPrice: computed ? _num(femaleWorkerPriceController) : null,
       );
     }
 
@@ -270,7 +438,22 @@ class ExpensesController extends GetxController {
     amountController.text = expense.value?.toInt().toString() ?? "";
     dateController.text = expense.datePerry ?? "";
     formCategory.value = expense.type;
-    
+    formReservationUuid.value = expense.reservationUuid;
+    linkToReservation.value = expense.reservationUuid != null;
+    final hasCounts =
+        expense.workersCount != null || expense.femaleWorkersCount != null;
+    workersByCount.value = hasCounts;
+    workersCountController.text = expense.workersCount?.toString() ?? '';
+    femaleWorkersCountController.text =
+        expense.femaleWorkersCount?.toString() ?? '';
+    workerPriceController.text = expense.workerPrice != null
+        ? _plain(expense.workerPrice!)
+        : '';
+    femaleWorkerPriceController.text = expense.femaleWorkerPrice != null
+        ? _plain(expense.femaleWorkerPrice!)
+        : '';
+    recalcWorkers();
+
     if (expense.datePerry != null) {
       try {
         selectedDate = DateFormat('yyyy-MM-dd').parse(expense.datePerry!);
@@ -291,24 +474,30 @@ class ExpensesController extends GetxController {
   }
 
   double get totalExpensesSum {
-    final hasFilter = searchQuery.value.isNotEmpty ||
+    final hasFilter =
+        searchQuery.value.isNotEmpty ||
         selectedCategory.value != 0 ||
         startDateFilter.value != null ||
         endDateFilter.value != null;
 
     if (hasFilter) {
-      return filteredExpenses.fold(0.0, (sum, item) => sum + (item.value ?? 0.0));
+      return filteredExpenses.fold(
+        0.0,
+        (sum, item) => sum + (item.value ?? 0.0),
+      );
     } else {
       final now = DateTime.now();
-      return allExpenses.where((item) {
-        if (item.datePerry == null) return false;
-        try {
-          final date = DateFormat('yyyy-MM-dd').parse(item.datePerry!);
-          return date.month == now.month && date.year == now.year;
-        } catch (e) {
-          return false;
-        }
-      }).fold(0.0, (sum, item) => sum + (item.value ?? 0.0));
+      return allExpenses
+          .where((item) {
+            if (item.datePerry == null) return false;
+            try {
+              final date = DateFormat('yyyy-MM-dd').parse(item.datePerry!);
+              return date.month == now.month && date.year == now.year;
+            } catch (e) {
+              return false;
+            }
+          })
+          .fold(0.0, (sum, item) => sum + (item.value ?? 0.0));
     }
   }
 
@@ -321,7 +510,8 @@ class ExpensesController extends GetxController {
     final now = DateTime.now();
 
     for (var res in allReservations) {
-      final double deposit = double.tryParse(res['deposit']?.toString() ?? '0.0') ?? 0.0;
+      final double deposit =
+          double.tryParse(res['deposit']?.toString() ?? '0.0') ?? 0.0;
       final String? dateStr = res['booking_date'];
       if (dateStr == null || dateStr.isEmpty) continue;
 
@@ -356,7 +546,8 @@ class ExpensesController extends GetxController {
     final now = DateTime.now();
 
     for (var res in allReservations) {
-      final double debt = double.tryParse(res['remaining_amount']?.toString() ?? '0.0') ?? 0.0;
+      final double debt =
+          double.tryParse(res['remaining_amount']?.toString() ?? '0.0') ?? 0.0;
       final String? dateStr = res['booking_date'];
       if (dateStr == null || dateStr.isEmpty) continue;
 

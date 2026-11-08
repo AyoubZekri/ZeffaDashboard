@@ -1,3 +1,4 @@
+import 'package:zeffa/core/functions/format_money.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +15,8 @@ class ExpensesTable extends StatelessWidget {
   final ValueChanged<int> onPageChanged;
   final ValueChanged<ExpenseModel>? onEdit;
   final ValueChanged<ExpenseModel>? onDelete;
+  // Returns the linked reservation label of an expense, if any
+  final String? Function(String? reservationUuid)? reservationLabel;
 
   const ExpensesTable({
     super.key,
@@ -25,6 +28,7 @@ class ExpensesTable extends StatelessWidget {
     required this.onPageChanged,
     this.onEdit,
     this.onDelete,
+    this.reservationLabel,
   });
 
   @override
@@ -69,7 +73,7 @@ class ExpensesTable extends StatelessWidget {
                   controller: horizontalScroll,
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
-                    width: 900,
+                    width: 1000,
                     child: Scrollbar(
                       controller: verticalScroll,
                       notificationPredicate: (notif) => notif.depth == 1,
@@ -143,6 +147,14 @@ class ExpensesTable extends StatelessWidget {
             width: 150,
             child: Text(
               'expense_date'.tr,
+              textAlign: isArabic ? TextAlign.right : TextAlign.left,
+              style: style,
+            ),
+          ),
+          SizedBox(
+            width: 180,
+            child: Text(
+              'linked_reservation'.tr,
               textAlign: isArabic ? TextAlign.right : TextAlign.left,
               style: style,
             ),
@@ -270,11 +282,25 @@ class ExpensesTable extends StatelessWidget {
               ),
             ),
           ),
+          // Linked reservation (wedding)
+          SizedBox(
+            width: 180,
+            child: Text(
+              reservationLabel?.call(item.reservationUuid) ?? "—",
+              style: TextStyle(
+                color: textColor,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           // Amount in DA
           SizedBox(
             width: 150,
             child: Text(
-              "${item.value?.toInt() ?? '0'} $currencyStr",
+              "${formatMoney(item.value)} $currencyStr",
               style: TextStyle(
                 color: textColor,
                 fontWeight: FontWeight.bold,

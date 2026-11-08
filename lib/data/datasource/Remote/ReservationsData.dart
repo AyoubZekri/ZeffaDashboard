@@ -25,9 +25,11 @@ class ReservationsData {
           pt.name AS party_type_name,
           pt.basic_price,
           pt.seasonal_price,
-          pt.icon AS party_icon
+          pt.icon AS party_icon,
+          h.name AS hall_name
         FROM reservations r
         LEFT JOIN party_types pt ON r.type_of_party_uuid = pt.uuid
+        LEFT JOIN halls h ON r.hall_uuid = h.uuid
         LEFT JOIN reservation_dishes rd ON r.uuid = rd.reservation_uuid
         LEFT JOIN dishes d ON rd.dishes_uuid = d.uuid
         LEFT JOIN reservation_services rs ON r.uuid = rs.reservation_uuid
@@ -79,9 +81,10 @@ class ReservationsData {
   Future<bool> Adddata(
     Map<String, dynamic> rawData,
     List<String> dishesUuids,
-    List<String> servicesUuids,
-  ) async {
-    final String uuid = Uuid().v4();
+    List<String> servicesUuids, {
+    String? presetUuid,
+  }) async {
+    final String uuid = presetUuid ?? Uuid().v4();
     try {
       final data = {
         "uuid": uuid,
@@ -92,6 +95,7 @@ class ReservationsData {
         "booking_date": rawData["booking_date"],
         "booking_period": rawData["booking_period"],
         "type_of_party_uuid": rawData["type_of_party_uuid"],
+        "hall_uuid": rawData["hall_uuid"],
         "price": rawData["price"],
         "notes": rawData["notes"],
         "deposit": rawData["deposit"],
@@ -165,6 +169,7 @@ class ReservationsData {
         "booking_date": rawData["booking_date"],
         "booking_period": rawData["booking_period"],
         "type_of_party_uuid": rawData["type_of_party_uuid"],
+        "hall_uuid": rawData["hall_uuid"],
         "price": rawData["price"],
         "notes": rawData["notes"],
         "deposit": rawData["deposit"],

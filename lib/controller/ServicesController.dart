@@ -16,6 +16,8 @@ class ServicesController extends GetxController {
   GlobalKey<FormState> formState = GlobalKey<FormState>();
   late TextEditingController name;
   late TextEditingController price;
+  // 0 = fixed price, 1 = per person
+  int priceType = 0;
 
   String? editUuid;
 
@@ -50,12 +52,14 @@ class ServicesController extends GetxController {
     editUuid = service.uuid;
     name.text = service.name ?? "";
     price.text = service.price?.toInt().toString() ?? "";
+    priceType = service.priceType ?? 0;
   }
 
   void clearForm() {
     editUuid = null;
     name.clear();
     price.clear();
+    priceType = 0;
   }
 
   Future<void> addService() async {
@@ -67,6 +71,7 @@ class ServicesController extends GetxController {
     bool success = await servicesData.Adddata(
       name.text.trim(),
       double.tryParse(price.text) ?? 0.0,
+      priceType: priceType,
     );
 
     if (success) {
@@ -91,6 +96,7 @@ class ServicesController extends GetxController {
       editUuid!,
       name.text.trim(),
       double.tryParse(price.text) ?? 0.0,
+      priceType: priceType,
     );
 
     if (success) {

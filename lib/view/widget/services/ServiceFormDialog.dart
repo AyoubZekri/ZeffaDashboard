@@ -102,6 +102,83 @@ class ServiceFormDialog extends StatelessWidget {
                       keyboardType: TextInputType.number,
                       validator: (val) => validInput(val!, 20, 1, "decimal"),
                     ),
+                    const SizedBox(height: 16),
+                    // How the price is counted in a reservation
+                    GetBuilder<ServicesController>(
+                      builder: (_) {
+                        Widget option(int type, IconData icon, String label) {
+                          final selected = ctrl.priceType == type;
+                          return Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                ctrl.priceType = type;
+                                ctrl.update();
+                              },
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: selected
+                                      ? AppColor.primaryPurple
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      icon,
+                                      size: 18,
+                                      color: selected ? Colors.white : subtitleColor,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Flexible(
+                                      child: Text(
+                                        label,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: selected ? Colors.white : subtitleColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: colors.inputFillColor,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: borderColor),
+                              ),
+                              child: Row(
+                                children: [
+                                  option(0, Icons.sell_outlined, 'price_fixed'.tr),
+                                  const SizedBox(width: 4),
+                                  option(1, Icons.groups_outlined, 'price_per_person'.tr),
+                                ],
+                              ),
+                            ),
+                            if (ctrl.priceType == 1) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                'price_per_person_note'.tr,
+                                style: TextStyle(fontSize: 12, color: subtitleColor),
+                              ),
+                            ],
+                          ],
+                        );
+                      },
+                    ),
                     const SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,

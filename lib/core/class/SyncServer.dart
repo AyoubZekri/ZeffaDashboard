@@ -64,9 +64,18 @@ class SyncService {
 
       for (final row in batch) {
         final operation = row["operation"] as String;
-        final data = row["data"] != null
-            ? Map<String, dynamic>.from(jsonDecode(row["data"] as String))
-            : <String, dynamic>{};
+        // A damaged queue row must not stop the whole sync: set it aside
+        // (synced = 2, kept for checking) and go on with the others
+        final Map<String, dynamic> data;
+        try {
+          data = row["data"] != null
+              ? Map<String, dynamic>.from(jsonDecode(row["data"] as String))
+              : <String, dynamic>{};
+        } catch (e) {
+          print("❌ بيانات غير صالحة في sync_queue (id=${row["id"]}): $e");
+          await _db.update("sync_queue", {"synced": 2}, "id=${row["id"]}");
+          continue;
+        }
         data["uuid"] = row["row_id"];
 
         final token = Get.find<Myservices>().sharedPreferences?.getString(
@@ -352,7 +361,23 @@ class SyncService {
   // FULL SYNC
   // ---------------------------------------------------------
 
-  Future<void> syncAll() async {
+  // One sync at a time: startup, the connectivity listener, login and the
+  // timer can all start one together, and two pushes of the same queue
+  // made the server insert a row twice ("Duplicate entry").
+  static Future<void>? _runningSync;
+
+  Future<void> syncAll() {
+    final running = _runningSync;
+    if (running != null) {
+      print("⏳ مزامنة جارية بالفعل — انتظار انتهائها");
+      return running;
+    }
+    final sync = _syncAllInner().whenComplete(() => _runningSync = null);
+    _runningSync = sync;
+    return sync;
+  }
+
+  Future<void> _syncAllInner() async {
     if (!await checkInternet()) {
       print('no_internet'.tr);
       return;
@@ -360,6 +385,7 @@ class SyncService {
 
     print('start_syncing'.tr);
 
+    await pushQueue("halls");
     await pushQueue("party_types");
     await pushQueue("cat_dishes");
     await pushQueue("dishes");
@@ -374,6 +400,7 @@ class SyncService {
     await pushQueue("terms");
     await pushQueue("terms_content");
 
+    await pullFromServer("halls");
     await pullFromServer("party_types");
     await pullFromServer("cat_dishes");
     await pullFromServer("dishes");

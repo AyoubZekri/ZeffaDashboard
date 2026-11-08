@@ -1,3 +1,8 @@
+import 'package:url_launcher/url_launcher.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io';
+import 'package:zeffa/core/functions/format_money.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -9,6 +14,7 @@ import 'package:arabic_reshaper/arabic_reshaper.dart';
 import '../../data/model/ReservationModel.dart';
 import '../class/Sqldb.dart';
 import '../services/Services.dart';
+import '../../data/datasource/Remote/Halls.dart';
 
 String ar(String text) {
   if (text.isEmpty) return "";
@@ -214,14 +220,18 @@ Future<void> generateAndPrintPDF(
   final Myservices myServices = Get.find();
 
   final int userId = myServices.sharedPreferences?.getInt("id") ?? 1;
-  final String hallName =
-      myServices.sharedPreferences?.getString("hallname") ?? "";
-  final String adminPhone =
-      myServices.sharedPreferences?.getString("numperPhone") ?? "";
-  final String fieldPhone =
-      myServices.sharedPreferences?.getString("fieldPhone") ?? "-يغغغغ";
-  final String address =
-      myServices.sharedPreferences?.getString("adresse") ?? "";
+  // Hall of the reservation: its name, and its phones when they were added
+  // (otherwise the account phones). No hall → the account hall.
+  final hall = await Halls(myServices).hallForPrint(reservation.hallUuid);
+  final String hallName = hall.name ?? "";
+  final String adminPhone = hall.phone1 ?? "";
+  final String fieldPhone = hall.phone2 ?? "";
+  // Hall numbers one after the other, separated by " - "
+  final String hallPhones = [
+    adminPhone,
+    fieldPhone,
+  ].where((p) => p.trim().isNotEmpty).join(" - ");
+  final String address = hall.address ?? "";
 
   final bool isArabic = Get.locale?.languageCode == 'ar';
 
@@ -318,6 +328,11 @@ Future<void> generateAndPrintPDF(
       if (contents.isNotEmpty) {
         List<String> parsedItems = [];
         for (String c in contents) {
+          // Plain text (old format) → printed as is, no JSON decode
+          if (!c.trimLeft().startsWith('{')) {
+            parsedItems.add("$title ........ $c");
+            continue;
+          }
           try {
             final decoded = jsonDecode(c);
             final name = decoded['name'] ?? title; // Fallback to title
@@ -392,16 +407,15 @@ Future<void> generateAndPrintPDF(
             ),
           ),
           pw.SizedBox(height: 4),
-          pw.Center(
-            child: pw.Text(
-              tr(
-                "المسير الإداري: $adminPhone                المسير الميداني: $fieldPhone",
-                "Admin Manager: $adminPhone                Field Manager: $fieldPhone",
+          if (hallPhones.isNotEmpty) ...[
+            pw.Center(
+              child: pw.Text(
+                ar(hallPhones),
+                textDirection: textDir,
+                style: pw.TextStyle(font: cairoFont, fontSize: 11),
               ),
-              textDirection: textDir,
-              style: pw.TextStyle(font: cairoFont, fontSize: 10),
             ),
-          ),
+          ],
           pw.SizedBox(height: 6),
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -612,6 +626,16 @@ Future<void> generateAndPrintPDF(
             ),
           ),
           pw.SizedBox(height: 4),
+          if (hallPhones.isNotEmpty) ...[
+            pw.Center(
+              child: pw.Text(
+                ar(hallPhones),
+                textDirection: textDir,
+                style: pw.TextStyle(font: cairoFont, fontSize: 11),
+              ),
+            ),
+            pw.SizedBox(height: 4),
+          ],
           pw.Center(
             child: pw.Text(
               ar(address),
@@ -736,6 +760,16 @@ Future<void> generateAndPrintPDF(
             ),
           ),
           pw.SizedBox(height: 4),
+          if (hallPhones.isNotEmpty) ...[
+            pw.Center(
+              child: pw.Text(
+                ar(hallPhones),
+                textDirection: textDir,
+                style: pw.TextStyle(font: cairoFont, fontSize: 11),
+              ),
+            ),
+            pw.SizedBox(height: 4),
+          ],
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
@@ -824,6 +858,29 @@ Future<void> generateAndPrintPDF(
                       ),
                     ),
                   ),
+                  // Guests: shown only when the count isn't 0
+                  if (reservation.numberOfWomen > 0)
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(5),
+                      child: pw.Center(
+                        child: pw.Text(
+                          tr("عدد النساء", "Women"),
+                          textDirection: textDir,
+                          style: pw.TextStyle(font: cairoBold, fontSize: 9.5),
+                        ),
+                      ),
+                    ),
+                  if (reservation.numberOfMen > 0)
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(5),
+                      child: pw.Center(
+                        child: pw.Text(
+                          tr("عدد الرجال", "Men"),
+                          textDirection: textDir,
+                          style: pw.TextStyle(font: cairoBold, fontSize: 9.5),
+                        ),
+                      ),
+                    ),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(5),
                     child: pw.Center(
@@ -853,8 +910,8 @@ Future<void> generateAndPrintPDF(
                     child: pw.Center(
                       child: pw.Text(
                         tr(
-                          "${reservation.remainingAmount} د.ج",
-                          "${reservation.remainingAmount} DZD",
+                          "${formatMoney(reservation.remainingAmount)} د.ج",
+                          "${formatMoney(reservation.remainingAmount)} DZD",
                         ),
                         textDirection: textDir,
                         style: pw.TextStyle(font: cairoFont, fontSize: 9),
@@ -866,8 +923,8 @@ Future<void> generateAndPrintPDF(
                     child: pw.Center(
                       child: pw.Text(
                         tr(
-                          "${reservation.deposit} د.ج",
-                          "${reservation.deposit} DZD",
+                          "${formatMoney(reservation.deposit)} د.ج",
+                          "${formatMoney(reservation.deposit)} DZD",
                         ),
                         textDirection: textDir,
                         style: pw.TextStyle(font: cairoFont, fontSize: 9),
@@ -879,14 +936,36 @@ Future<void> generateAndPrintPDF(
                     child: pw.Center(
                       child: pw.Text(
                         tr(
-                          "${reservation.price} د.ج",
-                          "${reservation.price} DZD",
+                          "${formatMoney(reservation.price)} د.ج",
+                          "${formatMoney(reservation.price)} DZD",
                         ),
                         textDirection: textDir,
                         style: pw.TextStyle(font: cairoFont, fontSize: 9),
                       ),
                     ),
                   ),
+                  if (reservation.numberOfWomen > 0)
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(5),
+                      child: pw.Center(
+                        child: pw.Text(
+                          ar("${reservation.numberOfWomen}"),
+                          textDirection: textDir,
+                          style: pw.TextStyle(font: cairoFont, fontSize: 9),
+                        ),
+                      ),
+                    ),
+                  if (reservation.numberOfMen > 0)
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(5),
+                      child: pw.Center(
+                        child: pw.Text(
+                          ar("${reservation.numberOfMen}"),
+                          textDirection: textDir,
+                          style: pw.TextStyle(font: cairoFont, fontSize: 9),
+                        ),
+                      ),
+                    ),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(5),
                     child: pw.Center(
@@ -1008,9 +1087,102 @@ Future<void> generateAndPrintPDF(
     pdf.addPage(buildMaterialsPage());
   }
 
-  // Open the PDF Printing layout
-  await Printing.layoutPdf(
-    onLayout: (PdfPageFormat format) async => pdf.save(),
-    name: "${reservation.customerName}_booking_documents",
+  // Build the PDF once: the print dialog may call onLayout several times
+  // (preview, open PDF...) and re-laying out all papers each time failed
+  // when the three were printed together.
+  try {
+    final bytes = await pdf.save();
+    // ASCII file name (an Arabic name came out garbled in the saved file)
+    final fileName =
+        "reservation_${reservation.numperReservation ?? reservation.id ?? reservation.uuid.substring(0, 8)}";
+
+    // Desktop: saving through a PDF printer goes through the print spooler,
+    // and the PDF reader opened the file before it was fully written
+    // ("sharing violation"). Offer to save the file directly instead.
+    if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+      final choice = await Get.dialog<String>(_printOrSaveDialog());
+      if (choice == null) return;
+      if (choice == 'save') {
+        final path = await FilePicker.platform.saveFile(
+          fileName: "$fileName.pdf",
+          type: FileType.custom,
+          allowedExtensions: ['pdf'],
+          bytes: bytes,
+        );
+        if (path != null) await launchUrl(Uri.file(path));
+        return;
+      }
+    }
+
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => bytes,
+      name: fileName,
+    );
+  } catch (e, st) {
+    print("❌ PDF error: $e");
+    print(st);
+    Get.snackbar("error".tr, e.toString());
+  }
+}
+
+/// Desktop choice after building the papers: save as a PDF file or print
+Widget _printOrSaveDialog() {
+  Widget option(String value, IconData icon, String label, bool primary) {
+    return Expanded(
+      child: primary
+          ? ElevatedButton.icon(
+              onPressed: () => Get.back(result: value),
+              icon: Icon(icon, size: 20),
+              label: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF4C2983),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            )
+          : OutlinedButton.icon(
+              onPressed: () => Get.back(result: value),
+              icon: Icon(icon, size: 20),
+              label: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF4C2983),
+                side: const BorderSide(color: Color(0xFF4C2983)),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+    );
+  }
+
+  return Dialog(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 420),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.picture_as_pdf_rounded, size: 40, color: Color(0xFF4C2983)),
+            const SizedBox(height: 12),
+            Text(
+              'documents_ready'.tr,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                option('save', Icons.save_alt_rounded, 'save_as_pdf'.tr, true),
+                const SizedBox(width: 12),
+                option('print', Icons.print_rounded, 'print_documents'.tr, false),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
   );
 }

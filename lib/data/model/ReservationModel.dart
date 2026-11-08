@@ -19,6 +19,10 @@ class ReservationModel {
   final String? createdAt;
   final String? updatedAt;
   final String? addedByName;
+  final String? hallUuid; // null = account hall
+
+  // Joined field from halls
+  final String? hallName;
 
   // Joined fields from party_types
   final String? partyTypeName;
@@ -58,6 +62,8 @@ class ReservationModel {
     this.createdAt,
     this.updatedAt,
     this.addedByName,
+    this.hallUuid,
+    this.hallName,
     this.partyTypeName,
     this.partyBasicPrice,
     this.partySeasonalPrice,
@@ -137,6 +143,8 @@ class ReservationModel {
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       addedByName: json['added_by_name'],
+      hallUuid: json['hall_uuid'],
+      hallName: json['hall_name'],
       // Joined fields
       partyTypeName: json['party_type_name'],
       partyBasicPrice: json['basic_price'] != null

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zeffa/controller/auth/Logincontroller.dart';
+import 'package:zeffa/core/class/Statusrequest.dart';
 import 'package:zeffa/core/constant/Colorapp.dart';
 import 'package:zeffa/view/widget/CustemTextField.dart';
 
@@ -106,48 +107,73 @@ class LoginFormWidget extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text(
-                          'remember_me'.tr,
-                          style: TextStyle(color: subtitleColor),
+                        GestureDetector(
+                          onTap: () =>
+                              controller.toggleRememberMe(!controller.rememberMe),
+                          child: Text(
+                            'remember_me'.tr,
+                            style: TextStyle(color: subtitleColor),
+                          ),
                         ),
                         Checkbox(
-                          value: false,
-                          onChanged: (val) {},
+                          value: controller.rememberMe,
+                          onChanged: controller.toggleRememberMe,
                           activeColor: AppColor.primaryPurple,
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        controller.Login();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColor.primaryPurple,
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.arrow_back_rounded,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            'login_btn'.tr,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                    // Loading while logging in (and while the first sync runs)
+                    Builder(
+                      builder: (context) {
+                        final isLoading =
+                            controller.statusrequest == Statusrequest.loadeng;
+                        return ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  controller.Login();
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColor.primaryPurple,
+                            disabledBackgroundColor: AppColor.primaryPurple
+                                .withValues(alpha: 0.8),
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                        ],
-                      ),
+                          // Loading: only the spinner, no text
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.arrow_back_rounded,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'login_btn'.tr,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 10),
                   ],

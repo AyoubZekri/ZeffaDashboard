@@ -1,3 +1,4 @@
+import 'package:zeffa/core/functions/format_money.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -203,7 +204,7 @@ Future<void> generateAndPrintServicesPDF(List<ServiceModel> services) async {
                       padding: const pw.EdgeInsets.all(6),
                       child: pw.Center(
                         child: pw.Text(
-                          ar("${service.price?.toInt() ?? 0},00"),
+                          ar("${formatMoney(service.price)}${service.isPerPerson ? ' / ' + 'per_person'.tr : ''}"),
                           textDirection: textDir,
                           style: pw.TextStyle(font: cairoBold, fontSize: 10),
                         ),

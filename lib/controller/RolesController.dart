@@ -14,11 +14,13 @@ class RolesController extends GetxController {
   final List<String> availablePermissions = [
     'calendar',
     'reservations',
+    'add_reservation',
     'event_types',
     'dish_categories',
     'dishes',
     'expenses',
     'additional_services',
+    'halls',
     'notes',
     'terms',
   ];

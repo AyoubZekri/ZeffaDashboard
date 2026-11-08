@@ -62,6 +62,8 @@ class _ReservationDatePickerDialogState extends State<ReservationDatePickerDialo
     final List<dynamic> matches = [];
     for (var res in ctrl.allReservations) {
       if (widget.excludeUuid != null && res.uuid == widget.excludeUuid) continue;
+      // Only bookings of the hall selected in the form
+      if (!ctrl.isSameHall(res)) continue;
       try {
         final resDate = DateTime.parse(res.bookingDate.replaceAll('/', '-'));
         if (resDate.year == date.year &&

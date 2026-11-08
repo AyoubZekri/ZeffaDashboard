@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,6 +6,7 @@ import '../../../core/constant/Colorapp.dart';
 import '../../../core/constant/AppTheme.dart';
 import '../../../data/model/ReservationModel.dart';
 import '../../../core/services/Services.dart';
+import 'ReservationActionsMenu.dart';
 
 class ReservationsTable extends StatelessWidget {
   final List<ReservationModel> reservations;
@@ -14,6 +16,9 @@ class ReservationsTable extends StatelessWidget {
   final ValueChanged<ReservationModel>? onPrint;
   final ValueChanged<ReservationModel>? onAddPayment;
   final ValueChanged<ReservationModel>? onEditGuests;
+  final ValueChanged<ReservationModel>? onExpenses;
+  // Hall name of a reservation; null when the account has a single hall
+  final String Function(ReservationModel)? hallName;
 
   const ReservationsTable({
     super.key,
@@ -24,6 +29,8 @@ class ReservationsTable extends StatelessWidget {
     this.onPrint,
     this.onAddPayment,
     this.onEditGuests,
+    this.onExpenses,
+    this.hallName,
   });
 
   @override
@@ -33,89 +40,95 @@ class ReservationsTable extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.extension<AppColors>()!;
 
-    return Container(
-      height: 500,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: colors.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: colors.shadowColor,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return LayoutBuilder(
+      builder: (context, box) {
+        // Fill the card; scroll horizontally only when narrower than 1000px
+        final tableWidth = math.max(box.maxWidth - 48, 1000.0);
+        return Container(
+          height: 500,
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: colors.cardColor,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: colors.shadowColor,
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: Scrollbar(
-              controller: horizontalScroll,
-              thumbVisibility: true,
-              thickness: 8,
-              radius: const Radius.circular(8),
-              child: ScrollConfiguration(
-                behavior: ScrollConfiguration.of(context).copyWith(
-                  dragDevices: {
-                    PointerDeviceKind.mouse,
-                    PointerDeviceKind.touch,
-                    PointerDeviceKind.stylus,
-                    PointerDeviceKind.trackpad,
-                  },
-                ),
-                child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Expanded(
+                child: Scrollbar(
                   controller: horizontalScroll,
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width: 1380,
-                    child: Scrollbar(
-                      controller: verticalScroll,
-                      notificationPredicate: (notif) => notif.depth == 1,
-                      child: SingleChildScrollView(
-                        controller: verticalScroll,
-                        scrollDirection: Axis.vertical,
-                        child: Column(
-                          children: [
-                            _buildTableHeader(context),
-                            const SizedBox(height: 8),
-                            Divider(color: colors.borderColor, height: 1),
-                            if (reservations.isEmpty)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 64,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'no_reservations_found'.tr,
-                                    style: TextStyle(
-                                      color: colors.subtitleColor,
-                                      fontSize: 16,
+                  thumbVisibility: true,
+                  thickness: 8,
+                  radius: const Radius.circular(8),
+                  child: ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(
+                      dragDevices: {
+                        PointerDeviceKind.mouse,
+                        PointerDeviceKind.touch,
+                        PointerDeviceKind.stylus,
+                        PointerDeviceKind.trackpad,
+                      },
+                    ),
+                    child: SingleChildScrollView(
+                      controller: horizontalScroll,
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width: tableWidth,
+                        child: Scrollbar(
+                          controller: verticalScroll,
+                          notificationPredicate: (notif) => notif.depth == 1,
+                          child: SingleChildScrollView(
+                            controller: verticalScroll,
+                            scrollDirection: Axis.vertical,
+                            child: Column(
+                              children: [
+                                _buildTableHeader(context),
+                                const SizedBox(height: 8),
+                                Divider(color: colors.borderColor, height: 1),
+                                if (reservations.isEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 64,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'no_reservations_found'.tr,
+                                        style: TextStyle(
+                                          color: colors.subtitleColor,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  ...List.generate(
+                                    reservations.length,
+                                    (index) => _buildTableRow(
+                                      context,
+                                      reservations[index],
                                     ),
                                   ),
-                                ),
-                              )
-                            else
-                              ...List.generate(
-                                reservations.length,
-                                (index) => _buildTableRow(
-                                  context,
-                                  reservations[index],
-                                ),
-                              ),
-                          ],
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
+              const SizedBox(height: 32),
+              _buildPagination(context),
+            ],
           ),
-          const SizedBox(height: 32),
-          _buildPagination(context),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -130,56 +143,75 @@ class ReservationsTable extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Row(
         textDirection: TextDirection.rtl,
+        spacing: 12,
         children: [
-          SizedBox(
-            width: 150,
+          Expanded(
+            flex: 3,
             child: Text(
               'reservation_number'.tr,
               textAlign: TextAlign.right,
+              maxLines: 2,
               style: style,
             ),
           ),
 
-          SizedBox(
-            width: 250,
+          Expanded(
+            flex: 5,
             child: Text(
               'customer_name'.tr,
               textAlign: TextAlign.right,
+              maxLines: 2,
               style: style,
             ),
           ),
-          SizedBox(
-            width: 180,
+          Expanded(
+            flex: 4,
             child: Text(
               'phone_number'.tr,
               textAlign: TextAlign.right,
+              maxLines: 2,
               style: style,
             ),
           ),
-          SizedBox(
-            width: 180,
+          Expanded(
+            flex: 4,
             child: Text(
               'reservation_date'.tr,
               textAlign: TextAlign.right,
+              maxLines: 2,
               style: style,
             ),
           ),
-          SizedBox(
-            width: 150,
+          Expanded(
+            flex: 3,
             child: Text(
               'added_by'.tr,
               textAlign: TextAlign.right,
+              maxLines: 2,
               style: style,
             ),
           ),
-          SizedBox(
-            width: 120,
-            child: Center(child: Text('status'.tr, style: style)),
+          Expanded(
+            flex: 3,
+            child: Center(
+              child: Text(
+                'status'.tr,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                style: style,
+              ),
+            ),
           ),
-          const Spacer(),
-          SizedBox(
-            width: 280,
-            child: Center(child: Text('actions'.tr, style: style)),
+          Expanded(
+            flex: 2,
+            child: Center(
+              child: Text(
+                'actions'.tr,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                style: style,
+              ),
+            ),
           ),
         ],
       ),
@@ -192,9 +224,10 @@ class ReservationsTable extends StatelessWidget {
     final textColor = theme.colorScheme.onSurface;
 
     final myServices = Get.find<Myservices>();
-    final supervisorName = myServices.sharedPreferences?.getString("username") ?? '';
-    final addedBy = (item.addedByName != null && item.addedByName!.isNotEmpty) 
-        ? item.addedByName! 
+    final supervisorName =
+        myServices.sharedPreferences?.getString("username") ?? '';
+    final addedBy = (item.addedByName != null && item.addedByName!.isNotEmpty)
+        ? item.addedByName!
         : supervisorName;
 
     final Color statusColor;
@@ -213,9 +246,10 @@ class ReservationsTable extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       child: Row(
         textDirection: TextDirection.rtl,
+        spacing: 12,
         children: [
-          SizedBox(
-            width: 150,
+          Expanded(
+            flex: 3,
             child: Text(
               "#${item.numperReservation}",
               style: TextStyle(
@@ -225,8 +259,8 @@ class ReservationsTable extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            width: 250,
+          Expanded(
+            flex: 5,
             child: Row(
               textDirection: TextDirection.rtl,
               children: [
@@ -254,7 +288,7 @@ class ReservationsTable extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
@@ -272,10 +306,11 @@ class ReservationsTable extends StatelessWidget {
             ),
           ),
 
-          SizedBox(
-            width: 180,
+          Expanded(
+            flex: 4,
             child: Text(
               item.phoneNumber,
+              maxLines: 2,
               style: TextStyle(
                 color: textColor,
                 fontWeight: FontWeight.bold,
@@ -283,20 +318,26 @@ class ReservationsTable extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            width: 180,
-            child: Text(
-              item.bookingDate,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.bookingDate,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                _buildHallLine(item),
+              ],
             ),
           ),
 
-          SizedBox(
-            width: 150,
+          Expanded(
+            flex: 3,
             child: Text(
               addedBy,
               style: TextStyle(
@@ -304,12 +345,12 @@ class ReservationsTable extends StatelessWidget {
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          SizedBox(
-            width: 120,
+          Expanded(
+            flex: 3,
             child: Center(
               child: Container(
                 padding: const EdgeInsets.symmetric(
@@ -322,6 +363,8 @@ class ReservationsTable extends StatelessWidget {
                 ),
                 child: Text(
                   item.statusKey.tr,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     color: statusColor,
                     fontSize: 11,
@@ -331,52 +374,19 @@ class ReservationsTable extends StatelessWidget {
               ),
             ),
           ),
-          const Spacer(),
-          SizedBox(
-            width: 280,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (onAddPayment != null)
-                  _buildActionIcon(
-                    context,
-                    Icons.payments_outlined,
-                    Colors.green,
-                    () => onAddPayment!(item),
-                  ),
-                if (onEditGuests != null)
-                  _buildActionIcon(
-                    context,
-                    Icons.group_outlined,
-                    Colors.blue,
-                    () => onEditGuests!(item),
-                  ),
-                if (onPrint != null)
-                  _buildActionIcon(
-                    context,
-                    Icons.print_outlined,
-                    Colors.grey,
-                    () => onPrint!(item),
-                  ),
-                _buildActionIcon(
-                  context,
-                  Icons.visibility_outlined,
-                  AppColor.primaryPurple,
-                  () => onView?.call(item),
-                ),
-                _buildActionIcon(
-                  context,
-                  Icons.edit_outlined,
-                  Colors.amber.shade700,
-                  () => onEdit?.call(item),
-                ),
-                _buildActionIcon(
-                  context,
-                  Icons.delete_outline_rounded,
-                  Colors.red,
-                  () => onDelete?.call(item),
-                ),
-              ],
+          Expanded(
+            flex: 2,
+            child: Center(
+              child: ReservationActionsMenu(
+                reservation: item,
+                onView: onView,
+                onExpenses: onExpenses,
+                onAddPayment: onAddPayment,
+                onEditGuests: onEditGuests,
+                onPrint: onPrint,
+                onEdit: onEdit,
+                onDelete: onDelete,
+              ),
             ),
           ),
         ],
@@ -384,24 +394,33 @@ class ReservationsTable extends StatelessWidget {
     );
   }
 
-  Widget _buildActionIcon(
-    BuildContext context,
-    IconData icon,
-    Color color,
-    VoidCallback onTap,
-  ) {
-    final colors = Theme.of(context).extension<AppColors>()!;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: colors.inputFillColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Icon(icon, color: color, size: 20),
+  /// Small "hall" line shown under the date when there are several halls
+  Widget _buildHallLine(ReservationModel item) {
+    if (hallName == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.meeting_room_outlined,
+            size: 14,
+            color: AppColor.primaryPurple,
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              hallName!(item),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: AppColor.primaryPurple,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

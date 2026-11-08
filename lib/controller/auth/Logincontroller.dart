@@ -1,3 +1,4 @@
+import 'package:zeffa/core/functions/secure_login_storage.dart';
 import 'package:zeffa/core/class/Statusrequest.dart';
 import 'package:zeffa/core/constant/routes.dart';
 import 'package:zeffa/core/functions/Snacpar.dart';
@@ -18,6 +19,44 @@ class Logincontroller extends GetxController {
   late TextEditingController Email;
   late TextEditingController Password;
   bool issobscureText = true;
+
+  // "Remember me": email + password kept in secure storage
+  // (encrypted with Windows DPAPI for the current Windows user)
+  bool rememberMe = false;
+
+  void toggleRememberMe(bool? value) {
+    rememberMe = value ?? false;
+    update();
+  }
+
+  Future<void> _loadRememberedLogin() async {
+    try {
+      final email = await SecureLoginStorage.read("remember_email");
+      final password = await SecureLoginStorage.read("remember_password");
+      if (email != null && password != null) {
+        Email.text = email;
+        Password.text = password;
+        rememberMe = true;
+        update();
+      }
+    } catch (e) {
+      print("remember me read error: $e");
+    }
+  }
+
+  Future<void> _saveRememberedLogin() async {
+    try {
+      if (rememberMe) {
+        await SecureLoginStorage.write("remember_email", Email.text.trim());
+        await SecureLoginStorage.write("remember_password", Password.text);
+      } else {
+        await SecureLoginStorage.delete("remember_email");
+        await SecureLoginStorage.delete("remember_password");
+      }
+    } catch (e) {
+      print("remember me save error: $e");
+    }
+  }
   showPassword() {
     issobscureText = issobscureText == true ? false : true;
     update();
@@ -49,6 +88,8 @@ class Logincontroller extends GetxController {
       print("=============================== Controller $response ");
       if (statusrequest == Statusrequest.success) {
         if (response["status"] == 1) {
+          // Correct email / password → remember them (or forget them)
+          await _saveRememberedLogin();
           if (response["data"]["user"]["user"]["role_id"] != null) {
             Get.offNamed(Approutes.mobileOnly);
             return;
@@ -251,6 +292,7 @@ class Logincontroller extends GetxController {
 
     Email = TextEditingController();
     Password = TextEditingController();
+    _loadRememberedLogin();
     // getUser();
     super.onInit();
   }

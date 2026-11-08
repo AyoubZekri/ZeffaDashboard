@@ -240,7 +240,9 @@ class TermsController extends GetxController {
     singleMaterial.clear();
 
     if (term.type == 'required_documents') {
-      if (term.contents.isNotEmpty) {
+      // Only the material format is JSON; plain text keeps the defaults
+      if (term.contents.isNotEmpty &&
+          term.contents.first.trimLeft().startsWith('{')) {
         try {
           final decoded = jsonDecode(term.contents.first);
 

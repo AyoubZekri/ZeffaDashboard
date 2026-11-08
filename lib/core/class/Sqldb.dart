@@ -16,7 +16,7 @@ class SQLDB {
     }
   }
 
-  int get version => 1;
+  int get version => 6;
 
   Future<Database> intialDb() async {
     String dataBais;
@@ -36,8 +36,65 @@ class SQLDB {
     return mydb;
   }
 
+  /// Upgrades may run again on a database that already has the change
+  /// (e.g. the version wasn't saved after an interrupted upgrade), so a
+  /// column is added only when it's missing.
+  Future<void> _addColumnIfMissing(
+    Database db,
+    String table,
+    String column,
+    String type,
+  ) async {
+    final cols = await db.rawQuery('PRAGMA table_info($table)');
+    if (cols.any((c) => c['name'] == column)) return;
+    await db.execute("ALTER TABLE $table ADD COLUMN $column $type");
+  }
+
   Future<void> _onUpgrade(Database db, int oldversion, int newVersion) async {
     print("_onUpgrade ===============");
+    if (oldversion < 2) {
+      // ربط المصاريف بالحجز + المصاريف المحفوظة لكل نوع حفلة
+      await _addColumnIfMissing(db, "expenses", "reservation_uuid", "TEXT");
+      await _addColumnIfMissing(db, "party_types", "default_expenses", "TEXT");
+    }
+    if (oldversion < 3) {
+      // القاعات الإضافية + ربط الحجز بالقاعة (فارغ = قاعة الحساب)
+      await db.execute('''
+      CREATE TABLE IF NOT EXISTS halls(
+        id INTEGER PRIMARY KEY,
+        uuid TEXT UNIQUE,
+        user_id INTEGER,
+        name TEXT,
+        phone1 TEXT,
+        phone2 TEXT,
+        created_at TEXT,
+        updated_at TEXT
+      )
+      ''');
+      await _addColumnIfMissing(db, "reservations", "hall_uuid", "TEXT");
+    }
+    if (oldversion < 4) {
+      // موقع القاعة (اختياري)
+      await _addColumnIfMissing(db, "halls", "address", "TEXT");
+    }
+    if (oldversion < 5) {
+      // طريقة حساب سعر الخدمة: 0 = ثابت، 1 = لكل شخص
+      await _addColumnIfMissing(
+        db,
+        "additional_services",
+        "price_type",
+        "INTEGER DEFAULT 0",
+      );
+    }
+    if (oldversion < 6) {
+      // سعر العامل / العاملة للفرد حسب نوع الحفل + عددهم في مصروف العمال
+      await _addColumnIfMissing(db, "party_types", "worker_price", "REAL");
+      await _addColumnIfMissing(db, "party_types", "female_worker_price", "REAL");
+      await _addColumnIfMissing(db, "expenses", "workers_count", "INTEGER");
+      await _addColumnIfMissing(db, "expenses", "female_workers_count", "INTEGER");
+      await _addColumnIfMissing(db, "expenses", "worker_price", "REAL");
+      await _addColumnIfMissing(db, "expenses", "female_worker_price", "REAL");
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -57,6 +114,9 @@ class SQLDB {
         seasonal_price REAL,
         guest_pricing_tiers TEXT,
         icon TEXT,
+        default_expenses TEXT,
+        worker_price REAL,
+        female_worker_price REAL,
         created_at TEXT,
         updated_at TEXT
       )
@@ -76,6 +136,7 @@ class SQLDB {
         booking_date TEXT,
         booking_period INTEGER,
         type_of_party_uuid TEXT,
+        hall_uuid TEXT,
         price REAL,
         notes TEXT,
         deposit REAL,
@@ -143,6 +204,7 @@ class SQLDB {
         user_id INTEGER,
         name TEXT,
         price REAL,
+        price_type INTEGER DEFAULT 0,
         created_at TEXT,
         updated_at TEXT
       )
@@ -183,6 +245,23 @@ class SQLDB {
       ''');
 
     // ==============================
+    // halls (extra halls of the account)
+    // ==============================
+    batch.execute('''
+      CREATE TABLE IF NOT EXISTS halls(
+        id INTEGER PRIMARY KEY,
+        uuid TEXT UNIQUE,
+        user_id INTEGER,
+        name TEXT,
+        phone1 TEXT,
+        phone2 TEXT,
+        address TEXT,
+        created_at TEXT,
+        updated_at TEXT
+      )
+      ''');
+
+    // ==============================
     // expenses
     // ==============================
     batch.execute('''
@@ -190,6 +269,11 @@ class SQLDB {
         id INTEGER PRIMARY KEY,
         uuid TEXT UNIQUE,
         user_id INTEGER,
+        reservation_uuid TEXT,
+        workers_count INTEGER,
+        female_workers_count INTEGER,
+        worker_price REAL,
+        female_worker_price REAL,
         type INTEGER,
         description TEXT,
         value REAL,
@@ -260,8 +344,6 @@ class SQLDB {
         updated_at TEXT
       )
       ''');
-
-
 
     // ==============================
     // جداول خاصة بالمزامنة

@@ -229,10 +229,76 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                           hint: 'enter_seasonal_price'.tr,
                           icon: Icons.price_change_rounded,
                           keyboardType: TextInputType.number,
+                          // Optional: empty → 0, and the base price is used on special days
                           validator: (val) {
-                            return validInput(val!, 100, 1, "decimal");
+                            return validInput(
+                              val!,
+                              100,
+                              1,
+                              "decimal",
+                              empty: true,
+                            );
                           },
                         ),
+                        const SizedBox(height: 20),
+
+                        // Workers price per person (optional), used by the
+                        // workers expense of a reservation of this type
+                        Text(
+                          'workers_prices_section'.tr,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CustemTextField(
+                                controller: isEdit
+                                    ? ctrl.editTypeWorkerPrice
+                                    : ctrl.typeWorkerPrice,
+                                label: 'worker_price'.tr,
+                                hint: 'hall_phone_optional'.tr,
+                                icon: Icons.man_rounded,
+                                keyboardType: TextInputType.number,
+                                validator: (val) {
+                                  return validInput(
+                                    val!,
+                                    100,
+                                    1,
+                                    "decimal",
+                                    empty: true,
+                                  );
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: CustemTextField(
+                                controller: isEdit
+                                    ? ctrl.editTypeFemaleWorkerPrice
+                                    : ctrl.typeFemaleWorkerPrice,
+                                label: 'female_worker_price'.tr,
+                                hint: 'hall_phone_optional'.tr,
+                                icon: Icons.woman_rounded,
+                                keyboardType: TextInputType.number,
+                                validator: (val) {
+                                  return validInput(
+                                    val!,
+                                    100,
+                                    1,
+                                    "decimal",
+                                    empty: true,
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
                         // Guest Pricing Tiers Section
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,11 +335,20 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                                     icon: Icons.group_add_rounded,
                                     keyboardType: TextInputType.number,
                                     validator: (val) {
-                                      if (ctrl.maxNormalGuests.text.isNotEmpty && (val == null || val.isEmpty)) {
+                                      if (ctrl
+                                              .maxNormalGuests
+                                              .text
+                                              .isNotEmpty &&
+                                          (val == null || val.isEmpty)) {
                                         return 'required'.tr;
                                       }
                                       if (val != null && val.isNotEmpty) {
-                                        return validInput(val, 100, 1, "number");
+                                        return validInput(
+                                          val,
+                                          100,
+                                          1,
+                                          "number",
+                                        );
                                       }
                                       return null;
                                     },
@@ -287,11 +362,20 @@ class _EventTypeFormDialogState extends State<EventTypeFormDialog> {
                                     icon: Icons.attach_money_rounded,
                                     keyboardType: TextInputType.number,
                                     validator: (val) {
-                                      if (ctrl.maxNormalGuests.text.isNotEmpty && (val == null || val.isEmpty)) {
+                                      if (ctrl
+                                              .maxNormalGuests
+                                              .text
+                                              .isNotEmpty &&
+                                          (val == null || val.isEmpty)) {
                                         return 'required'.tr;
                                       }
                                       if (val != null && val.isNotEmpty) {
-                                        return validInput(val, 100, 1, "decimal");
+                                        return validInput(
+                                          val,
+                                          100,
+                                          1,
+                                          "decimal",
+                                        );
                                       }
                                       return null;
                                     },

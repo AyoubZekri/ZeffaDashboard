@@ -11,6 +11,7 @@ import '../../view/screen/ExpensesScreen.dart';
 import '../../view/screen/NotesScreen.dart';
 import '../../view/screen/TermsScreen.dart';
 import '../../view/screen/ServicesScreen.dart';
+import '../../view/screen/HallsScreen.dart';
 import '../../view/screen/RolesScreen.dart';
 import '../../view/screen/SubUsersScreen.dart';
 
@@ -24,6 +25,7 @@ import 'NotificationsController.dart';
 import 'Reservationscontroller.dart';
 import 'TermsController.dart';
 import 'ServicesController.dart';
+import 'HallsController.dart';
 import 'RolesController.dart';
 import 'SubUsersController.dart';
 
@@ -93,6 +95,12 @@ class Siedbarcontroller extends GetxController {
         'page': () => const ServicesScreen(),
         'subPages': [],
       },
+      {
+        'name': 'halls',
+        'icon': Icons.meeting_room_outlined,
+        'page': () => const HallsScreen(),
+        'subPages': [],
+      },
 
       {
         'name': 'notes',
@@ -138,6 +146,7 @@ class Siedbarcontroller extends GetxController {
     Get.delete<TermsController>();
     Get.delete<NotificationsController>();
     Get.delete<ServicesController>();
+    Get.delete<HallsController>();
     Get.delete<RolesController>();
     Get.delete<SubUsersController>();
   }

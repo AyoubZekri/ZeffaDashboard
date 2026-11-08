@@ -37,8 +37,10 @@ class PartyTypes {
     double basicPrice,
     double seasonalPrice,
     String? guestPricingTiers,
-    String icon,
-  ) async {
+    String icon, {
+    double? workerPrice,
+    double? femaleWorkerPrice,
+  }) async {
     final String uuid = Uuid().v4();
 
     try {
@@ -51,6 +53,8 @@ class PartyTypes {
         "seasonal_price": seasonalPrice,
         "guest_pricing_tiers": guestPricingTiers,
         "icon": icon,
+        "worker_price": workerPrice,
+        "female_worker_price": femaleWorkerPrice,
         "created_at": DateTime.now().toIso8601String(),
         "updated_at": DateTime.now().toIso8601String(),
       };
@@ -75,8 +79,10 @@ class PartyTypes {
     double basicPrice,
     double seasonalPrice,
     String? guestPricingTiers,
-    String icon,
-  ) async {
+    String icon, {
+    double? workerPrice,
+    double? femaleWorkerPrice,
+  }) async {
     try {
       final data = {
         "name": name,
@@ -85,6 +91,8 @@ class PartyTypes {
         "seasonal_price": seasonalPrice,
         "guest_pricing_tiers": guestPricingTiers,
         "icon": icon,
+        "worker_price": workerPrice,
+        "female_worker_price": femaleWorkerPrice,
         "updated_at": DateTime.now().toIso8601String(),
       };
 
@@ -100,6 +108,30 @@ class PartyTypes {
       return false;
     } catch (e) {
       print("❌ Updatedata error: $e");
+      return false;
+    }
+  }
+
+  /// Save the expenses template suggested for the next reservation of this type
+  Future<bool> updateDefaultExpenses(String uuid, String? defaultExpenses) async {
+    try {
+      final data = {
+        "default_expenses": defaultExpenses,
+        "updated_at": DateTime.now().toIso8601String(),
+      };
+
+      final result = await _db.update("party_types", data, "uuid = ?", [uuid]);
+
+      if (result > 0) {
+        await _syncService.addToQueue("party_types", uuid, "update", {
+          "uuid": uuid,
+          ...data,
+        });
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print("❌ updateDefaultExpenses error: $e");
       return false;
     }
   }

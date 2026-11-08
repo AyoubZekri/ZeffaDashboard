@@ -84,6 +84,8 @@ dependencies:
   tray_manager: ^0.5.3
   excel: ^4.0.6
   arabic_reshaper: ^0.0.1
+  ffi: ^2.1.0
+  win32: ^5.15.0
 
 
 dev_dependencies:
@@ -97,6 +99,21 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+
+# Local copy of printing 5.14.3 with pdfium bundled (packages/printing/windows/pdfium),
+# so the Windows build doesn't download pdfium from GitHub.
+# Remove these two lines to go back to the normal printing package.
+dependency_overrides:
+  printing:
+    path: packages/printing
+
+# sqlite3: don't download the library from GitHub during the build; load the
+# sqlite3.dll shipped next to the exe (windows/libs/sqlite3.dll, see
+# windows/CMakeLists.txt). Remove to go back to the automatic download.
+hooks:
+  user_defines:
+    sqlite3:
+      source: system
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

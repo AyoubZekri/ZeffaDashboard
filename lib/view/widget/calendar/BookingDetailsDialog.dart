@@ -1,3 +1,4 @@
+import 'package:zeffa/core/functions/role_permissions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/CalendarController.dart';
@@ -23,6 +24,16 @@ class BookingDetailsDialog extends StatelessWidget {
     final List<dynamic> reservations = event['reservations'] ?? [];
 
     final CalendarController ctrl = Get.find();
+
+    // Day booked for only one period → the other one can still be reserved
+    // (3 = evening booked → morning free, 4 = morning booked → evening free)
+    final int? bookedPeriod = event['booking_period'] as int?;
+    final int? freePeriod = bookedPeriod == 3
+        ? 4
+        : (bookedPeriod == 4 ? 3 : null);
+    final String? dayDate = reservations.isNotEmpty
+        ? reservations.first['date']?.toString()
+        : null;
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -92,13 +103,18 @@ class BookingDetailsDialog extends StatelessWidget {
                       if (reservations.isNotEmpty)
                         ...reservations.map((res) {
                           final resId = res['bookingId'] ?? '#---';
-                          final resType = res['title'] ?? res['type_of_party_uuid'] ?? '---';
+                          final resType =
+                              res['title'] ??
+                              res['type_of_party_uuid'] ??
+                              '---';
                           final resName = res['customerName'] ?? '---';
                           final resPhone = res['customerPhone'] ?? '---';
                           final periodKey = res['booking_period'];
-                          final periodStr = periodKey == 3 
-                              ? 'period_evening'.tr 
-                              : (periodKey == 4 ? 'period_morning'.tr : 'period_full_day'.tr);
+                          final periodStr = periodKey == 3
+                              ? 'period_evening'.tr
+                              : (periodKey == 4
+                                    ? 'period_morning'.tr
+                                    : 'period_full_day'.tr);
 
                           return Container(
                             margin: const EdgeInsets.only(bottom: 16),
@@ -190,6 +206,25 @@ class BookingDetailsDialog extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
+              // ── Free period card ──
+              if (freePeriod != null &&
+                  dayDate != null &&
+                  hasRolePermission('add_reservation')) ...[
+                _buildFreePeriodCard(
+                  context,
+                  freePeriod: freePeriod,
+                  colors: colors,
+                  onBook: () {
+                    Get.back();
+                    ctrl.addReservationForDate(
+                      DateTime.parse(dayDate),
+                      period: freePeriod,
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+              ],
+
               // ── Action Buttons ──
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -247,6 +282,99 @@ class BookingDetailsDialog extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildFreePeriodCard(
+    BuildContext context, {
+    required int freePeriod,
+    required AppColors colors,
+    required VoidCallback onBook,
+  }) {
+    final theme = Theme.of(context);
+    final isMorning = freePeriod == 4;
+    final accent = isMorning ? Colors.orange : Colors.indigo;
+    final periodName = isMorning ? 'period_morning'.tr : 'period_evening'.tr;
+
+    final info = Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: accent.withValues(alpha: 0.15),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            isMorning ? Icons.light_mode_rounded : Icons.nights_stay_rounded,
+            color: accent,
+            size: 22,
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'period_available'.trParams({'period': periodName}),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'period_available_desc'.tr,
+                style: TextStyle(fontSize: 12, color: colors.subtitleColor),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    final button = ElevatedButton.icon(
+      onPressed: onBook,
+      icon: const Icon(Icons.add_rounded, size: 18),
+      label: Text(
+        'book_this_period'.tr,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: accent,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: accent.withValues(alpha: 0.4)),
+      ),
+      // Narrow (phone) → button under the text, wide → side by side
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 380) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [info, const SizedBox(height: 12), button],
+            );
+          }
+          return Row(
+            children: [
+              Expanded(child: info),
+              const SizedBox(width: 12),
+              button,
+            ],
+          );
+        },
       ),
     );
   }

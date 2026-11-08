@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controller/CalendarController.dart';
 import '../../core/constant/AppTheme.dart';
 import '../widget/calendar/CalendarCard.dart';
+import '../widget/calendar/CalendarHallSelector.dart';
 import '../widget/calendar/CalendarFormDialog.dart';
 import '../widget/calendar/CalendarGuide.dart';
 import '../widget/calendar/CalendarHeader.dart';
@@ -75,6 +76,8 @@ class CalendarScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 36),
 
+                      // Hall selector (only when the account has several halls)
+                      CalendarHallSelector(ctrl: ctrl),
                       CalendarCard(
                         ctrl: ctrl,
                         theme: theme,

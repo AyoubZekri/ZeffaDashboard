@@ -379,6 +379,8 @@ class TermCard extends StatelessWidget {
 
   String _parseDetail(String detail, bool isArabic, String? type) {
     if (type == 'required_documents') {
+      // Plain text (old format) → shown as is, no JSON decode
+      if (!detail.trimLeft().startsWith('{')) return detail;
       try {
         final decoded = jsonDecode(detail);
         final name = decoded['name'] ?? item.title ?? '';

@@ -28,13 +28,41 @@ class Expenses {
     }
   }
 
-  Future<bool> Adddata(int type, String description, double value, String datePerry) async {
+  Future<List<Map<String, dynamic>>> viewByReservation(String reservationUuid) async {
+    try {
+      final result = await _db.readData(
+        "SELECT * FROM expenses WHERE user_id = ? AND reservation_uuid = ? ORDER BY created_at",
+        [id, reservationUuid],
+      );
+      return List<Map<String, dynamic>>.from(result);
+    } catch (e) {
+      print("❌ viewByReservation error: $e");
+      return [];
+    }
+  }
+
+  Future<bool> Adddata(
+    int type,
+    String description,
+    double value,
+    String datePerry, {
+    String? reservationUuid,
+    int? workersCount,
+    int? femaleWorkersCount,
+    double? workerPrice,
+    double? femaleWorkerPrice,
+  }) async {
     final String uuid = Uuid().v4();
 
     try {
       final data = {
         "uuid": uuid,
         "user_id": id,
+        "reservation_uuid": reservationUuid,
+        "workers_count": workersCount,
+        "female_workers_count": femaleWorkersCount,
+        "worker_price": workerPrice,
+        "female_worker_price": femaleWorkerPrice,
         "type": type,
         "description": description,
         "value": value,
@@ -61,10 +89,20 @@ class Expenses {
     int type,
     String description,
     double value,
-    String datePerry,
-  ) async {
+    String datePerry, {
+    String? reservationUuid,
+    int? workersCount,
+    int? femaleWorkersCount,
+    double? workerPrice,
+    double? femaleWorkerPrice,
+  }) async {
     try {
       final data = {
+        "reservation_uuid": reservationUuid,
+        "workers_count": workersCount,
+        "female_workers_count": femaleWorkersCount,
+        "worker_price": workerPrice,
+        "female_worker_price": femaleWorkerPrice,
         "type": type,
         "description": description,
         "value": value,
