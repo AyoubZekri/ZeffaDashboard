@@ -161,7 +161,10 @@ class EventTypesController extends GetxController {
 
   String _plainPrice(dynamic value) {
     if (value == null) return '';
-    final v = (value as num).toDouble();
+    final v = value is num
+        ? value.toDouble()
+        : double.tryParse(value.toString().replaceAll(',', ''));
+    if (v == null) return value.toString();
     return v == v.roundToDouble() ? v.toInt().toString() : v.toString();
   }
 
@@ -287,8 +290,8 @@ class EventTypesController extends GetxController {
         maxNormalGuests.text = blockData['max_normal_guests']?.toString() ?? '';
         extraGuestsBlock.text =
             blockData['extra_guests_block']?.toString() ?? '';
-        extraGuestsPrice.text =
-            blockData['extra_guests_price']?.toString() ?? '';
+        // 10000.0 -> 10000 (no automatic ".0")
+        extraGuestsPrice.text = _plainPrice(blockData['extra_guests_price']);
       }
     }
 
