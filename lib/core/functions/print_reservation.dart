@@ -360,9 +360,7 @@ Future<void> generateAndPrintPDF(
 
   // Load fonts (using Amiri instead of Cairo because Cairo lacks some isolated presentation form glyphs)
   // Papers are printed all in bold (Amiri Bold)
-  final fontData = await rootBundle.load(
-    "assets/fonts/static/Amiri-Bold.ttf",
-  );
+  final fontData = await rootBundle.load("assets/fonts/static/Amiri-Bold.ttf");
   final cairoFont = pw.Font.ttf(fontData);
 
   final boldFontData = await rootBundle.load(
@@ -398,6 +396,45 @@ Future<void> generateAndPrintPDF(
         ),
       ),
       crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+      // Signature at the bottom of every page; the thank-you line comes
+      // after it, on the last page only
+      footer: (pw.Context context) => pw.Padding(
+        padding: const pw.EdgeInsets.only(top: 20),
+        child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+          children: [
+            pw.Align(
+              alignment: alignLeft,
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                children: [
+                  pw.Text(
+                    tr("امضاء مسير القاعة", "Hall Manager Signature"),
+                    textDirection: textDir,
+                    style: pw.TextStyle(font: cairoBold, fontSize: 10),
+                  ),
+                  pw.SizedBox(height: 35),
+                ],
+              ),
+            ),
+            if (context.pageNumber == context.pagesCount)
+              pw.Center(
+                child: pw.Text(
+                  tr(
+                    "نشكركم على ثقتكم ودامت افراحكم",
+                    "Thank you for your trust, may your joys last",
+                  ),
+                  textDirection: textDir,
+                  style: pw.TextStyle(
+                    font: cairoBold,
+                    fontSize: 14,
+                    color: PdfColors.grey700,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
       build: (pw.Context context) {
         return [
           pw.Center(
@@ -466,7 +503,7 @@ Future<void> generateAndPrintPDF(
                               textDirection: textDir,
                               style: pw.TextStyle(
                                 font: cairoBold,
-                                fontSize: 12,
+                                fontSize: 10,
                               ),
                             ),
                           ),
@@ -490,7 +527,7 @@ Future<void> generateAndPrintPDF(
                               textDirection: textDir,
                               style: pw.TextStyle(
                                 font: cairoBold,
-                                fontSize: 12,
+                                fontSize: 10,
                               ),
                             ),
                           ),
@@ -528,7 +565,7 @@ Future<void> generateAndPrintPDF(
                       child: pw.Text(
                         ar(title),
                         textDirection: textDir,
-                        style: pw.TextStyle(font: cairoBold, fontSize: 11.5),
+                        style: pw.TextStyle(font: cairoBold, fontSize: 9.5),
                       ),
                     ),
                   ),
@@ -547,7 +584,7 @@ Future<void> generateAndPrintPDF(
                               textDirection: textDir,
                               style: pw.TextStyle(
                                 font: cairoBold,
-                                fontSize: 11,
+                                fontSize: 9,
                                 height: 1.3,
                               ),
                             ),
@@ -559,37 +596,6 @@ Future<void> generateAndPrintPDF(
               );
             }).toList(),
           ),
-          // Signatures: kept apart from the text above
-          pw.SizedBox(height: 45),
-          pw.Align(
-            alignment: alignLeft,
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.center,
-              children: [
-                pw.Text(
-                  tr("امضاء مسير القاعة", "Hall Manager Signature"),
-                  textDirection: textDir,
-                  style: pw.TextStyle(font: cairoBold, fontSize: 10),
-                ),
-                pw.SizedBox(height: 35),
-              ],
-            ),
-          ),
-          pw.Center(
-            child: pw.Text(
-              tr(
-                "نشكركم على ثقتكم ودامت افراحكم",
-                "Thank you for your trust, may your joys last",
-              ),
-              textDirection: textDir,
-              style: pw.TextStyle(
-                font: cairoBold,
-                fontSize: 14,
-                color: PdfColors.grey700,
-              ),
-            ),
-          ),
-          pw.SizedBox(height: 8),
         ];
       },
     );
@@ -617,6 +623,24 @@ Future<void> generateAndPrintPDF(
         ),
       ),
       crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+      // Signatures at the bottom of every page
+      footer: (pw.Context context) => pw.Padding(
+        padding: const pw.EdgeInsets.only(top: 20),
+        child: pw.Align(
+          alignment: alignLeft,
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              pw.Text(
+                tr("امضاء مسير القاعة", "Hall Manager Signature"),
+                textDirection: textDir,
+                style: pw.TextStyle(font: cairoBold, fontSize: 10),
+              ),
+              pw.SizedBox(height: 35),
+            ],
+          ),
+        ),
+      ),
       build: (pw.Context context) {
         return [
           pw.Center(
@@ -677,7 +701,7 @@ Future<void> generateAndPrintPDF(
                         textDirection: textDir,
                         style: pw.TextStyle(
                           font: cairoBold,
-                          fontSize: 11.5,
+                          fontSize: 9.5,
                           height: 1.35,
                         ),
                       ),
@@ -698,7 +722,7 @@ Future<void> generateAndPrintPDF(
                               textDirection: textDir,
                               style: pw.TextStyle(
                                 font: cairoBold,
-                                fontSize: 11,
+                                fontSize: 9,
                                 height: 1.3,
                               ),
                             ),
@@ -709,22 +733,6 @@ Future<void> generateAndPrintPDF(
                 ],
               );
             }).toList(),
-          ),
-          // Signatures: kept apart from the text above
-          pw.SizedBox(height: 45),
-          pw.Align(
-            alignment: alignLeft,
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.center,
-              children: [
-                pw.Text(
-                  tr("امضاء مسير القاعة", "Hall Manager Signature"),
-                  textDirection: textDir,
-                  style: pw.TextStyle(font: cairoBold, fontSize: 10),
-                ),
-                pw.SizedBox(height: 35),
-              ],
-            ),
           ),
         ];
       },
@@ -753,6 +761,37 @@ Future<void> generateAndPrintPDF(
         ),
       ),
       crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+      // Signatures at the bottom of every page
+      footer: (pw.Context context) => pw.Padding(
+        padding: const pw.EdgeInsets.only(top: 20),
+        child: pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.center,
+              children: [
+                pw.Text(
+                  tr("إمضاء مسير القاعة", "Hall Manager Signature"),
+                  textDirection: textDir,
+                  style: pw.TextStyle(font: cairoBold, fontSize: 10),
+                ),
+                pw.SizedBox(height: 35),
+              ],
+            ),
+            pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.center,
+              children: [
+                pw.Text(
+                  tr("إمضاء صاحب الحجز", "Client Signature"),
+                  textDirection: textDir,
+                  style: pw.TextStyle(font: cairoBold, fontSize: 10),
+                ),
+                pw.SizedBox(height: 35),
+              ],
+            ),
+          ],
+        ),
+      ),
       build: (pw.Context context) {
         return [
           pw.Center(
@@ -1012,7 +1051,7 @@ Future<void> generateAndPrintPDF(
                         textDirection: textDir,
                         style: pw.TextStyle(
                           font: cairoBold,
-                          fontSize: 11.2,
+                          fontSize: 9.2,
                           height: 1.3,
                         ),
                       ),
@@ -1033,7 +1072,7 @@ Future<void> generateAndPrintPDF(
                               textDirection: textDir,
                               style: pw.TextStyle(
                                 font: cairoBold,
-                                fontSize: 10.8,
+                                fontSize: 8.8,
                                 height: 1.25,
                               ),
                             ),
@@ -1044,35 +1083,6 @@ Future<void> generateAndPrintPDF(
                 ],
               );
             }).toList(),
-          ),
-          // Signatures: kept apart from the text above
-          pw.SizedBox(height: 45),
-          pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-            children: [
-              pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.center,
-                children: [
-                  pw.Text(
-                    tr("إمضاء مسير القاعة", "Hall Manager Signature"),
-                    textDirection: textDir,
-                    style: pw.TextStyle(font: cairoBold, fontSize: 10),
-                  ),
-                  pw.SizedBox(height: 35),
-                ],
-              ),
-              pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.center,
-                children: [
-                  pw.Text(
-                    tr("إمضاء صاحب الحجز", "Client Signature"),
-                    textDirection: textDir,
-                    style: pw.TextStyle(font: cairoBold, fontSize: 10),
-                  ),
-                  pw.SizedBox(height: 35),
-                ],
-              ),
-            ],
           ),
         ];
       },
@@ -1104,7 +1114,8 @@ Future<void> generateAndPrintPDF(
     // Desktop: saving through a PDF printer goes through the print spooler,
     // and the PDF reader opened the file before it was fully written
     // ("sharing violation"). Offer to save the file directly instead.
-    if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+    if (!kIsWeb &&
+        (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
       final choice = await Get.dialog<String>(_printOrSaveDialog());
       if (choice == null) return;
       if (choice == 'save') {
@@ -1138,24 +1149,34 @@ Widget _printOrSaveDialog() {
           ? ElevatedButton.icon(
               onPressed: () => Get.back(result: value),
               icon: Icon(icon, size: 20),
-              label: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+              label: Text(
+                label,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF4C2983),
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             )
           : OutlinedButton.icon(
               onPressed: () => Get.back(result: value),
               icon: Icon(icon, size: 20),
-              label: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+              label: Text(
+                label,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF4C2983),
                 side: const BorderSide(color: Color(0xFF4C2983)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
     );
@@ -1170,7 +1191,11 @@ Widget _printOrSaveDialog() {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.picture_as_pdf_rounded, size: 40, color: Color(0xFF4C2983)),
+            const Icon(
+              Icons.picture_as_pdf_rounded,
+              size: 40,
+              color: Color(0xFF4C2983),
+            ),
             const SizedBox(height: 12),
             Text(
               'documents_ready'.tr,
@@ -1182,7 +1207,12 @@ Widget _printOrSaveDialog() {
               children: [
                 option('save', Icons.save_alt_rounded, 'save_as_pdf'.tr, true),
                 const SizedBox(width: 12),
-                option('print', Icons.print_rounded, 'print_documents'.tr, false),
+                option(
+                  'print',
+                  Icons.print_rounded,
+                  'print_documents'.tr,
+                  false,
+                ),
               ],
             ),
           ],
